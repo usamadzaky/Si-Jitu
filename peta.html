@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="WebGIS Sebaran Spasial Ghost Gear Teluk Banten - Peta interaktif zona bahaya dan titik jaring hanyut.">
+  <title>GHOST-TRACK Banten — Peta Sebaran WebGIS</title>
+
+  <!-- Google Fonts: Plus Jakarta Sans & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- FontAwesome 6 Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <!-- Leaflet CSS (Required in <head>) -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+
+  <!-- Shared Enterprise Stylesheet -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="peta-page-body">
+
+  <!-- ========================================================================
+       STICKY TOP NAVBAR (UNIFIED SUITE ACROSS ALL PAGES)
+       ======================================================================== -->
+  <header class="site-navbar">
+    <div class="nav-container">
+      <a href="index.html" class="nav-brand">
+        <div class="brand-icon-box">
+          <i class="fa-solid fa-satellite-dish"></i>
+        </div>
+        <div class="brand-text">
+          <span class="brand-title">GHOST-TRACK</span>
+          <span class="brand-subtitle">Teluk Banten GIS</span>
+        </div>
+      </a>
+
+      <nav>
+        <ul class="nav-menu" id="navMenu">
+          <li><a href="index.html" class="nav-link"><i class="fa-solid fa-house"></i> Beranda</a></li>
+          <li><a href="peta.html" class="nav-link active"><i class="fa-solid fa-map-location-dot"></i> Peta Utama</a></li>
+
+          <!-- Dropdown EcoReef 3D Studio -->
+          <li class="nav-item-dropdown">
+            <a class="nav-link nav-dropdown-toggle">
+              <i class="fa-solid fa-cubes"></i> EcoReef 3D Studio <i class="fa-solid fa-chevron-down chevron"></i>
+            </a>
+            <div class="nav-dropdown-menu">
+              <a href="ecoreef-1cube.html" class="nav-dropdown-item">
+                <i class="fa-solid fa-cube"></i>
+                <div>
+                  <strong>Modul 1-Cube</strong>
+                  <span>Struktur Kubus Tunggal PVC & Jaring</span>
+                </div>
+              </a>
+              <a href="ecoreef-2cube.html" class="nav-dropdown-item">
+                <i class="fa-solid fa-cubes-stacked"></i>
+                <div>
+                  <strong>Modul 2-Cube</strong>
+                  <span>Struktur Bertingkat Ekosistem Dalam</span>
+                </div>
+              </a>
+              <a href="EcoReef3D.html" class="nav-dropdown-item">
+                <i class="fa-solid fa-landmark"></i>
+                <div>
+                  <strong>Overview EcoReef 3D</strong>
+                  <span>Blueprint Rekayasa & Daur Ulang</span>
+                </div>
+              </a>
+            </div>
+          </li>
+
+          <li><a href="sijitu-3d.html" class="nav-link"><i class="fa-solid fa-satellite"></i> Perangkat SIJITU 3D</a></li>
+          <li><a href="ai-model.html" class="nav-link"><i class="fa-solid fa-robot"></i> GHOST-AI Analytics</a></li>
+          <li><a href="index.html#lapor" class="nav-link nav-cta-btn"><i class="fa-solid fa-plus-circle"></i> Lapor Temuan</a></li>
+        </ul>
+      </nav>
+
+      <button class="nav-hamburger" id="navHamburger" aria-label="Toggle Menu">
+        <i class="fa-solid fa-bars"></i>
+      </button>
+    </div>
+  </header>
+
+  <!-- ========================================================================
+       FULLSCREEN WEBGIS CONTAINER: height: calc(100vh - 70px); width: 100%;
+       ======================================================================== -->
+  <main class="webgis-viewport">
+    <!-- Leaflet Map Element -->
+    <div id="map"></div>
+
+    <!-- Floating Enterprise Legend & Layer Control Panel -->
+    <div class="gis-floating-panel">
+      <div class="gis-panel-header">
+        <h3><i class="fa-solid fa-layer-group" style="color: var(--teal-primary);"></i> Layer & Filter Spasial</h3>
+        <span class="badge-tag badge-teal" style="font-size: 0.65rem;">Teluk Banten</span>
+      </div>
+
+      <!-- Layer 1: 65 Titik ALDFG / Ghost Gear -->
+      <div class="layer-toggle-row">
+        <label class="layer-lbl" for="toggleGhostPoints" style="cursor: pointer;">
+          <span style="display:inline-block; width:12px; height:12px; border-radius:50%; background:#800000; border:1.5px solid #fff;"></span>
+          <span>65 Titik Laporan ALDFG</span>
+        </label>
+        <input type="checkbox" id="toggleGhostPoints" checked style="accent-color: var(--teal-primary); cursor: pointer; width: 16px; height: 16px;">
+      </div>
+
+      <!-- Legend Risk Level Dots -->
+      <div style="margin: -0.25rem 0 0.5rem 1.6rem; display: flex; flex-wrap: wrap; gap: 0.45rem; font-size: 0.7rem; color: var(--text-muted);">
+        <span style="display:flex; align-items:center; gap:0.25rem;"><span style="width:8px; height:8px; border-radius:50%; background:#800000;"></span> R4: Ekstrem</span>
+        <span style="display:flex; align-items:center; gap:0.25rem;"><span style="width:8px; height:8px; border-radius:50%; background:#ff3333;"></span> R3: Tinggi</span>
+        <span style="display:flex; align-items:center; gap:0.25rem;"><span style="width:8px; height:8px; border-radius:50%; background:#ffa500;"></span> R2: Sedang</span>
+        <span style="display:flex; align-items:center; gap:0.25rem;"><span style="width:8px; height:8px; border-radius:50%; background:#ff9999;"></span> R1: Rendah</span>
+      </div>
+
+      <!-- Layer 2: Zona Bahaya Polygon -->
+      <div class="layer-toggle-row">
+        <label class="layer-lbl" for="toggleDangerZones" style="cursor: pointer;">
+          <span class="swatch-danger-poly"></span>
+          <span>Zona Bahaya ALDFG (Poligon)</span>
+        </label>
+        <input type="checkbox" id="toggleDangerZones" checked style="accent-color: var(--teal-primary); cursor: pointer; width: 16px; height: 16px;">
+      </div>
+
+      <!-- Layer 3: Dinamika Arus Grid -->
+      <div class="layer-toggle-row">
+        <label class="layer-lbl" for="toggleCurrents" style="cursor: pointer;">
+          <span style="display:inline-block; width:14px; height:14px; border:1px solid #0284c7; background:rgba(2, 132, 199, 0.4); border-radius:2px;"></span>
+          <span>Dinamika Arus Laut (Grid Hidrodinamika)</span>
+        </label>
+        <input type="checkbox" id="toggleCurrents" checked style="accent-color: var(--teal-primary); cursor: pointer; width: 16px; height: 16px;">
+      </div>
+
+      <!-- Statistics Counters Chips -->
+      <div class="gis-stats-chips">
+        <div class="chip-box">
+          <div class="chip-val" id="countGhostPoints">65</div>
+          <div class="chip-lbl">Titik ALDFG</div>
+        </div>
+        <div class="chip-box">
+          <div class="chip-val" id="countDangerZones">3</div>
+          <div class="chip-lbl">Poligon Rawan</div>
+        </div>
+        <div class="chip-box">
+          <div class="chip-val" id="countCurrents">52</div>
+          <div class="chip-lbl">Grid Arus</div>
+        </div>
+      </div>
+
+      <div style="margin-top: 0.75rem; font-size: 0.75rem; color: var(--text-muted); display: flex; align-items: center; gap: 0.35rem;">
+        <i class="fa-solid fa-circle-info" style="color: var(--teal-primary);"></i>
+        <span>Klik titik temuan untuk detail risiko &amp; navigasi solusi upcycling 3D.</span>
+      </div>
+    </div>
+  </main>
+
+  <!-- ========================================================================
+       GLOBAL FOOTER (PRESERVED)
+       ======================================================================== -->
+  <footer class="site-footer">
+    <div class="footer-container">
+      <div style="display: flex; align-items: center; gap: 0.5rem; color: #ffffff; font-weight: 700; font-size: 1rem;">
+        <i class="fa-solid fa-satellite-dish" style="color: var(--teal-primary);"></i>
+        <span>GHOST-TRACK Banten &copy; 2026</span>
+      </div>
+      <ul class="footer-nav">
+        <li><a href="index.html">Beranda</a></li>
+        <li><a href="peta.html">Peta Utama</a></li>
+        <li><a href="EcoReef3D.html">Solusi Ecoreef</a></li>
+        <li><a href="sijitu-3d.html">Perangkat SIJITU</a></li>
+        <li><a href="ai-model.html">GHOST-AI</a></li>
+      </ul>
+      <span class="footer-credits">
+        Inisiatif Sains Terbuka Konservasi Bahari &amp; Hilirisasi Daur Ulang Ghost Gear Teluk Banten, Indonesia.
+      </span>
+    </div>
+  </footer>
+
+  <!-- Leaflet JS CDN -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+
+  <!-- 65 Titik Dataset Ghost Gear Banten -->
+  <script src="ghostgear.js"></script>
+
+  <!-- Shared Controller Script -->
+  <script src="script.js"></script>
+</body>
+</html>

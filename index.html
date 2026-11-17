@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="GHOST-TRACK Banten - Platform Pemantauan Spasial & Hilirisasi Daur Ulang Ghost Gear (ALDFG) di Teluk Banten.">
+  <title>GHOST-TRACK Banten — Beranda & Dashboard Analisis</title>
+
+  <!-- Google Fonts: Plus Jakarta Sans (UI) & JetBrains Mono (Stats/Data) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- FontAwesome 6 Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
+  <!-- Shared Enterprise Stylesheet -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- ========================================================================
+       STICKY TOP NAVBAR (UNIFORM ACROSS ALL PAGES)
+       ======================================================================== -->
+  <header class="site-navbar">
+    <div class="nav-container">
+      <a href="index.html" class="nav-brand">
+        <div class="brand-icon-box">
+          <i class="fa-solid fa-satellite-dish"></i>
+        </div>
+        <div class="brand-text">
+          <span class="brand-title">GHOST-TRACK</span>
+          <span class="brand-subtitle">Teluk Banten GIS</span>
+        </div>
+      </a>
+
+      <nav>
+        <ul class="nav-menu" id="navMenu">
+          <li><a href="index.html" class="nav-link active"><i class="fa-solid fa-house"></i> Beranda</a></li>
+          <li><a href="peta.html" class="nav-link"><i class="fa-solid fa-map-location-dot"></i> Peta Utama</a></li>
+
+          <!-- Dropdown EcoReef 3D Studio -->
+          <li class="nav-item-dropdown">
+            <a class="nav-link nav-dropdown-toggle">
+              <i class="fa-solid fa-cubes"></i> EcoReef 3D Studio <i class="fa-solid fa-chevron-down chevron"></i>
+            </a>
+            <div class="nav-dropdown-menu">
+              <a href="ecoreef-1cube.html" class="nav-dropdown-item">
+                <i class="fa-solid fa-cube"></i>
+                <div>
+                  <strong>Modul 1-Cube</strong>
+                  <span>Struktur Kubus Tunggal PVC & Jaring</span>
+                </div>
+              </a>
+              <a href="ecoreef-2cube.html" class="nav-dropdown-item">
+                <i class="fa-solid fa-cubes-stacked"></i>
+                <div>
+                  <strong>Modul 2-Cube</strong>
+                  <span>Struktur Bertingkat Ekosistem Dalam</span>
+                </div>
+              </a>
+              <a href="EcoReef3D.html" class="nav-dropdown-item">
+                <i class="fa-solid fa-landmark"></i>
+                <div>
+                  <strong>Overview EcoReef 3D</strong>
+                  <span>Blueprint Rekayasa & Daur Ulang</span>
+                </div>
+              </a>
+            </div>
+          </li>
+
+          <li><a href="sijitu-3d.html" class="nav-link"><i class="fa-solid fa-satellite"></i> Perangkat SIJITU 3D</a></li>
+          <li><a href="ai-model.html" class="nav-link"><i class="fa-solid fa-robot"></i> GHOST-AI Analytics</a></li>
+          <li><a href="#lapor" class="nav-link nav-cta-btn"><i class="fa-solid fa-plus-circle"></i> Lapor Temuan</a></li>
+        </ul>
+      </nav>
+
+      <button class="nav-hamburger" id="navHamburger" aria-label="Toggle Menu">
+        <i class="fa-solid fa-bars"></i>
+      </button>
+    </div>
+  </header>
+
+  <main>
+    <!-- ======================================================================
+         SECTION 1: HERO SECTION
+         ====================================================================== -->
+    <section class="hero-wrapper">
+      <div class="hero-bg-overlay"></div>
+      <div class="hero-inner">
+        <div class="badge-tag badge-dark">
+          <i class="fa-solid fa-shield-halved"></i> Konservasi Ekosistem Laut Teluk Banten
+        </div>
+        <h1>Melacak Jejak Pembunuh Senyap di Teluk Banten</h1>
+        <p>
+          Sistem pemantauan spasial terintegrasi untuk mendeteksi, mencatat, dan memitigasi akumulasi <em>Abandoned, Lost or otherwise Discarded Fishing Gear</em> (ALDFG) demi menyelamatkan terumbu karang dan habitat pesisir.
+        </p>
+
+        <div class="hero-cta-group">
+          <a href="peta.html" class="btn btn-teal">
+            <i class="fa-solid fa-map-location-dot"></i> Buka Peta Sebaran WebGIS
+          </a>
+          <a href="#analisis" class="btn btn-outline-white">
+            <i class="fa-solid fa-chart-simple"></i> Lihat Dashboard Metrik
+          </a>
+        </div>
+
+        <!-- Metric Ribbon Strip -->
+        <div class="hero-stat-ribbon">
+          <div class="stat-item">
+            <span class="stat-val">Teluk Banten</span>
+            <span class="stat-lbl">Kawasan Fokus</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-val">3 Zona</span>
+            <span class="stat-lbl">Area Risiko Tinggi</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-val">Esri Satelit</span>
+            <span class="stat-lbl">Basemap Navigasi</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-val">Citizen Science</span>
+            <span class="stat-lbl">Pelaporan Mandiri</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================================================================
+         SECTION 2: DASHBOARD ANALISIS (BENTO GRID LAYOUT)
+         ====================================================================== -->
+    <section id="analisis" class="section-container">
+      <div class="section-header-block">
+        <div class="badge-tag badge-teal" style="margin-bottom: 0.65rem;">
+          <i class="fa-solid fa-chart-line"></i> Data Lapangan Terverifikasi
+        </div>
+        <h2>Dashboard Analisis Sebaran ALDFG</h2>
+        <p>
+          Rekapitulasi data statistik mengenai estimasi kerugian ekonomi nelayan dan sebaran komponen alat penangkap ikan yang terlantar di perairan Teluk Banten.
+        </p>
+      </div>
+
+      <!-- Bento Grid Container -->
+      <div class="bento-grid">
+        <!-- Card 1: Estimasi Kerugian -->
+        <div class="bento-card metric-col-4">
+          <div class="metric-header">
+            <span class="metric-title">Estimasi Kerugian</span>
+            <div class="icon-badge icon-loss">
+              <i class="fa-solid fa-money-bill-trend-up"></i>
+            </div>
+          </div>
+          <div>
+            <div class="metric-number">Rp 752.5 Juta</div>
+            <div class="metric-desc">
+              <span class="font-mono" style="color: var(--danger-primary); font-weight:700;">/ Tahun</span> Kerugian nelayan akibat trip terganggu dan alat tangkap rusak.
+            </div>
+          </div>
+        </div>
+
+        <!-- Card 2: Jaring Hilang -->
+        <div class="bento-card metric-col-4">
+          <div class="metric-header">
+            <span class="metric-title">Jaring Hilang</span>
+            <div class="icon-badge icon-net">
+              <i class="fa-solid fa-network-wired"></i>
+            </div>
+          </div>
+          <div>
+            <div class="metric-number">2.300 Piece</div>
+            <div class="metric-desc">
+              Didominasi potongan jaring insang monofilamen yang membelit terumbu karang dangkal.
+            </div>
+          </div>
+        </div>
+
+        <!-- Card 3: Bubu Hilang -->
+        <div class="bento-card metric-col-4">
+          <div class="metric-header">
+            <span class="metric-title">Bubu Hilang</span>
+            <div class="icon-badge icon-trap">
+              <i class="fa-solid fa-box-open"></i>
+            </div>
+          </div>
+          <div>
+            <div class="metric-number">2.500 Unit</div>
+            <div class="metric-desc">
+              Perangkap kawat & bambu tanpa awak yang terus menjebak ikan secara berkelanjutan (ghost fishing).
+            </div>
+          </div>
+        </div>
+
+        <!-- Card 4: Bar Chart - Faktor Penyebab Utama -->
+        <div class="bento-card chart-col-6">
+          <div class="chart-card-header">
+            <h3><i class="fa-solid fa-chart-column" style="color: var(--teal-primary);"></i> Faktor Penyebab Utama</h3>
+            <span class="badge-tag badge-teal">Analisis Insiden</span>
+          </div>
+          <div class="chart-canvas-container">
+            <canvas id="causesBarChart"></canvas>
+          </div>
+        </div>
+
+        <!-- Card 5: Doughnut Chart - Komponen Hilang -->
+        <div class="bento-card chart-col-6">
+          <div class="chart-card-header">
+            <h3><i class="fa-solid fa-chart-pie" style="color: var(--blue-primary);"></i> Komponen Alat Tangkap Hilang</h3>
+            <span class="badge-tag badge-blue">Distribusi Komposisi</span>
+          </div>
+          <div class="chart-canvas-container">
+            <canvas id="componentsDoughnutChart"></canvas>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================================================================
+         SECTION 3: FORM LAPOR MANDIRI (CITIZEN SCIENCE)
+         ====================================================================== -->
+    <section id="lapor" class="form-section-bg">
+      <div class="section-container" style="padding-top: 3.5rem; padding-bottom: 3.5rem;">
+        <div class="form-enterprise-card">
+          <div style="margin-bottom: 1.75rem; text-align: center;">
+            <div class="badge-tag badge-teal" style="margin-bottom: 0.5rem;">
+              <i class="fa-solid fa-users"></i> Citizen Science
+            </div>
+            <h2 style="font-size: 1.75rem; font-weight: 800; color: var(--text-heading);">Formulir Lapor Mandiri</h2>
+            <p style="font-size: 0.9rem; color: var(--text-muted); margin-top: 0.35rem;">
+              Laporkan koordinat dan temuan jaring hantu atau bubu terlantar di sekitar perairan Teluk Banten untuk dijadwalkan dalam operasi retrieval.
+            </p>
+          </div>
+
+          <form id="citizenReportForm">
+            <!-- Field 1: Nama Pelapor -->
+            <div class="form-group-field">
+              <label for="reporterName"><i class="fa-solid fa-user" style="color: var(--teal-primary);"></i> Nama Pelapor</label>
+              <input type="text" id="reporterName" class="form-input" placeholder="Masukkan nama lengkap atau komunitas nelayan..." required>
+            </div>
+
+            <!-- Field 2: Jenis Alat Tangkap -->
+            <div class="form-group-field">
+              <label for="gearType"><i class="fa-solid fa-fish" style="color: var(--teal-primary);"></i> Jenis Alat Tangkap</label>
+              <select id="gearType" class="form-input" required style="cursor: pointer;">
+                <option value="" disabled selected>Pilih jenis alat tangkap...</option>
+                <option value="Jaring Insang">Jaring Insang</option>
+                <option value="Bubu Lipat">Bubu Lipat</option>
+                <option value="Rawai / Longline">Rawai / Longline</option>
+                <option value="Lainnya">Lainnya</option>
+              </select>
+            </div>
+
+            <!-- Field 3: Deskripsi Kondisi -->
+            <div class="form-group-field">
+              <label for="conditionDesc"><i class="fa-solid fa-align-left" style="color: var(--teal-primary);"></i> Deskripsi Kondisi</label>
+              <textarea id="conditionDesc" class="form-input" placeholder="Tuliskan estimasi kedalaman, substrat karang/lumpur, dan biota laut yang mungkin terperangkap..." required></textarea>
+            </div>
+
+            <!-- Field 4: Titik Koordinat + Geolocation API -->
+            <div class="form-group-field">
+              <label for="reportCoords"><i class="fa-solid fa-location-dot" style="color: var(--teal-primary);"></i> Titik Koordinat (Latitude, Longitude)</label>
+              <div class="coords-split-group">
+                <input type="text" id="reportCoords" class="form-input" placeholder="Contoh: -5.98124, 106.15832" readonly required>
+                <button type="button" id="btnGetLocation" class="btn-get-location">
+                  <i class="fa-solid fa-location-crosshairs"></i> Dapatkan Lokasi Saya
+                </button>
+              </div>
+              <span class="form-field-hint">
+                <i class="fa-solid fa-circle-info"></i> Gunakan tombol di atas untuk mengisi koordinat otomatis via sensor GPS perangkat Anda.
+              </span>
+            </div>
+
+            <button type="submit" class="btn btn-teal btn-submit-full">
+              <i class="fa-solid fa-paper-plane"></i> Kirim Laporan Temuan
+            </button>
+          </form>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ========================================================================
+       GLOBAL FOOTER
+       ======================================================================== -->
+  <footer class="site-footer">
+    <div class="footer-container">
+      <div style="display: flex; align-items: center; gap: 0.5rem; color: #ffffff; font-weight: 700; font-size: 1rem;">
+        <i class="fa-solid fa-satellite-dish" style="color: var(--teal-primary);"></i>
+        <span>GHOST-TRACK Banten &copy; 2026</span>
+      </div>
+      <ul class="footer-nav">
+        <li><a href="index.html">Beranda</a></li>
+        <li><a href="peta.html">Peta Utama</a></li>
+        <li><a href="EcoReef3D.html">Solusi Ecoreef</a></li>
+        <li><a href="sijitu-3d.html">Perangkat SIJITU</a></li>
+        <li><a href="ai-model.html">GHOST-AI</a></li>
+      </ul>
+      <span class="footer-credits">
+        Inisiatif Sains Terbuka Konservasi Bahari & Hilirisasi Daur Ulang Ghost Gear Teluk Banten, Indonesia.
+      </span>
+    </div>
+  </footer>
+
+  <!-- Shared Controller Script -->
+  <script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,1020 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D Modul Terumbu Karang Buatan - Kubus Interaktif Edukasi</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Three.js & OrbitControls -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Plus+Jakarta+Sans:wght@400;600;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+
+    <!-- Shared Enterprise Stylesheet -->
+    <link rel="stylesheet" href="style.css">
+
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            user-select: none;
+            overflow: hidden;
+            background-color: #031226;
+        }
+        .font-kids {
+            font-family: 'Fredoka', cursive;
+        }
+        /* Glassmorphism Styling */
+        .glass-card {
+            background: rgba(8, 25, 48, 0.75);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(56, 189, 248, 0.25);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
+        }
+        .glass-btn {
+            background: rgba(14, 165, 233, 0.2);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(56, 189, 248, 0.4);
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .glass-btn:hover {
+            background: rgba(14, 165, 233, 0.4);
+            border-color: rgba(56, 189, 248, 0.8);
+            transform: translateY(-2px);
+            box-shadow: 0 0 15px rgba(56, 189, 248, 0.4);
+        }
+        .glass-btn:active {
+            transform: translateY(1px) scale(0.98);
+        }
+        /* Numbered Hotspot Pins Styling */
+        .hotspot-pin {
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #06b6d4, #3b82f6);
+            border: 2px solid #ffffff;
+            color: #ffffff;
+            font-weight: 800;
+            font-family: 'Fredoka', cursive;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 15px rgba(6, 182, 212, 0.8), 0 4px 6px rgba(0,0,0,0.3);
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            animation: pulse-pin 2s infinite;
+        }
+        .hotspot-pin:hover {
+            transform: scale(1.3);
+            background: linear-gradient(135deg, #f59e0b, #ef4444);
+            box-shadow: 0 0 25px rgba(245, 158, 11, 0.9);
+            z-index: 40;
+        }
+        @keyframes pulse-pin {
+            0%, 100% { box-shadow: 0 0 12px rgba(6, 182, 212, 0.8); }
+            50% { box-shadow: 0 0 22px rgba(6, 182, 212, 1); }
+        }
+    </style>
+</head>
+<body class="w-screen h-screen relative text-white">
+
+    <!-- ========================================================================
+         STICKY TOP NAVBAR (UNIFIED SUITE ACROSS ALL PAGES)
+         ======================================================================== -->
+    <header class="site-navbar">
+        <div class="nav-container">
+            <a href="index.html" class="nav-brand">
+                <div class="brand-icon-box">
+                    <i class="fa-solid fa-satellite-dish"></i>
+                </div>
+                <div class="brand-text">
+                    <span class="brand-title">GHOST-TRACK</span>
+                    <span class="brand-subtitle">Teluk Banten GIS</span>
+                </div>
+            </a>
+
+            <nav>
+                <ul class="nav-menu" id="navMenu">
+                    <li><a href="index.html" class="nav-link"><i class="fa-solid fa-house"></i> Beranda</a></li>
+                    <li><a href="peta.html" class="nav-link"><i class="fa-solid fa-map-location-dot"></i> Peta Utama</a></li>
+
+                    <!-- Dropdown EcoReef 3D Studio -->
+                    <li class="nav-item-dropdown">
+                        <a class="nav-link nav-dropdown-toggle active">
+                            <i class="fa-solid fa-cubes"></i> EcoReef 3D Studio <i class="fa-solid fa-chevron-down chevron"></i>
+                        </a>
+                        <div class="nav-dropdown-menu">
+                            <a href="ecoreef-1cube.html" class="nav-dropdown-item active">
+                                <i class="fa-solid fa-cube"></i>
+                                <div>
+                                    <strong>Modul 1-Cube</strong>
+                                    <span>Struktur Kubus Tunggal PVC & Jaring</span>
+                                </div>
+                            </a>
+                            <a href="ecoreef-2cube.html" class="nav-dropdown-item">
+                                <i class="fa-solid fa-cubes-stacked"></i>
+                                <div>
+                                    <strong>Modul 2-Cube</strong>
+                                    <span>Struktur Bertingkat Ekosistem Dalam</span>
+                                </div>
+                            </a>
+                            <a href="EcoReef3D.html" class="nav-dropdown-item">
+                                <i class="fa-solid fa-landmark"></i>
+                                <div>
+                                    <strong>Overview EcoReef 3D</strong>
+                                    <span>Blueprint Rekayasa & Daur Ulang</span>
+                                </div>
+                            </a>
+                        </div>
+                    </li>
+
+                    <li><a href="sijitu-3d.html" class="nav-link"><i class="fa-solid fa-satellite"></i> Perangkat SIJITU 3D</a></li>
+                    <li><a href="ai-model.html" class="nav-link"><i class="fa-solid fa-robot"></i> GHOST-AI Analytics</a></li>
+                    <li><a href="index.html#lapor" class="nav-link nav-cta-btn"><i class="fa-solid fa-plus-circle"></i> Lapor Temuan</a></li>
+                </ul>
+            </nav>
+
+            <button class="nav-hamburger" id="navHamburger" aria-label="Toggle Menu">
+                <i class="fa-solid fa-bars"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- 3D Canvas container -->
+    <div id="canvas-container" class="w-full h-full absolute inset-0 z-0"></div>
+
+    <!-- HTML Hotspots Layer (Overlay) -->
+    <div id="hotspots-layer" class="w-full h-full absolute inset-0 z-10 pointer-events-none overflow-hidden">
+        <!-- Hotspot Pin 1: Rangka PVC -->
+        <div id="pin-1" onclick="focusOnTarget('frame')" class="hotspot-pin absolute pointer-events-auto" title="1. Rangka Kubus PVC">1</div>
+        <!-- Hotspot Pin 2: Cor Beton -->
+        <div id="pin-2" onclick="focusOnTarget('concrete')" class="hotspot-pin absolute pointer-events-auto" style="background: linear-gradient(135deg, #f59e0b, #d97706);" title="2. Cor Beton Pemberat">2</div>
+        <!-- Hotspot Pin 3: Terowongan Ikan -->
+        <div id="pin-3" onclick="focusOnTarget('entrance')" class="hotspot-pin absolute pointer-events-auto" style="background: linear-gradient(135deg, #ef4444, #b91c1c);" title="3. Terowongan Pintu Ikan">3</div>
+        <!-- Hotspot Pin 4: Jaring Kuning -->
+        <div id="pin-4" onclick="focusOnTarget('netting')" class="hotspot-pin absolute pointer-events-auto" style="background: linear-gradient(135deg, #eab308, #ca8a04);" title="4. Jaring Ghost Gear">4</div>
+        <!-- Hotspot Pin 5: Karang & Biota -->
+        <div id="pin-5" onclick="focusOnTarget('corals')" class="hotspot-pin absolute pointer-events-auto" style="background: linear-gradient(135deg, #10b981, #047857);" title="5. Fragmen Karang">5</div>
+    </div>
+
+    <!-- UI Overlay Top Header (Offset below 70px navbar) -->
+    <header class="absolute top-20 left-4 right-4 z-20 flex flex-wrap justify-between items-center pointer-events-none gap-3">
+        <div class="glass-card px-5 py-3 rounded-2xl pointer-events-auto flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-cyan-500 to-blue-600 flex items-center justify-center text-white text-xl shadow-lg">
+                <i class="fa-solid fa-cubes"></i>
+            </div>
+            <div>
+                <h1 class="font-kids text-lg md:text-xl text-cyan-300 font-bold tracking-wide">CUBIC REEF HABITAT 3D</h1>
+                <p class="text-xs text-slate-300">Modul Terumbu Karang Buatan - Ghost Gear Adaptation</p>
+            </div>
+        </div>
+
+        <div class="flex gap-2 pointer-events-auto">
+            <button id="btn-mode-explore" onclick="setMode('explore')" class="glass-btn px-4 py-2.5 rounded-xl text-xs md:text-sm font-bold flex items-center gap-2 bg-cyan-500/30 border-cyan-400">
+                <i class="fa-solid fa-fish text-cyan-300"></i> Mode Jelajah
+            </button>
+            <button id="btn-mode-xray" onclick="setMode('xray')" class="glass-btn px-4 py-2.5 rounded-xl text-xs md:text-sm font-bold flex items-center gap-2">
+                <i class="fa-solid fa-bone text-amber-300"></i> Mode Sinar-X Pemberat
+            </button>
+        </div>
+    </header>
+
+    <!-- Side Interactive Specs Panel (Offset below top header) -->
+    <aside class="absolute left-4 top-40 bottom-6 z-20 w-72 md:w-80 glass-card rounded-3xl p-5 flex flex-col justify-start hidden md:flex pointer-events-auto overflow-y-auto">
+        <div>
+            <div class="flex items-center justify-between border-b border-cyan-500/30 pb-3 mb-4">
+                <h2 class="font-kids text-lg text-cyan-300 flex items-center gap-2">
+                    <i class="fa-solid fa-list-ol"></i> Nomor Bagian & Zoom
+                </h2>
+                <span class="bg-cyan-900/60 text-cyan-300 text-xs px-2.5 py-1 rounded-full font-mono font-semibold">Skala 1:20</span>
+            </div>
+
+            <!-- List Features with Numbers -->
+            <div class="space-y-3 text-xs md:text-sm">
+                <!-- Component 1 -->
+                <div id="card-frame" class="bg-slate-900/40 p-3 rounded-xl border border-cyan-500/20 hover:border-cyan-400 transition cursor-pointer flex gap-3 items-start" onclick="focusOnTarget('frame')">
+                    <span class="w-7 h-7 rounded-full bg-cyan-500 text-slate-950 font-black font-kids flex items-center justify-center shrink-0 shadow-md">1</span>
+                    <div>
+                        <div class="font-bold text-cyan-300 mb-0.5">Rangka Kubus PVC (1.00m³)</div>
+                        <p class="text-slate-300 text-xs leading-relaxed">Struktur berbentuk kubus presisi 1.00m x 1.00m x 1.00m dari pipa PVC warna cyan yang tahan air laut.</p>
+                    </div>
+                </div>
+
+                <!-- Component 2 -->
+                <div id="card-concrete" class="bg-slate-900/40 p-3 rounded-xl border border-amber-500/20 hover:border-amber-400 transition cursor-pointer flex gap-3 items-start" onclick="focusOnTarget('concrete')">
+                    <span class="w-7 h-7 rounded-full bg-amber-500 text-slate-950 font-black font-kids flex items-center justify-center shrink-0 shadow-md">2</span>
+                    <div>
+                        <div class="font-bold text-amber-300 mb-0.5">Cor Beton Pemberat</div>
+                        <p class="text-slate-300 text-xs leading-relaxed">Pipa bagian dasar diisi <b>cor beton padat</b> agar modul stabil & tidak tersapu arus laut.</p>
+                    </div>
+                </div>
+
+                <!-- Component 3 -->
+                <div id="card-entrance" class="bg-slate-900/40 p-3 rounded-xl border border-rose-500/20 hover:border-rose-400 transition cursor-pointer flex gap-3 items-start" onclick="focusOnTarget('entrance')">
+                    <span class="w-7 h-7 rounded-full bg-rose-500 text-white font-black font-kids flex items-center justify-center shrink-0 shadow-md">3</span>
+                    <div>
+                        <div class="font-bold text-rose-300 mb-0.5">Terowongan Pintu Ikan</div>
+                        <p class="text-slate-300 text-xs leading-relaxed">Pintu masuk terbuka berbentuk lengkungan (Archway) berlis merah untuk akses bebas ikan keluar masuk.</p>
+                    </div>
+                </div>
+
+                <!-- Component 4 -->
+                <div id="card-netting" class="bg-slate-900/40 p-3 rounded-xl border border-yellow-500/20 hover:border-yellow-400 transition cursor-pointer flex gap-3 items-start" onclick="focusOnTarget('netting')">
+                    <span class="w-7 h-7 rounded-full bg-yellow-500 text-slate-950 font-black font-kids flex items-center justify-center shrink-0 shadow-md">4</span>
+                    <div>
+                        <div class="font-bold text-yellow-300 mb-0.5">Jaring Ghost Gear Adaptation</div>
+                        <p class="text-slate-300 text-xs leading-relaxed">Jaring polyethylene kuning menyelimuti seluruh dinding kubus (kecuali lubang terowongan ikan) sebagai media karang.</p>
+                    </div>
+                </div>
+
+                <!-- Component 5 -->
+                <div id="card-corals" class="bg-slate-900/40 p-3 rounded-xl border border-emerald-500/20 hover:border-emerald-400 transition cursor-pointer flex gap-3 items-start" onclick="focusOnTarget('corals')">
+                    <span class="w-7 h-7 rounded-full bg-emerald-500 text-slate-950 font-black font-kids flex items-center justify-center shrink-0 shadow-md">5</span>
+                    <div>
+                        <div class="font-bold text-emerald-300 mb-0.5">Fragmen Karang & Biota</div>
+                        <p class="text-slate-300 text-xs leading-relaxed">Bibit karang hias diikat kabel tis pada jaring untuk mempercepat tumbuhnya terumbu alami.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Bottom Controls & Action Bar -->
+    <footer class="absolute bottom-4 left-4 right-4 z-20 flex flex-wrap justify-between items-center gap-3 pointer-events-none">
+        <div class="glass-card px-4 py-2.5 rounded-2xl text-xs md:text-sm text-cyan-200 pointer-events-auto flex items-center gap-2">
+            <i class="fa-solid fa-hand-pointer text-cyan-400 animate-bounce"></i>
+            <span>Klik Pin Nomor / Kartu: <b>Auto Zoom Bagian</b> | Putar: <b>Drag 3D</b></span>
+        </div>
+
+        <div class="flex gap-2 pointer-events-auto">
+            <button onclick="feedFish()" class="glass-btn px-4 py-2.5 rounded-2xl bg-amber-500/30 border-amber-400 text-amber-200 font-bold text-xs md:text-sm flex items-center gap-2 shadow-lg">
+                <i class="fa-solid fa-cookie-bite text-amber-400 text-base"></i> Beri Makan Ikan
+            </button>
+            <button onclick="addCoralFrag()" class="glass-btn px-4 py-2.5 rounded-2xl bg-rose-500/30 border-rose-400 text-rose-200 font-bold text-xs md:text-sm flex items-center gap-2 shadow-lg">
+                <i class="fa-solid fa-plus-circle text-rose-400 text-base"></i> Tanam Karang Baru
+            </button>
+            <button onclick="resetCamera()" class="glass-btn px-4 py-2.5 rounded-2xl text-xs md:text-sm font-bold flex items-center gap-2 text-slate-200">
+                <i class="fa-solid fa-rotate-left"></i> Reset Kamera & Zoom
+            </button>
+        </div>
+    </footer>
+
+    <!-- Three.js Interactive Script -->
+    <script>
+        // --- 1. SETUP SCENE, CAMERA, & RENDERER ---
+        const container = document.getElementById('canvas-container');
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color(0x02182b);
+        scene.fog = new THREE.FogExp2(0x02182b, 0.08);
+
+        const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 100);
+        camera.position.set(2.8, 2.2, 3.8);
+
+        const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        renderer.shadowMap.enabled = true;
+        renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+        container.appendChild(renderer.domElement);
+
+        // Orbit Controls
+        const controls = new THREE.OrbitControls(camera, renderer.domElement);
+        controls.enableDamping = true;
+        controls.dampingFactor = 0.05;
+        controls.maxPolarAngle = Math.PI / 2 + 0.05; // Don't go far below sea bed
+        controls.minDistance = 1.2;
+        controls.maxDistance = 8.0;
+        controls.target.set(0, 0.9, 0);
+
+        // --- 2. LIGHTING ---
+        const ambientLight = new THREE.AmbientLight(0x7dd3fc, 0.7);
+        scene.add(ambientLight);
+
+        const sunLight = new THREE.DirectionalLight(0xffffff, 1.2);
+        sunLight.position.set(5, 12, 5);
+        sunLight.castShadow = true;
+        sunLight.shadow.mapSize.width = 2048;
+        sunLight.shadow.mapSize.height = 2048;
+        scene.add(sunLight);
+
+        const blueSpotLight = new THREE.PointLight(0x00f0ff, 1.5, 10);
+        blueSpotLight.position.set(0, 2, 0);
+        scene.add(blueSpotLight);
+
+        // --- 3. MATERIALS ---
+        const cyanPipeMat = new THREE.MeshStandardMaterial({
+            color: 0x00d8f6,
+            roughness: 0.2,
+            metalness: 0.2
+        });
+
+        const redArchMat = new THREE.MeshStandardMaterial({
+            color: 0xef4444,
+            roughness: 0.3,
+            metalness: 0.1
+        });
+
+        const concreteMat = new THREE.MeshStandardMaterial({
+            color: 0x94a3b8,
+            roughness: 0.9,
+            metalness: 0.05
+        });
+
+        const sandySeafloorMat = new THREE.MeshStandardMaterial({
+            color: 0x1e3a5f,
+            roughness: 0.9
+        });
+
+        // Yellow Net Texture (Procedural Canvas Texture)
+        function createNetTexture() {
+            const canvas = document.createElement('canvas');
+            canvas.width = 128;
+            canvas.height = 128;
+            const ctx = canvas.getContext('2d');
+            
+            ctx.fillStyle = 'rgba(0,0,0,0)';
+            ctx.fillRect(0, 0, 128, 128);
+
+            ctx.strokeStyle = '#eab308';
+            ctx.lineWidth = 4;
+            
+            ctx.beginPath();
+            for (let i = -128; i < 256; i += 16) {
+                ctx.moveTo(i, 0);
+                ctx.lineTo(i + 128, 128);
+                ctx.moveTo(i, 128);
+                ctx.lineTo(i + 128, 0);
+            }
+            ctx.stroke();
+
+            const texture = new THREE.CanvasTexture(canvas);
+            texture.wrapS = THREE.RepeatWrapping;
+            texture.wrapT = THREE.RepeatWrapping;
+            texture.repeat.set(4, 4);
+            return texture;
+        }
+
+        const yellowNetMaterial = new THREE.MeshStandardMaterial({
+            map: createNetTexture(),
+            transparent: true,
+            opacity: 0.85,
+            side: THREE.DoubleSide
+        });
+
+        // --- 4. SEAFLOOR & ENVIRONMENT ---
+        const seafloorGeo = new THREE.PlaneGeometry(30, 30, 32, 32);
+        const seafloor = new THREE.Mesh(seafloorGeo, sandySeafloorMat);
+        seafloor.rotation.x = -Math.PI / 2;
+        seafloor.position.y = 0;
+        seafloor.receiveShadow = true;
+        scene.add(seafloor);
+
+        // Water Bubbles Particle System
+        const bubbleGeo = new THREE.SphereGeometry(0.025, 8, 8);
+        const bubbleMat = new THREE.MeshBasicMaterial({ color: 0x67e8f9, transparent: true, opacity: 0.6 });
+        const bubblesGroup = new THREE.Group();
+        for (let i = 0; i < 60; i++) {
+            const bubble = new THREE.Mesh(bubbleGeo, bubbleMat);
+            bubble.position.set(
+                (Math.random() - 0.5) * 6,
+                Math.random() * 5,
+                (Math.random() - 0.5) * 6
+            );
+            bubble.userData = { speed: 0.005 + Math.random() * 0.01, wobble: Math.random() * Math.PI * 2 };
+            bubblesGroup.add(bubble);
+        }
+        scene.add(bubblesGroup);
+
+        // --- 5. BUILD CUBIC ARTIFICIAL REEF (1.00m x 1.00m x 1.00m) ---
+        const reefGroup = new THREE.Group();
+        scene.add(reefGroup);
+
+        const size = 1.6; // Scale for visually impressive 3D scene
+        const pipeRadius = 0.07;
+        const half = size / 2;
+        const archRadius = 0.42; // Radius for fish tunnel opening
+
+        // Helper function for building pipe segments
+        function createPipe(p1, p2, material) {
+            const distance = p1.distanceTo(p2);
+            const geo = new THREE.CylinderGeometry(pipeRadius, pipeRadius, distance, 16);
+            const mesh = new THREE.Mesh(geo, material);
+            mesh.castShadow = true;
+            mesh.receiveShadow = true;
+
+            const midPoint = new THREE.Vector3().addVectors(p1, p2).multiplyScalar(0.5);
+            mesh.position.copy(midPoint);
+
+            const orientation = new THREE.Matrix4();
+            orientation.lookAt(p1, p2, new THREE.Vector3(0, 1, 0));
+            mesh.rotation.setFromRotationMatrix(orientation);
+            mesh.rotateX(Math.PI / 2);
+
+            return mesh;
+        }
+
+        // 8 Corners of the Cube
+        const corners = [
+            new THREE.Vector3(-half, pipeRadius, -half),  // 0: Bottom Left Back
+            new THREE.Vector3(half, pipeRadius, -half),   // 1: Bottom Right Back
+            new THREE.Vector3(half, pipeRadius, half),    // 2: Bottom Right Front
+            new THREE.Vector3(-half, pipeRadius, half),   // 3: Bottom Left Front
+            new THREE.Vector3(-half, size, -half),        // 4: Top Left Back
+            new THREE.Vector3(half, size, -half),         // 5: Top Right Back
+            new THREE.Vector3(half, size, half),          // 6: Top Right Front
+            new THREE.Vector3(-half, size, half)          // 7: Top Left Front
+        ];
+
+        const cubeStructureGroup = new THREE.Group();
+        reefGroup.add(cubeStructureGroup);
+
+        // Bottom Edges (Base Pipes)
+        const bottomEdges = [[0,1], [1,2], [2,3], [3,0]];
+        const concreteFillGroup = new THREE.Group();
+        concreteFillGroup.visible = false; // Shown in X-Ray mode
+        reefGroup.add(concreteFillGroup);
+
+        bottomEdges.forEach(edge => {
+            const pipe = createPipe(corners[edge[0]], corners[edge[1]], cyanPipeMat);
+            cubeStructureGroup.add(pipe);
+
+            // Concrete Fill mesh inside bottom pipes
+            const dist = corners[edge[0]].distanceTo(corners[edge[1]]);
+            const cGeo = new THREE.CylinderGeometry(pipeRadius * 0.85, pipeRadius * 0.85, dist, 12);
+            const cMesh = new THREE.Mesh(cGeo, concreteMat);
+            cMesh.position.copy(pipe.position);
+            cMesh.rotation.copy(pipe.rotation);
+            concreteFillGroup.add(cMesh);
+        });
+
+        // Vertical Edges
+        const verticalEdges = [[0,4], [1,5], [2,6], [3,7]];
+        verticalEdges.forEach(edge => {
+            cubeStructureGroup.add(createPipe(corners[edge[0]], corners[edge[1]], cyanPipeMat));
+        });
+
+        // Top Edges
+        const topEdges = [[4,5], [5,6], [6,7], [7,4]];
+        topEdges.forEach(edge => {
+            cubeStructureGroup.add(createPipe(corners[edge[0]], corners[edge[1]], cyanPipeMat));
+        });
+
+        // Connecting Elbow Joints
+        const jointGeo = new THREE.SphereGeometry(pipeRadius * 1.25, 16, 16);
+        corners.forEach(pos => {
+            const joint = new THREE.Mesh(jointGeo, cyanPipeMat);
+            joint.position.copy(pos);
+            cubeStructureGroup.add(joint);
+        });
+
+        // --- 6. ARCHWAY FISH SHELTER OPENING (PINTU LENGKUNGAN IKAN) ---
+        function createFishArchway(positionZ, rotationY) {
+            const archGroup = new THREE.Group();
+            archGroup.position.set(0, pipeRadius, positionZ);
+            archGroup.rotation.y = rotationY;
+
+            // Curved Tube for Archway
+            class ArchCurve extends THREE.Curve {
+                getPoint(t) {
+                    const angle = t * Math.PI;
+                    return new THREE.Vector3(archRadius * Math.cos(angle), archRadius * Math.sin(angle), 0);
+                }
+            }
+            const path = new ArchCurve();
+            const tubeGeo = new THREE.TubeGeometry(path, 24, pipeRadius * 0.8, 12, false);
+            const archTube = new THREE.Mesh(tubeGeo, redArchMat);
+            archTube.position.y = 0.02;
+            archGroup.add(archTube);
+
+            return archGroup;
+        }
+
+        const frontArch = createFishArchway(half, 0);
+        const backArch = createFishArchway(-half, Math.PI);
+        cubeStructureGroup.add(frontArch);
+        cubeStructureGroup.add(backArch);
+
+        // --- 7. NETTING PANELS (JARING GHOST GEAR - FULL COVERAGE EXCEPT ARCHWAYS) ---
+        const nettingGroup = new THREE.Group();
+        reefGroup.add(nettingGroup);
+
+        const netSpan = size - pipeRadius * 1.6;
+        const netHeight = size - pipeRadius * 1.6;
+        const netCenterY = (size + pipeRadius) / 2;
+
+        // Top Netting Panel (Full)
+        const topNetGeo = new THREE.PlaneGeometry(netSpan, netSpan);
+        const topNet = new THREE.Mesh(topNetGeo, yellowNetMaterial);
+        topNet.rotation.x = Math.PI / 2;
+        topNet.position.set(0, size, 0);
+        nettingGroup.add(topNet);
+
+        // Side Netting Panels (Left and Right - Full)
+        const sideNetGeo = new THREE.PlaneGeometry(netSpan, netHeight);
+        const leftNet = new THREE.Mesh(sideNetGeo, yellowNetMaterial);
+        leftNet.rotation.y = Math.PI / 2;
+        leftNet.position.set(-half, netCenterY, 0);
+        nettingGroup.add(leftNet);
+
+        const rightNet = new THREE.Mesh(sideNetGeo, yellowNetMaterial);
+        rightNet.rotation.y = -Math.PI / 2;
+        rightNet.position.set(half, netCenterY, 0);
+        nettingGroup.add(rightNet);
+
+        // Helper function: Creates a full wall of netting with an exact arched hole cut out for the fish tunnel
+        function createNetPanelWithArchHole() {
+            const halfW = netSpan / 2;
+            const bottomY = pipeRadius;
+            const topY = size - pipeRadius * 0.4;
+            const archBaseY = pipeRadius + 0.02;
+
+            // Define outer square boundary
+            const wallShape = new THREE.Shape();
+            wallShape.moveTo(-halfW, bottomY);
+            wallShape.lineTo(halfW, bottomY);
+            wallShape.lineTo(halfW, topY);
+            wallShape.lineTo(-halfW, topY);
+            wallShape.closePath();
+
+            // Define inner arch cutout hole so fish swim through freely without net obstruction
+            const holePath = new THREE.Path();
+            holePath.moveTo(-archRadius, bottomY);
+            holePath.lineTo(-archRadius, archBaseY);
+            holePath.absarc(0, archBaseY, archRadius, Math.PI, 0, true); // Clockwise top arch
+            holePath.lineTo(archRadius, bottomY);
+            holePath.closePath();
+
+            wallShape.holes.push(holePath);
+
+            const geom = new THREE.ShapeGeometry(wallShape, 24);
+            
+            // Normalize UV coordinates so the diagonal net pattern matches other panels seamlessly
+            const posAttr = geom.attributes.position;
+            const uvAttr = geom.attributes.uv;
+            for (let i = 0; i < posAttr.count; i++) {
+                const x = posAttr.getX(i);
+                const y = posAttr.getY(i);
+                uvAttr.setXY(i, (x + halfW) / netSpan, (y - bottomY) / (topY - bottomY));
+            }
+            uvAttr.needsUpdate = true;
+
+            return geom;
+        }
+
+        const archwayWallNetGeo = createNetPanelWithArchHole();
+
+        // Front Netting Panel (Full wall around front tunnel, completely open inside arch)
+        const frontNet = new THREE.Mesh(archwayWallNetGeo, yellowNetMaterial);
+        frontNet.position.set(0, 0, half);
+        nettingGroup.add(frontNet);
+
+        // Back Netting Panel (Full wall around back tunnel, completely open inside arch)
+        const backNet = new THREE.Mesh(archwayWallNetGeo, yellowNetMaterial);
+        backNet.position.set(0, 0, -half);
+        nettingGroup.add(backNet);
+
+        // --- 8. CORAL FRAGMENTS & ATTACHED BIOTA ---
+        const coralsGroup = new THREE.Group();
+        reefGroup.add(coralsGroup);
+
+        function createCoralShape(colorHex, scale = 1) {
+            const group = new THREE.Group();
+            const mat = new THREE.MeshStandardMaterial({ color: colorHex, roughness: 0.5 });
+
+            const base = new THREE.Mesh(new THREE.ConeGeometry(0.06 * scale, 0.15 * scale, 6), mat);
+            group.add(base);
+
+            // Branches
+            for (let i = 0; i < 4; i++) {
+                const branch = new THREE.Mesh(new THREE.ConeGeometry(0.035 * scale, 0.12 * scale, 5), mat);
+                branch.position.set(
+                    (Math.random() - 0.5) * 0.08 * scale,
+                    0.06 * scale,
+                    (Math.random() - 0.5) * 0.08 * scale
+                );
+                branch.rotation.set((Math.random() - 0.5), (Math.random() - 0.5), (Math.random() - 0.5));
+                group.add(branch);
+            }
+
+            // Cable Tie simulator
+            const tieGeo = new THREE.TorusGeometry(0.05 * scale, 0.006, 8, 16);
+            const tieMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
+            const tie = new THREE.Mesh(tieGeo, tieMat);
+            tie.rotation.x = Math.PI / 2;
+            tie.position.y = -0.04 * scale;
+            group.add(tie);
+
+            return group;
+        }
+
+        const coralColors = [0xf43f5e, 0x10b981, 0x8b5cf6, 0xf59e0b, 0xec4899];
+        const coralPositions = [
+            { pos: new THREE.Vector3(-half + 0.05, size * 0.7, 0.2), rot: [0, 0, -Math.PI / 2] },
+            { pos: new THREE.Vector3(half - 0.05, size * 0.4, -0.3), rot: [0, 0, Math.PI / 2] },
+            { pos: new THREE.Vector3(0.45, size * 0.75, half - 0.05), rot: [Math.PI / 2, 0, 0] },
+            { pos: new THREE.Vector3(-0.45, size * 0.65, -half + 0.05), rot: [-Math.PI / 2, 0, 0] },
+            { pos: new THREE.Vector3(0.1, size - 0.05, 0.3), rot: [0, 0, 0] }
+        ];
+
+        coralPositions.forEach((cp, idx) => {
+            const coral = createCoralShape(coralColors[idx % coralColors.length], 1.2);
+            coral.position.copy(cp.pos);
+            coral.rotation.set(...cp.rot);
+            coralsGroup.add(coral);
+        });
+
+        // Add a new coral dynamically on the netted walls/top
+        function addCoralFrag() {
+            const randomColor = coralColors[Math.floor(Math.random() * coralColors.length)];
+            const coral = createCoralShape(randomColor, 1.3);
+            const rx = (Math.random() - 0.5) * (size - 0.4);
+            const ry = 0.65 + Math.random() * (size - 0.75);
+            const rz = (Math.random() - 0.5) * (size - 0.4);
+            coral.position.set(rx, ry, rz);
+            coralsGroup.add(coral);
+
+            showToast("🌱 Fragmen karang baru berhasil ditanam pada jaring terumbu!");
+        }
+
+        // --- 9. DETAILED FISHES WITH HEAD & EYES ---
+        const fishes = [];
+
+        function createDetailedFish(colorBody, colorStripe = 0xffffff) {
+            const fishGroup = new THREE.Group();
+
+            // 1. Fish Body
+            const bodyGeo = new THREE.SphereGeometry(0.08, 16, 12);
+            bodyGeo.scale(2.0, 1.2, 0.6); // Flattened fish body
+            const bodyMat = new THREE.MeshStandardMaterial({ color: colorBody, roughness: 0.3 });
+            const body = new THREE.Mesh(bodyGeo, bodyMat);
+            body.castShadow = true;
+            fishGroup.add(body);
+
+            // 2. Head & Big Eyes
+            const eyeGeo = new THREE.SphereGeometry(0.024, 12, 12);
+            const eyeMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
+            const pupilGeo = new THREE.SphereGeometry(0.012, 8, 8);
+            const pupilMat = new THREE.MeshBasicMaterial({ color: 0x000000 });
+
+            // Left Eye
+            const eyeLeft = new THREE.Mesh(eyeGeo, eyeMat);
+            eyeLeft.position.set(0.09, 0.02, 0.03);
+            const pupilLeft = new THREE.Mesh(pupilGeo, pupilMat);
+            pupilLeft.position.set(0.1, 0.02, 0.038);
+            fishGroup.add(eyeLeft);
+            fishGroup.add(pupilLeft);
+
+            // Right Eye
+            const eyeRight = new THREE.Mesh(eyeGeo, eyeMat);
+            eyeRight.position.set(0.09, 0.02, -0.03);
+            const pupilRight = new THREE.Mesh(pupilGeo, pupilMat);
+            pupilRight.position.set(0.1, 0.02, -0.038);
+            fishGroup.add(eyeRight);
+            fishGroup.add(pupilRight);
+
+            // 3. Stripes
+            if (colorStripe) {
+                const stripeGeo = new THREE.CylinderGeometry(0.05, 0.05, 0.08, 12);
+                const stripeMat = new THREE.MeshBasicMaterial({ color: colorStripe });
+                const stripe = new THREE.Mesh(stripeGeo, stripeMat);
+                stripe.scale.set(0.5, 1.3, 0.7);
+                stripe.position.set(0.01, 0, 0);
+                fishGroup.add(stripe);
+            }
+
+            // 4. Tail Fin
+            const tailGeo = new THREE.ConeGeometry(0.06, 0.12, 3);
+            const tailMat = new THREE.MeshStandardMaterial({ color: colorBody, roughness: 0.4 });
+            const tail = new THREE.Mesh(tailGeo, tailMat);
+            tail.rotation.z = -Math.PI / 2;
+            tail.position.set(-0.15, 0, 0);
+            tail.name = "tail";
+            fishGroup.add(tail);
+
+            // 5. Dorsal Fin
+            const finGeo = new THREE.ConeGeometry(0.035, 0.08, 3);
+            const dorsalFin = new THREE.Mesh(finGeo, tailMat);
+            dorsalFin.position.set(-0.01, 0.08, 0);
+            fishGroup.add(dorsalFin);
+
+            // Custom AI Physics Data (Strict Archway Gateway Waypoints)
+            fishGroup.userData = {
+                target: new THREE.Vector3(0, 0.28, half + 1.2),
+                state: 'OUTSIDE_FRONT',
+                speed: 0.014 + Math.random() * 0.008,
+                timer: Math.random() * 100
+            };
+
+            return fishGroup;
+        }
+
+        // Spawn 4 Distinct Fish Species
+        const fishConfigs = [
+            { body: 0xf97316, stripe: 0xffffff }, // Clownfish (Orange)
+            { body: 0x0284c7, stripe: 0xfacc15 }, // Blue Tang (Blue-Yellow)
+            { body: 0xec4899, stripe: 0xffffff }, // Pink Anthias
+            { body: 0xeab308, stripe: 0x1e293b }  // Yellow Butterflyfish
+        ];
+
+        fishConfigs.forEach((cfg, idx) => {
+            const fish = createDetailedFish(cfg.body, cfg.stripe);
+            fish.position.set(
+                (Math.random() - 0.5) * 0.8,
+                0.25 + Math.random() * 0.25,
+                1.5 + idx * 0.4
+            );
+            scene.add(fish);
+            fishes.push(fish);
+        });
+
+        // Fish AI Logic (Passes directly through the open Front/Back Archways)
+        function updateFishAI(fish, time) {
+            const data = fish.userData;
+            data.timer += 0.02;
+
+            // Tail Wiggle Animation
+            const tail = fish.getObjectByName("tail");
+            if (tail) tail.rotation.y = Math.sin(time * 14 + data.timer) * 0.45;
+
+            const pos = fish.position;
+            const target = data.target;
+
+            if (pos.distanceTo(target) < 0.22) {
+                if (data.state === 'OUTSIDE_FRONT') {
+                    data.state = 'ENTERING_FRONT';
+                    target.set((Math.random() - 0.5) * 0.2, 0.26, half - 0.1);
+                } else if (data.state === 'ENTERING_FRONT') {
+                    data.state = 'INSIDE';
+                    target.set((Math.random() - 0.5) * 0.45, 0.32 + Math.random() * 0.35, (Math.random() - 0.5) * 0.45);
+                } else if (data.state === 'INSIDE') {
+                    if (Math.random() > 0.5) {
+                        data.state = 'LEAVING_BACK';
+                        target.set((Math.random() - 0.5) * 0.2, 0.26, -half - 0.1);
+                    } else {
+                        data.state = 'LEAVING_FRONT';
+                        target.set((Math.random() - 0.5) * 0.2, 0.26, half + 0.1);
+                    }
+                } else if (data.state === 'LEAVING_BACK') {
+                    data.state = 'OUTSIDE_BACK';
+                    target.set((Math.random() - 0.5) * 1.4, 0.35 + Math.random() * 0.5, -half - 1.5);
+                } else if (data.state === 'OUTSIDE_BACK') {
+                    data.state = 'ENTERING_BACK';
+                    target.set((Math.random() - 0.5) * 0.2, 0.26, -half + 0.1);
+                } else if (data.state === 'ENTERING_BACK') {
+                    data.state = 'INSIDE';
+                    target.set((Math.random() - 0.5) * 0.45, 0.32 + Math.random() * 0.35, (Math.random() - 0.5) * 0.45);
+                } else {
+                    data.state = 'OUTSIDE_FRONT';
+                    target.set((Math.random() - 0.5) * 1.4, 0.35 + Math.random() * 0.5, half + 1.5);
+                }
+            }
+
+            // Steering towards target
+            const dir = new THREE.Vector3().subVectors(target, pos).normalize();
+            pos.addScaledVector(dir, data.speed);
+
+            // Smooth Rotation towards movement direction
+            const angle = Math.atan2(-dir.z, dir.x);
+            fish.rotation.y = THREE.MathUtils.lerp(fish.rotation.y, angle, 0.08);
+            fish.rotation.z = Math.sin(time * 3 + data.timer) * 0.08;
+        }
+
+        // Feed Fish Interactivity
+        function feedFish() {
+            for (let i = 0; i < 8; i++) {
+                const foodGeo = new THREE.SphereGeometry(0.02, 6, 6);
+                const foodMat = new THREE.MeshBasicMaterial({ color: 0xf59e0b });
+                const food = new THREE.Mesh(foodGeo, foodMat);
+                food.position.set((Math.random() - 0.5) * 0.8, 2.2, (Math.random() - 0.5) * 0.8);
+                scene.add(food);
+
+                const fallInterval = setInterval(() => {
+                    food.position.y -= 0.015;
+                    if (food.position.y <= 0.1) {
+                        scene.remove(food);
+                        clearInterval(fallInterval);
+                    }
+                }, 30);
+            }
+
+            fishes.forEach(fish => {
+                // Route fishes cleanly through the nearest open archway if outside
+                if (fish.position.z > half) {
+                    fish.userData.state = 'ENTERING_FRONT';
+                    fish.userData.target.set(0, 0.26, half - 0.1);
+                } else if (fish.position.z < -half) {
+                    fish.userData.state = 'ENTERING_BACK';
+                    fish.userData.target.set(0, 0.26, -half + 0.1);
+                } else {
+                    fish.userData.state = 'INSIDE';
+                    fish.userData.target.set((Math.random() - 0.5) * 0.5, 0.65, (Math.random() - 0.5) * 0.5);
+                }
+            });
+
+            showToast("🍕 Makanan disebar! Ikan-ikan masuk melalui terowongan untuk makan!");
+        }
+
+        // --- 10. HOTSPOT PINS & CAMERA ANIMATION SYSTEM ---
+        const hotspotAnchors = {
+            1: new THREE.Vector3(-half, size, half),           // Pin 1: Top Left Corner Frame
+            2: new THREE.Vector3(0, pipeRadius * 2, -half),     // Pin 2: Base Concrete Filled Pipe
+            3: new THREE.Vector3(0, 0.45, half),                // Pin 3: Front Arch Opening
+            4: new THREE.Vector3(half, size / 2, 0),            // Pin 4: Side Netting Panel
+            5: new THREE.Vector3(0.45, size * 0.75, half)       // Pin 5: Coral Fragment
+        };
+
+        const cameraZoomTargets = {
+            'frame': { target: new THREE.Vector3(0, 0.9, 0), pos: new THREE.Vector3(2.8, 2.2, 3.8) },
+            'concrete': { target: new THREE.Vector3(0, 0.1, -half), pos: new THREE.Vector3(1.2, 0.5, -2.1) },
+            'entrance': { target: new THREE.Vector3(0, 0.35, half), pos: new THREE.Vector3(0, 0.5, 2.2) },
+            'netting': { target: new THREE.Vector3(half, 0.8, 0), pos: new THREE.Vector3(2.5, 1.1, 0.8) },
+            'corals': { target: new THREE.Vector3(0.3, 1.1, 0.3), pos: new THREE.Vector3(0.9, 1.8, 1.5) }
+        };
+
+        let isAnimatingCamera = false;
+        let targetCamPos = new THREE.Vector3().copy(camera.position);
+        let targetControlTarget = new THREE.Vector3().copy(controls.target);
+
+        function updateHotspotPinPositions() {
+            const tempV = new THREE.Vector3();
+            for (let id in hotspotAnchors) {
+                tempV.copy(hotspotAnchors[id]);
+                tempV.project(camera);
+
+                if (tempV.z > 1) {
+                    document.getElementById(`pin-${id}`).style.display = 'none';
+                    continue;
+                }
+
+                document.getElementById(`pin-${id}`).style.display = 'flex';
+                const x = (tempV.x * .5 + .5) * window.innerWidth;
+                const y = (tempV.y * -.5 + .5) * window.innerHeight;
+
+                const pin = document.getElementById(`pin-${id}`);
+                pin.style.left = `${x - 17}px`;
+                pin.style.top = `${y - 17}px`;
+            }
+        }
+
+        // --- 11. UI & CONTROL FUNCTIONS ---
+        function setMode(mode) {
+            const btnExplore = document.getElementById('btn-mode-explore');
+            const btnXray = document.getElementById('btn-mode-xray');
+
+            btnExplore.className = 'glass-btn px-4 py-2.5 rounded-xl text-xs md:text-sm font-bold flex items-center gap-2';
+            btnXray.className = 'glass-btn px-4 py-2.5 rounded-xl text-xs md:text-sm font-bold flex items-center gap-2';
+
+            if (mode === 'xray') {
+                btnXray.className += ' bg-amber-500/30 border-amber-400';
+                cyanPipeMat.transparent = true;
+                cyanPipeMat.opacity = 0.35;
+                redArchMat.transparent = true;
+                redArchMat.opacity = 0.35;
+                yellowNetMaterial.opacity = 0.25;
+                concreteFillGroup.visible = true;
+                showToast("🦴 Mode Sinar-X: Menampilkan Cor Beton Pemberat Padat di Dalam Pipa Dasar!");
+            } else {
+                btnExplore.className += ' bg-cyan-500/30 border-cyan-400';
+                cyanPipeMat.transparent = false;
+                cyanPipeMat.opacity = 1.0;
+                redArchMat.transparent = false;
+                redArchMat.opacity = 1.0;
+                yellowNetMaterial.opacity = 0.85;
+                concreteFillGroup.visible = false;
+            }
+        }
+
+        function focusOnTarget(type) {
+            const data = cameraZoomTargets[type];
+            if (!data) return;
+
+            if (type === 'concrete') {
+                setMode('xray');
+            } else {
+                setMode('explore');
+            }
+
+            targetCamPos.copy(data.pos);
+            targetControlTarget.copy(data.target);
+            isAnimatingCamera = true;
+
+            const names = {
+                'frame': '1. Rangka Pipa PVC Cyan',
+                'concrete': '2. Cor Beton Pemberat Padat',
+                'entrance': '3. Terowongan Pintu Masuk Ikan',
+                'netting': '4. Jaring Kuning (Ghost Gear Adaptation)',
+                'corals': '5. Fragmen Karang & Biota Laut'
+            };
+            showToast(`🔎 Zoom In & Fokus: ${names[type]}`);
+        }
+
+        function resetCamera() {
+            targetCamPos.set(2.8, 2.2, 3.8);
+            targetControlTarget.set(0, 0.9, 0);
+            isAnimatingCamera = true;
+            setMode('explore');
+            showToast("🔄 Posisi Kamera & Zoom Direset!");
+        }
+
+        function showToast(message) {
+            let toast = document.getElementById('toast-notification');
+            if (!toast) {
+                toast = document.createElement('div');
+                toast.id = 'toast-notification';
+                toast.className = 'fixed top-20 left-1/2 -translate-x-1/2 z-50 glass-card px-5 py-2.5 rounded-full text-xs md:text-sm font-bold text-cyan-200 border-cyan-400 shadow-xl pointer-events-none transition-all duration-300 opacity-0 transform -translate-y-2';
+                document.body.appendChild(toast);
+            }
+            toast.innerText = message;
+            toast.classList.remove('opacity-0', '-translate-y-2');
+            toast.classList.add('opacity-100', 'translate-y-0');
+
+            clearTimeout(window.toastTimer);
+            window.toastTimer = setTimeout(() => {
+                toast.classList.remove('opacity-100', 'translate-y-0');
+                toast.classList.add('opacity-0', '-translate-y-2');
+            }, 3500);
+        }
+
+        // Window Resize Handler
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+        // --- 12. ANIMATION LOOP ---
+        const clock = new THREE.Clock();
+
+        function animate() {
+            requestAnimationFrame(animate);
+
+            const elapsedTime = clock.getElapsedTime();
+
+            // Smooth Camera Interpolation (Auto Zoom Transition)
+            if (isAnimatingCamera) {
+                camera.position.lerp(targetCamPos, 0.08);
+                controls.target.lerp(targetControlTarget, 0.08);
+                if (camera.position.distanceTo(targetCamPos) < 0.02) {
+                    camera.position.copy(targetCamPos);
+                    controls.target.copy(targetControlTarget);
+                    isAnimatingCamera = false;
+                }
+            }
+
+            // Update OrbitControls
+            controls.update();
+
+            // Update Screen Projection of 3D Hotspot Pins
+            updateHotspotPinPositions();
+
+            // Animate Water Bubbles
+            bubblesGroup.children.forEach(b => {
+                b.position.y += b.userData.speed;
+                b.position.x += Math.sin(elapsedTime * 2 + b.userData.wobble) * 0.002;
+                if (b.position.y > 5) b.position.y = 0;
+            });
+
+            // Animate Fishes Swim Logic
+            fishes.forEach(fish => updateFishAI(fish, elapsedTime));
+
+            // Subtle Floating Coral Effect
+            coralsGroup.children.forEach((c, idx) => {
+                c.rotation.z = Math.sin(elapsedTime * 1.5 + idx) * 0.03;
+            });
+
+            renderer.render(scene, camera);
+        }
+
+        // Start render loop on window load
+        window.onload = function() {
+            animate();
+        };
+    </script>
+
+    <!-- Floating Technical Specification Card -->
+    <div class="floating-technical-card" id="techSpecCard">
+        <div class="card-header">
+            <h4><i class="fa-solid fa-cube text-cyan-400"></i> Spesifikasi Teknis 1-Cube</h4>
+            <button class="toggle-min-btn" aria-label="Minimize"><i class="fa-solid fa-chevron-down"></i></button>
+        </div>
+        <div class="card-content">
+            <p class="text-slate-300">Modul kubus tunggal upcycling jaring rajungan Teluk Banten untuk nursery habitat karang mikro.</p>
+            <div style="margin-top: 0.5rem; display: flex; flex-direction: column; gap: 0.35rem; font-size: 0.78rem;" class="text-slate-200">
+                <div><strong class="text-cyan-300">Dimensi:</strong> 1.00m &times; 1.00m &times; 1.00m (Volume 1.00 m&sup3;)</div>
+                <div><strong class="text-amber-300">Pemberat Balast:</strong> 100 kg cor beton semen kedap laut</div>
+                <div><strong class="text-emerald-300">Substrat Daur Ulang:</strong> Jaring Rajungan Monofilamen 22mm</div>
+                <div><strong class="text-sky-300">Akses Biota:</strong> Pipa terowongan silinder &Oslash; 220mm</div>
+            </div>
+            <div class="spec-badge-pill"><i class="fa-solid fa-recycle"></i> 100% Upcycled ALDFG Substrate</div>
+        </div>
+    </div>
+
+    <!-- Shared Controller Script (for Navbar Dropdown & UI Controls) -->
+    <script src="script.js"></script>
+</body>
+</html>

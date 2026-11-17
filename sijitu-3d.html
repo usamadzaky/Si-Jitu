@@ -1,0 +1,1601 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SI JITU - 3D Interactive Prototype (Sesuai Dokumen Desain Awal)</title>
+    <!-- Tailwind CSS untuk antarmuka responsif -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Three.js & OrbitControls untuk visualisasi 3D penuh 360 derajat -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    <!-- FontAwesome 6 Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts: Plus Jakarta Sans, Inter & JetBrains Mono -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Shared Enterprise Stylesheet -->
+    <link rel="stylesheet" href="style.css">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            overflow: hidden;
+            background-color: #030e1c;
+            color: #f8fafc;
+            user-select: none;
+        }
+        canvas {
+            display: block;
+            width: 100vw;
+            height: 100vh;
+            outline: none;
+        }
+        .font-mono {
+            font-family: 'JetBrains Mono', monospace;
+        }
+        ::-webkit-scrollbar {
+            width: 5px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(15, 23, 42, 0.4);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(56, 189, 248, 0.45);
+            border-radius: 9999px;
+        }
+        .glass-panel {
+            background: rgba(7, 19, 36, 0.82);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            border: 1px solid rgba(56, 189, 248, 0.24);
+            box-shadow: 0 12px 36px -6px rgba(0, 0, 0, 0.7);
+        }
+        .btn-active {
+            background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+            border-color: #38bdf8;
+            color: #ffffff;
+            box-shadow: 0 0 14px rgba(56, 189, 248, 0.35);
+        }
+        .btn-testdrive-active {
+            background: linear-gradient(135deg, #ea580c 0%, #c2410c 100%);
+            border-color: #fb923c;
+            color: #ffffff;
+            box-shadow: 0 0 18px rgba(249, 115, 22, 0.45);
+        }
+    </style>
+</head>
+<body class="relative w-screen h-screen overflow-hidden">
+
+    <!-- ========================================================================
+         STICKY TOP NAVBAR (UNIFIED SUITE ACROSS ALL PAGES)
+         ======================================================================== -->
+    <header class="site-navbar">
+        <div class="nav-container">
+            <a href="index.html" class="nav-brand">
+                <div class="brand-icon-box">
+                    <i class="fa-solid fa-satellite-dish"></i>
+                </div>
+                <div class="brand-text">
+                    <span class="brand-title">GHOST-TRACK</span>
+                    <span class="brand-subtitle">Teluk Banten GIS</span>
+                </div>
+            </a>
+
+            <nav>
+                <ul class="nav-menu" id="navMenu">
+                    <li><a href="index.html" class="nav-link"><i class="fa-solid fa-house"></i> Beranda</a></li>
+                    <li><a href="peta.html" class="nav-link"><i class="fa-solid fa-map-location-dot"></i> Peta Utama</a></li>
+
+                    <!-- Dropdown EcoReef 3D Studio -->
+                    <li class="nav-item-dropdown">
+                        <a class="nav-link nav-dropdown-toggle">
+                            <i class="fa-solid fa-cubes"></i> EcoReef 3D Studio <i class="fa-solid fa-chevron-down chevron"></i>
+                        </a>
+                        <div class="nav-dropdown-menu">
+                            <a href="ecoreef-1cube.html" class="nav-dropdown-item">
+                                <i class="fa-solid fa-cube"></i>
+                                <div>
+                                    <strong>Modul 1-Cube</strong>
+                                    <span>Struktur Kubus Tunggal PVC & Jaring</span>
+                                </div>
+                            </a>
+                            <a href="ecoreef-2cube.html" class="nav-dropdown-item">
+                                <i class="fa-solid fa-cubes-stacked"></i>
+                                <div>
+                                    <strong>Modul 2-Cube</strong>
+                                    <span>Struktur Bertingkat Ekosistem Dalam</span>
+                                </div>
+                            </a>
+                            <a href="EcoReef3D.html" class="nav-dropdown-item">
+                                <i class="fa-solid fa-landmark"></i>
+                                <div>
+                                    <strong>Overview EcoReef 3D</strong>
+                                    <span>Blueprint Rekayasa & Daur Ulang</span>
+                                </div>
+                            </a>
+                        </div>
+                    </li>
+
+                    <li><a href="sijitu-3d.html" class="nav-link active"><i class="fa-solid fa-satellite"></i> Perangkat SIJITU 3D</a></li>
+                    <li><a href="ai-model.html" class="nav-link"><i class="fa-solid fa-robot"></i> GHOST-AI Analytics</a></li>
+                    <li><a href="index.html#lapor" class="nav-link nav-cta-btn"><i class="fa-solid fa-plus-circle"></i> Lapor Temuan</a></li>
+                </ul>
+            </nav>
+
+            <button class="nav-hamburger" id="navHamburger" aria-label="Toggle Menu">
+                <i class="fa-solid fa-bars"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- Canvas Utama Three.js -->
+    <div id="canvas-container" class="absolute inset-0 z-0"></div>
+
+    <!-- Header Informasi Utama (Offset below 70px navbar) -->
+    <header class="absolute top-20 left-3 right-3 md:top-22 md:left-6 md:right-6 z-10 flex flex-wrap items-center justify-between gap-3 pointer-events-none">
+        <div class="glass-panel rounded-2xl px-4 py-2.5 flex items-center gap-3.5 pointer-events-auto">
+            <!-- Logo Emblem SI JITU Ghost Gear Research Team (SVG Presisi) -->
+            <div class="w-12 h-12 md:w-13 md:h-13 shrink-0 flex items-center justify-center">
+                <svg class="w-12 h-12 drop-shadow-[0_2px_8px_rgba(6,182,212,0.35)]" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                        <clipPath id="emblemClip">
+                            <circle cx="60" cy="60" r="53" />
+                        </clipPath>
+                        <radialGradient id="oceanBg" cx="50%" cy="35%" r="65%">
+                            <stop offset="0%" stop-color="#145369" />
+                            <stop offset="65%" stop-color="#0a3346" />
+                            <stop offset="100%" stop-color="#062130" />
+                        </radialGradient>
+                        <linearGradient id="sunRay" x1="0%" y1="0%" x2="20%" y2="100%">
+                            <stop offset="0%" stop-color="#67e8f9" stop-opacity="0.22" />
+                            <stop offset="100%" stop-color="#67e8f9" stop-opacity="0.0" />
+                        </linearGradient>
+                    </defs>
+
+                    <!-- Lingkaran Dasar Laut -->
+                    <circle cx="60" cy="60" r="54" fill="url(#oceanBg)" />
+
+                    <g clip-path="url(#emblemClip)">
+                        <!-- Sinar Cahaya Permukaan -->
+                        <polygon points="28,5 48,5 62,115 20,115" fill="url(#sunRay)" />
+                        <polygon points="56,5 76,5 94,115 68,115" fill="url(#sunRay)" />
+
+                        <!-- Pola Jaring / Mesh Sonar Diagonal -->
+                        <g stroke="#38bdf8" stroke-opacity="0.22" stroke-width="1">
+                            <line x1="10" y1="30" x2="90" y2="110" />
+                            <line x1="25" y1="15" x2="105" y2="95" />
+                            <line x1="45" y1="10" x2="115" y2="80" />
+                            <line x1="5" y1="50" x2="70" y2="115" />
+                            <line x1="95" y1="15" x2="15" y2="95" />
+                            <line x1="110" y1="30" x2="30" y2="110" />
+                            <line x1="75" y1="10" x2="5" y2="80" />
+                            <line x1="115" y1="50" x2="50" y2="115" />
+                        </g>
+
+                        <!-- Dasar Laut Gelap & Lengkungan Grid Bawah -->
+                        <path d="M5 94 Q60 80 115 94 L115 120 L5 120 Z" fill="#041520" />
+                        <path d="M12 92 Q60 76 108 92" stroke="#67e8f9" stroke-opacity="0.45" stroke-width="1.2" fill="none" />
+                        <path d="M22 98 Q60 83 98 98" stroke="#67e8f9" stroke-opacity="0.35" stroke-width="1" fill="none" />
+                        <line x1="28" y1="86" x2="48" y2="102" stroke="#67e8f9" stroke-opacity="0.35" stroke-width="1" />
+                        <line x1="92" y1="86" x2="72" y2="102" stroke="#67e8f9" stroke-opacity="0.35" stroke-width="1" />
+
+                        <!-- Lingkaran Radar Putus-putus -->
+                        <circle cx="60" cy="60" r="44" stroke="#67e8f9" stroke-opacity="0.35" stroke-width="1" stroke-dasharray="2 3" />
+
+                        <!-- Gelembung Air -->
+                        <circle cx="32" cy="36" r="2.2" stroke="#a5f3fc" stroke-opacity="0.7" stroke-width="1" />
+                        <circle cx="84" cy="14" r="1.8" stroke="#a5f3fc" stroke-opacity="0.75" stroke-width="1" />
+                        <circle cx="89" cy="24" r="2.5" stroke="#a5f3fc" stroke-opacity="0.7" stroke-width="1" />
+
+                        <!-- Batang & Cabang Karang Jingga (Coral) -->
+                        <g stroke="#ef532a" stroke-linecap="round" stroke-linejoin="round" fill="none">
+                            <!-- Batang Utama -->
+                            <path d="M59 95 L59 54 L63 42 L64 31" stroke-width="5.2" />
+                            <!-- Cabang Kiri Bawah -->
+                            <path d="M59 83 L46 78 L42 74" stroke-width="3.6" />
+                            <!-- Cabang Kiri Tengah -->
+                            <path d="M59 71 L43 60 L37 46" stroke-width="4.2" />
+                            <path d="M45 61 L49 48 L49 42" stroke-width="3.4" />
+                            <!-- Cabang Kanan Bawah -->
+                            <path d="M59 86 L74 80 L79 75" stroke-width="3.6" />
+                            <!-- Cabang Kanan Tengah -->
+                            <path d="M59 69 L75 61 L83 56 L87 49" stroke-width="4.2" />
+                            <path d="M74 61 L74 47 L72 41" stroke-width="3.4" />
+                            <!-- Ranting Atas -->
+                            <path d="M62 45 L71 39 L72 34" stroke-width="3.2" />
+                        </g>
+
+                        <!-- Ujung Polip Karang Cerah -->
+                        <circle cx="64" cy="31" r="2.6" fill="#fed7aa" />
+                        <circle cx="37" cy="46" r="2.5" fill="#fed7aa" />
+                        <circle cx="49" cy="42" r="2.2" fill="#fed7aa" />
+                        <circle cx="42" cy="74" r="2.1" fill="#fed7aa" />
+                        <circle cx="87" cy="49" r="2.4" fill="#fed7aa" />
+                        <circle cx="72" cy="41" r="2.1" fill="#fed7aa" />
+                        <circle cx="72" cy="34" r="2.0" fill="#fed7aa" />
+                        <circle cx="79" cy="75" r="2.1" fill="#fed7aa" />
+                    </g>
+
+                    <!-- Cincin Bingkai Luar & Penanda Kompas (N, E, S, W) -->
+                    <circle cx="60" cy="60" r="54" stroke="#082f49" stroke-width="3.5" />
+                    <circle cx="60" cy="60" r="56" stroke="#22d3ee" stroke-width="2" />
+                    <line x1="60" y1="8" x2="60" y2="15" stroke="#67e8f9" stroke-width="1.8" stroke-linecap="round" />
+                    <line x1="60" y1="105" x2="60" y2="112" stroke="#67e8f9" stroke-width="1.8" stroke-linecap="round" />
+                    <line x1="8" y1="60" x2="15" y2="60" stroke="#67e8f9" stroke-width="1.8" stroke-linecap="round" />
+                    <line x1="105" y1="60" x2="112" y2="60" stroke="#67e8f9" stroke-width="1.8" stroke-linecap="round" />
+                </svg>
+            </div>
+
+            <!-- Tipografi Logo SI JITU + Garis Aksen Oranye + Subjudul Tim Riset -->
+            <div class="flex flex-col justify-center">
+                <div class="flex items-center gap-2">
+                    <h1 class="text-lg md:text-xl font-normal tracking-[0.14em] text-white leading-none">SI JITU</h1>
+                    <span class="text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 rounded-full bg-orange-500/20 text-orange-300 border border-orange-500/30">3D Prototype</span>
+                </div>
+                <!-- Garis Pembatas Khas Logo (Oranye-Merah + Cyan) -->
+                <div class="flex items-center w-full my-1.5">
+                    <div class="h-[2.5px] w-10 bg-[#ef532a] rounded-l-full"></div>
+                    <div class="h-[1px] flex-1 bg-cyan-400/50"></div>
+                </div>
+                <p class="text-[9px] md:text-[10px] font-medium tracking-[0.22em] text-cyan-300 uppercase leading-none">
+                    GHOST GEAR RESEARCH TEAM
+                </p>
+            </div>
+        </div>
+
+        <!-- Telemetri & Target Desain Sesuai Dokumen -->
+        <div class="hidden lg:flex glass-panel rounded-2xl px-4 py-2.5 items-center gap-5 pointer-events-auto text-xs">
+            <div>
+                <div class="text-[10px] text-slate-400 uppercase tracking-wider">Target Kedalaman</div>
+                <div class="font-mono font-semibold text-sky-300">Maks. 5.0 m <span class="text-[10px] text-slate-400">(IP68)</span></div>
+            </div>
+            <div class="h-6 w-px bg-slate-700/70"></div>
+            <div>
+                <div class="text-[10px] text-slate-400 uppercase tracking-wider">Dimensi Referensi</div>
+                <div class="font-mono font-semibold text-slate-200">261 × 76 mm <span class="text-[10px] text-slate-400">(Bodi 64 mm)</span></div>
+            </div>
+            <div class="h-6 w-px bg-slate-700/70"></div>
+            <div>
+                <div class="text-[10px] text-slate-400 uppercase tracking-wider">Sensor IMU (MPU6050)</div>
+                <div id="imu-readout" class="font-mono font-semibold text-amber-300">Pitch: 0.0° Roll: 0.0°</div>
+            </div>
+        </div>
+    </header>
+
+    <!-- HUD Dashboard Simulasi Test Drive (Muncul saat Mode Test Drive aktif) -->
+    <section id="testdrive-hud" class="hidden absolute top-36 left-3 md:top-40 md:left-6 z-10 w-80 sm:w-96 glass-panel rounded-2xl p-4 border border-orange-500/40 transition-all duration-300">
+        <div class="flex items-center justify-between border-b border-slate-700/70 pb-2 mb-3">
+            <div class="flex items-center gap-2">
+                <span id="td-status-dot" class="w-2.5 h-2.5 rounded-full bg-sky-400 animate-ping"></span>
+                <h2 class="text-xs font-bold uppercase tracking-wider text-orange-300">Simulasi Test Drive • Laut Lepas</h2>
+            </div>
+            <button id="btn-restart-td" class="text-[11px] font-mono bg-slate-800 hover:bg-slate-700 text-sky-300 px-2.5 py-1 rounded-lg border border-slate-600/60 transition">Ulangi</button>
+        </div>
+
+        <!-- Tahapan Alur Kerja Sistem (Sesuai Bab 3 Dokumen) -->
+        <div class="space-y-2 mb-3 text-xs">
+            <div id="td-step-1" class="flex items-center gap-2.5 p-2 rounded-xl bg-slate-900/70 border border-slate-700/60 transition">
+                <span class="w-5 h-5 rounded-full bg-sky-500/20 text-sky-300 font-mono text-[11px] flex items-center justify-center font-bold">1</span>
+                <div>
+                    <div class="font-semibold text-slate-200">Pelepasan & Passive Drifting</div>
+                    <div class="text-[10px] text-slate-400">Hanyut pasif mengikuti arus pada kedalaman ±3.8 m</div>
+                </div>
+            </div>
+            <div id="td-step-2" class="flex items-center gap-2.5 p-2 rounded-xl bg-slate-900/40 border border-slate-800 opacity-60 transition">
+                <span class="w-5 h-5 rounded-full bg-amber-500/20 text-amber-300 font-mono text-[11px] flex items-center justify-center font-bold">2</span>
+                <div>
+                    <div class="font-semibold text-slate-200">Kamera Memindai Indikasi Ghost Gear</div>
+                    <div class="text-[10px] text-slate-400">Analisis citra jaring & perekaman orientasi IMU</div>
+                </div>
+            </div>
+            <div id="td-step-3" class="flex items-center gap-2.5 p-2 rounded-xl bg-slate-900/40 border border-slate-800 opacity-60 transition">
+                <span class="w-5 h-5 rounded-full bg-emerald-500/20 text-emerald-300 font-mono text-[11px] flex items-center justify-center font-bold">3</span>
+                <div>
+                    <div class="font-semibold text-slate-200">Transmisi Akustik & Notifikasi Website</div>
+                    <div class="text-[10px] text-slate-400">Kirim indikasi temuan ke penerima kapal/dashboard</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Simulasi Feed Kamera Bawah Air + Bounding Box Deteksi -->
+        <div class="relative rounded-xl overflow-hidden border border-slate-700/80 bg-slate-950 p-2.5 mb-2.5">
+            <div class="flex items-center justify-between text-[10px] font-mono text-slate-400 mb-1.5">
+                <span>CAM-01 • LIVE OPTICAL FEED</span>
+                <span id="td-distance-readout" class="text-sky-300">Jarak Objek: 6.5 m</span>
+            </div>
+            <div class="relative h-24 rounded-lg bg-gradient-to-b from-cyan-950/60 to-slate-950 border border-cyan-900/40 flex items-center justify-center overflow-hidden">
+                <!-- Ilustrasi Jaring dalam viewfinder kamera -->
+                <svg id="td-cam-net-svg" class="w-28 h-20 text-sky-400/35 transition-all duration-500 scale-75" viewBox="0 0 120 80" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <path d="M15 55 Q40 20 65 45 T105 35 L95 68 Q55 72 20 65 Z" />
+                    <path d="M25 45 L85 60 M35 35 L95 50 M45 65 L75 30 M28 62 L58 32 M65 66 L92 38" />
+                </svg>
+                <!-- Bounding Box Merah Deteksi Ghost Gear -->
+                <div id="td-cam-bbox" class="hidden absolute inset-x-8 inset-y-2 border-2 border-red-500 rounded bg-red-500/10 flex flex-col justify-between p-1">
+                    <span class="self-start bg-red-600 text-white text-[9px] font-mono px-1.5 py-0.2 rounded">POTENSI GHOST GEAR (89%)</span>
+                    <span class="self-end text-[9px] font-mono text-red-300">VERIFIKASI NELAYAN</span>
+                </div>
+                <div id="td-cam-scanning" class="text-[10px] font-mono text-cyan-300/80 animate-pulse">Menyisir area arus...</div>
+            </div>
+        </div>
+
+        <!-- Banner Notifikasi Website SI JITU saat Ghost Gear Ditemukan -->
+        <div id="td-alert-banner" class="hidden rounded-xl bg-red-950/85 border border-red-500/70 p-2.5 text-xs">
+            <div class="flex items-start gap-2">
+                <svg class="w-5 h-5 text-red-400 shrink-0 mt-0.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                </svg>
+                <div>
+                    <div class="font-bold text-red-200">Notifikasi Website: Indikasi Ghost Gear!</div>
+                    <p class="text-[11px] text-red-300/90 mt-0.5 leading-snug">Citra menyerupai jaring terekam & log IMU tersimpan di MicroSD. Silakan lakukan verifikasi lapangan di area pelepasan.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Panel Inspeksi Komponen & Penyetelan Trim (Sisi Kanan) -->
+    <aside id="info-panel" class="absolute top-20 right-3 md:top-24 md:right-6 z-10 w-72 sm:w-80 glass-panel rounded-2xl p-4 transition-all duration-300 max-h-[calc(100vh-195px)] overflow-y-auto">
+        <div class="flex items-center justify-between border-b border-slate-700/70 pb-2.5 mb-3">
+            <div class="flex items-center gap-2">
+                <span class="w-2 h-2 rounded-full bg-sky-400 animate-pulse"></span>
+                <h2 class="text-xs font-bold uppercase tracking-wider text-sky-300">Rancangan Komponen</h2>
+            </div>
+            <button id="toggle-panel-btn" class="text-xs text-slate-400 hover:text-white px-2 py-0.5 rounded-lg bg-slate-800/70">Tutup</button>
+        </div>
+
+        <!-- Detail Komponen Terpilih -->
+        <div id="component-detail" class="bg-slate-900/75 border border-slate-700/60 rounded-xl p-3 mb-3">
+            <div class="flex items-center justify-between mb-1">
+                <span id="comp-badge" class="text-[10px] font-mono px-2 py-0.5 rounded bg-sky-500/20 text-sky-300">ARSITEKTUR UTUH</span>
+                <span id="comp-dim" class="text-[10px] font-mono text-slate-400">261 × 76 mm</span>
+            </div>
+            <h3 id="comp-title" class="text-sm font-bold text-white mb-1">Perangkat Passive Drifting SI JITU</h3>
+            <p id="comp-desc" class="text-xs text-slate-300 leading-relaxed">
+                Tabung kedap air memanjang dengan susunan internal modular: jendela optik & kamera di depan, ESP32 + MPU6050 + MicroSD di tengah, baterai Li-Po di belakang, serta pemberat bawah yang dapat diatur.
+            </p>
+        </div>
+
+        <!-- Slider Penyetelan Posisi Pemberat Bawah (Adjustable Ballast Trim) -->
+        <div class="bg-slate-900/60 border border-slate-700/50 rounded-xl p-2.5 mb-3">
+            <div class="flex items-center justify-between text-[11px] mb-1">
+                <span class="font-semibold text-purple-300">Setel Posisi Pemberat (Trim):</span>
+                <span id="ballast-val" class="font-mono text-slate-300">0 mm (Netral)</span>
+            </div>
+            <input id="ballast-slider" type="range" min="-40" max="40" value="0" class="w-full accent-sky-400 cursor-pointer h-1.5 bg-slate-700 rounded-lg">
+            <p class="text-[10px] text-slate-400 mt-1">Menggeser pemberat bawah mengubah sudut kemiringan (pitch) perangkat di dalam air.</p>
+        </div>
+
+        <!-- Daftar 7 Bagian Sesuai Tabel Dokumen -->
+        <div class="space-y-1.5">
+            <p class="text-[10px] font-semibold uppercase tracking-wider text-slate-400 mb-1">Inspeksi Bagian Perangkat:</p>
+            
+            <button data-part="all" class="part-btn w-full text-left px-3 py-2 rounded-xl text-xs font-medium transition flex items-center justify-between btn-active border border-transparent">
+                <span>1. Tampilan Utuh (360° Full)</span>
+                <span class="text-[10px] font-mono opacity-80">261 mm</span>
+            </button>
+
+            <button data-part="camera" class="part-btn w-full text-left px-3 py-2 rounded-xl text-xs font-medium bg-slate-800/50 hover:bg-slate-800 text-slate-200 border border-slate-700/50 transition flex items-center justify-between">
+                <span>2. Kamera & Jendela Optik + LED</span>
+                <span class="text-[10px] font-mono text-sky-400">Depan</span>
+            </button>
+
+            <button data-part="electronics" class="part-btn w-full text-left px-3 py-2 rounded-xl text-xs font-medium bg-slate-800/50 hover:bg-slate-800 text-slate-200 border border-slate-700/50 transition flex items-center justify-between">
+                <span>3. ESP32, IMU MPU6050 & MicroSD</span>
+                <span class="text-[10px] font-mono text-emerald-400">Tengah</span>
+            </button>
+
+            <button data-part="battery" class="part-btn w-full text-left px-3 py-2 rounded-xl text-xs font-medium bg-slate-800/50 hover:bg-slate-800 text-slate-200 border border-slate-700/50 transition flex items-center justify-between">
+                <span>4. Baterai Li-Po & BMS PCB</span>
+                <span class="text-[10px] font-mono text-amber-400">Daya</span>
+            </button>
+
+            <button data-part="casing" class="part-btn w-full text-left px-3 py-2 rounded-xl text-xs font-medium bg-slate-800/50 hover:bg-slate-800 text-slate-200 border border-slate-700/50 transition flex items-center justify-between">
+                <span>5. Casing Tabung, Pengunci & O-Ring</span>
+                <span class="text-[10px] font-mono text-orange-400">IP68</span>
+            </button>
+
+            <button data-part="ballast" class="part-btn w-full text-left px-3 py-2 rounded-xl text-xs font-medium bg-slate-800/50 hover:bg-slate-800 text-slate-200 border border-slate-700/50 transition flex items-center justify-between">
+                <span>6. Pemberat Bawah (Adjustable)</span>
+                <span class="text-[10px] font-mono text-purple-400">Bawah</span>
+            </button>
+
+            <button data-part="comm" class="part-btn w-full text-left px-3 py-2 rounded-xl text-xs font-medium bg-slate-800/50 hover:bg-slate-800 text-slate-200 border border-slate-700/50 transition flex items-center justify-between">
+                <span>7. Transduser Akustik (Tanpa Kabel)</span>
+                <span class="text-[10px] font-mono text-cyan-400">Belakang</span>
+            </button>
+        </div>
+
+        <!-- Catatan Ketentuan Desain dari Dokumen -->
+        <div class="mt-3 pt-2.5 border-t border-slate-700/60 text-[11px] text-slate-400 space-y-1">
+            <div class="flex items-start gap-1.5">
+                <span class="text-amber-400 font-bold">•</span>
+                <span><strong>Tanpa</strong> motor/propeller, pelampung, maupun GPS pada unit bawah air (sesuai Bab 1 & 4 dokumen).</span>
+            </div>
+            <div class="flex items-start gap-1.5">
+                <span class="text-sky-400 font-bold">•</span>
+                <span>Batas kedalaman target rancangan awal: <strong>maksimal 5 meter</strong>.</span>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Tombol Buka Panel jika ditutup -->
+    <button id="open-panel-btn" class="hidden absolute top-20 right-3 md:top-24 md:right-6 z-10 glass-panel rounded-xl px-3.5 py-2 text-xs font-semibold text-sky-300 hover:text-white items-center gap-2">
+        <span>Rancangan Komponen</span>
+    </button>
+
+    <!-- Bilah Kontrol Bawah -->
+    <footer class="absolute bottom-3 left-3 right-3 md:bottom-5 md:left-6 md:right-6 z-10 flex flex-col items-center pointer-events-none">
+        <div class="glass-panel rounded-2xl p-2 md:p-2.5 flex flex-wrap items-center justify-center gap-1.5 md:gap-2 pointer-events-auto max-w-full">
+            
+            <!-- Menu Utama Baru: Simulasi Test Drive Temuan Ghost Gear -->
+            <button id="btn-testdrive" class="px-3.5 py-2 rounded-xl text-xs font-bold bg-orange-600/85 hover:bg-orange-500 text-white border border-orange-400/70 shadow-lg shadow-orange-600/25 transition flex items-center gap-1.5">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
+                </svg>
+                <span id="testdrive-btn-label">Test Drive: Deteksi Ghost Gear</span>
+            </button>
+
+            <!-- Mode Potongan Cutaway / Transparan -->
+            <button id="btn-xray" class="px-3 py-2 rounded-xl text-xs font-semibold bg-slate-800/80 hover:bg-slate-700 text-slate-200 border border-slate-600/60 transition flex items-center gap-1.5">
+                <svg class="w-4 h-4 text-sky-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                </svg>
+                <span>Lihat Dalam (Cutaway)</span>
+            </button>
+
+            <!-- Mode Bongkar (Exploded View) -->
+            <button id="btn-explode" class="px-3 py-2 rounded-xl text-xs font-semibold bg-slate-800/80 hover:bg-slate-700 text-slate-200 border border-slate-600/60 transition flex items-center gap-1.5">
+                <svg class="w-4 h-4 text-orange-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
+                </svg>
+                <span>Bongkar Rakitan</span>
+            </button>
+
+            <!-- Toggle Pulsa Sinyal Akustik Bawah Air -->
+            <button id="btn-comm-mode" class="px-3 py-2 rounded-xl text-xs font-semibold btn-active border transition flex items-center gap-1.5">
+                <svg class="w-4 h-4 text-cyan-300" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M8.111 16.404a5.5 5.5 0 017.778 0M12 20h.01m-7.08-7.071c3.904-3.905 10.236-3.905 14.141 0" />
+                </svg>
+                <span id="comm-label">Sinyal Akustik: ON</span>
+            </button>
+
+            <!-- Simulasi Passive Drifting -->
+            <button id="btn-drift" class="px-3 py-2 rounded-xl text-xs font-semibold btn-active border transition flex items-center gap-1.5">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <span>Arus Pasif: ON</span>
+            </button>
+
+            <!-- Putar Otomatis 360 -->
+            <button id="btn-rotate" class="px-3 py-2 rounded-xl text-xs font-semibold bg-slate-800/80 hover:bg-slate-700 text-slate-200 border border-slate-600/60 transition flex items-center gap-1.5">
+                <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                </svg>
+                <span>Putar 360°</span>
+            </button>
+
+            <!-- Reset Sudut Pandang -->
+            <button id="btn-reset" class="px-3 py-2 rounded-xl text-xs font-semibold bg-slate-800/80 hover:bg-slate-700 text-slate-300 border border-slate-600/60 transition">
+                Reset
+            </button>
+        </div>
+        <p class="text-[10px] text-slate-300/90 mt-1.5 text-center bg-slate-950/65 px-3 py-0.5 rounded-full">
+            Klik kiri & geser untuk rotasi 360° • Scroll / cubit untuk Zoom • Klik kanan untuk geser posisi
+        </p>
+    </footer>
+
+    <script>
+        // =========================================================================
+        // DATA SPESIFIKASI & DIMENSI REFERENSI DARI DOKUMEN DESAIN AWAL SI JITU
+        // Skala 3D: 1 unit = 50 mm (Panjang total 261 mm ≈ 5.22 unit; Radius bodi 32 mm ≈ 0.64 unit)
+        // =========================================================================
+        const COMPONENT_INFO = {
+            all: {
+                badge: "ARSITEKTUR UTUH",
+                dim: "261 × 76 mm (Bodi 64 mm)",
+                title: "Perangkat Passive Drifting SI JITU",
+                desc: "Tabung silinder kedap air dengan susunan internal modular: jendela optik & kamera di depan, ESP32 + MPU6050 + MicroSD di tengah, baterai Li-Po di belakang, serta pemberat bawah yang dapat diatur.",
+                camPos: new THREE.Vector3(4.5, 2.3, 5.0),
+                target: new THREE.Vector3(0, -0.05, 0)
+            },
+            camera: {
+                badge: "BAGIAN DEPAN",
+                dim: "Optical Port Ø 76 mm",
+                title: "Kamera Bawah Air, Jendela Optik & LED",
+                desc: "Menggunakan kamera bawah air (ESP32-CAM / kamera USB / Pi Camera) di balik jendela optik transparan (akrilik/polikarbonat) dengan LED indikator merah untuk mengambil citra objek menyerupai jaring.",
+                camPos: new THREE.Vector3(3.8, 0.75, 2.1),
+                target: new THREE.Vector3(2.05, 0, 0)
+            },
+            electronics: {
+                badge: "BAGIAN TENGAH",
+                dim: "ESP32 + MPU6050 + SD",
+                title: "Mikrokontroler, Sensor IMU & MicroSD",
+                desc: "Terdiri dari mikrokontroler (ESP32), sensor gerak IMU (MPU6050) untuk merekam percepatan dan orientasi selama hanyut, serta modul MicroSD untuk penyimpanan lokal. Tanpa modul GPS/GNSS.",
+                camPos: new THREE.Vector3(0.35, 2.2, 2.7),
+                target: new THREE.Vector3(0.25, 0.05, 0)
+            },
+            battery: {
+                badge: "BAGIAN DAYA",
+                dim: "Li-Po ±2000 mAh + BMS",
+                title: "Baterai Li-Po & Rangkaian Pengelolaan Daya",
+                desc: "Menyuplai energi perangkat (target operasional 6–12 jam) lengkap dengan Battery Management PCB untuk melindungi baterai dan mengatur pengisian maupun pemakaian.",
+                camPos: new THREE.Vector3(-1.3, 2.0, 2.6),
+                target: new THREE.Vector3(-0.95, 0.05, 0)
+            },
+            casing: {
+                badge: "SELURUH BADAN",
+                dim: "IP68 (Target Maks. 5 m)",
+                title: "Casing Tabung, Cincin Pengunci & O-Ring",
+                desc: "Tabung PVC/akrilik/polikarbonat dengan cincin pengunci oranye (control/lock ring), pengait atas, baut pengaman samping, serta ganda O-ring karet untuk mencegah rembesan hingga kedalaman 5 meter.",
+                camPos: new THREE.Vector3(2.3, 2.7, 3.8),
+                target: new THREE.Vector3(0, 0, 0)
+            },
+            ballast: {
+                badge: "BAGIAN BAWAH",
+                dim: "Adjustable Ballast",
+                title: "Pemberat yang Dapat Diatur (Trim & Buoyancy)",
+                desc: "Pemberat eksternal yang dipasang pada rel bawah dan dapat digeser atau ditambah untuk menyetel kemiringan (trim) serta mendekati daya apung netral di perairan dangkal.",
+                camPos: new THREE.Vector3(1.6, -1.6, 3.1),
+                target: new THREE.Vector3(0.05, -0.78, 0)
+            },
+            comm: {
+                badge: "NIRKABEL / AKUSTIK",
+                dim: "Acoustic Modem + SD",
+                title: "Transduser Akustik & Penyimpanan MicroSD (Tanpa Kabel)",
+                desc: "Perangkat beroperasi bebas hanyut tanpa kabel (wireless). Data citra & IMU disimpan di MicroSD internal, sementara indikasi deteksi dipancarkan melalui transduser akustik bawah air ke penerima di kapal.",
+                camPos: new THREE.Vector3(-4.1, 1.3, 2.4),
+                target: new THREE.Vector3(-2.15, 0, 0)
+            }
+        };
+
+        // =========================================================================
+        // VARIABEL UTAMA THREE.JS
+        // =========================================================================
+        let scene, camera, renderer, controls;
+        let deviceRoot, frontAssembly, midElectronics, batteryPack, mainBodyGroup, ballastGroup, adjustableWeightMesh, rearEndcapGroup;
+        let acousticModemMesh, acousticWavesGroup;
+        let waterParticles, seabedNetGroup, ghostNetMesh, detectionRing3D, cameraScanCone;
+        let clock = new THREE.Clock();
+
+        // State Interaksi
+        let isExploded = false;
+        let explodeProgress = 0;
+        let isXray = false;
+        let isDrifting = true;
+        let isAutoRotate = false;
+        let showAcousticPulse = true;
+        let isTestDrive = false;
+        let testDriveTime = 0;
+        let ballastOffset = 0; // -0.4 sampai +0.4 unit
+        let targetCamPos = COMPONENT_INFO.all.camPos.clone();
+        let targetLookAt = COMPONENT_INFO.all.target.clone();
+        let isTransitioningCamera = false;
+
+        // Material luar tabung yang akan dibuat semi-transparan saat mode Cutaway/X-Ray
+        let outerBodyMaterials = [];
+
+        function init() {
+            const container = document.getElementById('canvas-container');
+
+            // 1. Scene Bawah Air Dangkal (Kedalaman target 5 meter masih ditembus cahaya matahari)
+            scene = new THREE.Scene();
+            scene.background = new THREE.Color(0x041529);
+            scene.fog = new THREE.FogExp2(0x041529, 0.042);
+
+            // 2. Kamera Perspektif
+            camera = new THREE.PerspectiveCamera(42, window.innerWidth / window.innerHeight, 0.1, 100);
+            camera.position.copy(COMPONENT_INFO.all.camPos);
+
+            // 3. Renderer WebGL
+            renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: "high-performance" });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+            renderer.shadowMap.enabled = true;
+            renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+            renderer.toneMapping = THREE.ACESFilmicToneMapping;
+            renderer.toneMappingExposure = 1.18;
+            container.appendChild(renderer.domElement);
+
+            // 4. OrbitControls (Rotasi Bebas 360 Derajat Penuh)
+            controls = new THREE.OrbitControls(camera, renderer.domElement);
+            controls.enableDamping = true;
+            controls.dampingFactor = 0.06;
+            controls.minDistance = 2.0;
+            controls.maxDistance = 14;
+            controls.maxPolarAngle = Math.PI;
+            controls.addEventListener('start', () => {
+                isTransitioningCamera = false;
+            });
+
+            setupLighting();
+            setupUnderwaterEnvironment();
+            buildSiJituDevice();
+            setupUIEvents();
+
+            window.addEventListener('resize', onWindowResize);
+            animate();
+        }
+
+        function setupLighting() {
+            // Cahaya ambient biru perairan dangkal
+            const ambientLight = new THREE.AmbientLight(0x7dd3fc, 0.75);
+            scene.add(ambientLight);
+
+            // Cahaya matahari dari atas permukaan air
+            const sunLight = new THREE.DirectionalLight(0xf0f9ff, 2.3);
+            sunLight.position.set(4, 10, 5);
+            sunLight.castShadow = true;
+            sunLight.shadow.mapSize.width = 1024;
+            sunLight.shadow.mapSize.height = 1024;
+            scene.add(sunLight);
+
+            // Cahaya pantulan dasar laut dari bawah agar pemberat & bagian bawah terlihat jelas
+            const bottomBounce = new THREE.DirectionalLight(0x0284c7, 1.1);
+            bottomBounce.position.set(-2, -6, 3);
+            scene.add(bottomBounce);
+
+            // Fill light depan untuk memperjelas optik kamera & LED
+            const frontLight = new THREE.PointLight(0xe0f2fe, 1.0, 10);
+            frontLight.position.set(4.5, 1.2, 2.5);
+            scene.add(frontLight);
+        }
+
+        function setupUnderwaterEnvironment() {
+            // Partikel air untuk memperlihatkan arah aliran arus pasif
+            const particleCount = 420;
+            const geometry = new THREE.BufferGeometry();
+            const positions = new Float32Array(particleCount * 3);
+            for (let i = 0; i < particleCount; i++) {
+                positions[i * 3] = (Math.random() - 0.5) * 24;
+                positions[i * 3 + 1] = (Math.random() - 0.5) * 12;
+                positions[i * 3 + 2] = (Math.random() - 0.5) * 24;
+            }
+            geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+            const material = new THREE.PointsMaterial({
+                color: 0xbae6fd,
+                size: 0.05,
+                transparent: true,
+                opacity: 0.5
+            });
+            waterParticles = new THREE.Points(geometry, material);
+            scene.add(waterParticles);
+
+            // Dasar perairan dangkal + Ilustrasi Jaring Hilang (Ghost Gear) sebagai konteks sistem
+            const seabedGeo = new THREE.PlaneGeometry(36, 36, 24, 24);
+            seabedGeo.rotateX(-Math.PI / 2);
+            const pos = seabedGeo.attributes.position;
+            for (let i = 0; i < pos.count; i++) {
+                const x = pos.getX(i);
+                const z = pos.getZ(i);
+                pos.setY(i, -2.55 + Math.sin(x * 0.4) * 0.12 + Math.cos(z * 0.4) * 0.12);
+            }
+            seabedGeo.computeVertexNormals();
+            const seabedMat = new THREE.MeshStandardMaterial({
+                color: 0x082038,
+                roughness: 0.9,
+                metalness: 0.05
+            });
+            const seabed = new THREE.Mesh(seabedGeo, seabedMat);
+            seabed.receiveShadow = true;
+            scene.add(seabed);
+
+            // Jaring Ghost Gear tersangkut di dasar laut (di depan perangkat)
+            seabedNetGroup = new THREE.Group();
+            const netGeo = new THREE.IcosahedronGeometry(1.05, 2);
+            netGeo.scale(1.65, 0.48, 1.25);
+            const netMat = new THREE.MeshBasicMaterial({
+                color: 0x38bdf8,
+                wireframe: true,
+                transparent: true,
+                opacity: 0.35
+            });
+            ghostNetMesh = new THREE.Mesh(netGeo, netMat);
+            ghostNetMesh.position.set(4.8, -2.15, -0.2);
+            seabedNetGroup.add(ghostNetMesh);
+
+            // Bingkai Indikator Deteksi 3D di sekitar Ghost Gear saat Test Drive menemukan jaring
+            const ringGeo = new THREE.RingGeometry(1.35, 1.48, 32);
+            ringGeo.rotateX(-Math.PI / 2);
+            const ringMat = new THREE.MeshBasicMaterial({
+                color: 0xef4444,
+                side: THREE.DoubleSide,
+                transparent: true,
+                opacity: 0.0
+            });
+            detectionRing3D = new THREE.Mesh(ringGeo, ringMat);
+            detectionRing3D.position.set(4.8, -2.38, -0.2);
+            seabedNetGroup.add(detectionRing3D);
+
+            scene.add(seabedNetGroup);
+        }
+
+        // Tekstur Bodi Tabung dengan Logo & Tulisan "SI JITU"
+        function createCylinderBodyTexture() {
+            const canvas = document.createElement('canvas');
+            canvas.width = 1024;
+            canvas.height = 512;
+            const ctx = canvas.getContext('2d');
+
+            // Warna bodi hitam doff (PVC/ABS) sesuai ilustrasi perangkat SI JITU
+            ctx.fillStyle = '#181e29';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Garis sambungan mekanis halus
+            ctx.strokeStyle = 'rgba(148, 163, 184, 0.22)';
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.moveTo(0, 32);
+            ctx.lineTo(canvas.width, 32);
+            ctx.moveTo(0, canvas.height - 32);
+            ctx.lineTo(canvas.width, canvas.height - 32);
+            ctx.stroke();
+
+            function drawBranding(cx, cy) {
+                ctx.save();
+                ctx.translate(cx, cy);
+
+                // Ikon gelombang biru SI JITU
+                ctx.strokeStyle = '#38bdf8';
+                ctx.lineWidth = 10;
+                ctx.lineCap = 'round';
+                ctx.beginPath();
+                ctx.moveTo(-75, -52);
+                ctx.quadraticCurveTo(-25, -88, 25, -52);
+                ctx.quadraticCurveTo(60, -32, 85, -52);
+                ctx.stroke();
+
+                ctx.strokeStyle = '#0284c7';
+                ctx.beginPath();
+                ctx.moveTo(-60, -32);
+                ctx.quadraticCurveTo(-18, -62, 24, -32);
+                ctx.quadraticCurveTo(55, -16, 75, -32);
+                ctx.stroke();
+
+                // Tulisan SI JITU
+                ctx.fillStyle = '#f8fafc';
+                ctx.font = 'bold 58px Inter, Arial, sans-serif';
+                ctx.textAlign = 'center';
+                ctx.fillText('SI JITU', 0, 26);
+
+                ctx.restore();
+            }
+
+            // Cetak logo di kedua sisi silinder
+            drawBranding(256, 256);
+            drawBranding(768, 256);
+
+            const tex = new THREE.CanvasTexture(canvas);
+            tex.wrapS = THREE.RepeatWrapping;
+            tex.wrapT = THREE.ClampToEdgeWrapping;
+            return tex;
+        }
+
+        function buildSiJituDevice() {
+            deviceRoot = new THREE.Group();
+            scene.add(deviceRoot);
+
+            // Material Komponen
+            const darkHousingMat = new THREE.MeshStandardMaterial({
+                color: 0x1a2230,
+                roughness: 0.42,
+                metalness: 0.35
+            });
+
+            const mainTubeMat = new THREE.MeshStandardMaterial({
+                map: createCylinderBodyTexture(),
+                roughness: 0.38,
+                metalness: 0.25,
+                transparent: true,
+                opacity: 1.0
+            });
+            outerBodyMaterials.push(mainTubeMat);
+
+            const orangeRingMat = new THREE.MeshStandardMaterial({
+                color: 0xf97316, // Aksen cincin oranye sesuai gambar desain SI JITU
+                roughness: 0.32,
+                metalness: 0.15
+            });
+
+            const opticalGlassMat = new THREE.MeshPhysicalMaterial({
+                color: 0xe0f2fe,
+                transparent: true,
+                opacity: 0.32,
+                roughness: 0.06,
+                metalness: 0.05,
+                transmission: 0.72,
+                ior: 1.49,
+                depthWrite: false
+            });
+
+            const oRingRubberMat = new THREE.MeshStandardMaterial({
+                color: 0x090d14,
+                roughness: 0.85
+            });
+
+            const pcbGreenMat = new THREE.MeshStandardMaterial({
+                color: 0x065f46,
+                roughness: 0.45,
+                metalness: 0.25
+            });
+
+            const metalSilverMat = new THREE.MeshStandardMaterial({
+                color: 0xcbd5e1,
+                roughness: 0.25,
+                metalness: 0.85
+            });
+
+            // =================================================================
+            // 1. BAGIAN DEPAN: JENDELA OPTIK, KAMERA BAWAH AIR & LED INDIKATOR
+            // (Proporsi referensi: Ø Collar 76 mm -> R = 0.76 unit)
+            // =================================================================
+            frontAssembly = new THREE.Group();
+            deviceRoot.add(frontAssembly);
+
+            // Cincin pengunci oranye depan (Control / Lock Ring)
+            const frontOrangeCollar = new THREE.Mesh(
+                new THREE.CylinderGeometry(0.74, 0.72, 0.26, 48),
+                orangeRingMat
+            );
+            frontOrangeCollar.rotation.z = Math.PI / 2;
+            frontOrangeCollar.position.set(1.52, 0, 0);
+            frontAssembly.add(frontOrangeCollar);
+
+            // Bezel luar hitam (76 mm) dengan kait pengunci mekanis atas (sesuai Gambar 1 referensi)
+            const frontOuterBezel = new THREE.Mesh(
+                new THREE.CylinderGeometry(0.76, 0.76, 0.20, 48),
+                darkHousingMat
+            );
+            frontOuterBezel.rotation.z = Math.PI / 2;
+            frontOuterBezel.position.set(1.74, 0, 0);
+            frontAssembly.add(frontOuterBezel);
+
+            // Kait pengunci mekanis di atas bezel depan (Control ring latch)
+            const topLatchArm = new THREE.Mesh(new THREE.BoxGeometry(0.42, 0.12, 0.16), darkHousingMat);
+            topLatchArm.position.set(1.62, 0.79, 0);
+            topLatchArm.rotation.z = -0.12;
+            frontAssembly.add(topLatchArm);
+
+            // Baut pengaman samping pada cincin pengunci (sesuai ilustrasi desain)
+            const sideScrewGeo = new THREE.CylinderGeometry(0.04, 0.04, 1.54, 16);
+            sideScrewGeo.rotateX(Math.PI / 2);
+            const sideScrew = new THREE.Mesh(sideScrewGeo, metalSilverMat);
+            sideScrew.position.set(1.52, 0, 0);
+            frontAssembly.add(sideScrew);
+
+            // O-Ring karet hitam di belakang collar depan
+            const frontORing = new THREE.Mesh(new THREE.TorusGeometry(0.64, 0.028, 16, 48), oRingRubberMat);
+            frontORing.rotation.y = Math.PI / 2;
+            frontORing.position.set(1.36, 0, 0);
+            frontAssembly.add(frontORing);
+
+            // Jendela Optik Transparan (Optical Port Akrilik/Polikarbonat)
+            const opticalCylinder = new THREE.Mesh(
+                new THREE.CylinderGeometry(0.62, 0.68, 0.56, 48),
+                opticalGlassMat
+            );
+            opticalCylinder.rotation.z = Math.PI / 2;
+            opticalCylinder.position.set(2.10, 0, 0);
+            frontAssembly.add(opticalCylinder);
+
+            const opticalFrontWindow = new THREE.Mesh(
+                new THREE.CylinderGeometry(0.62, 0.62, 0.05, 48),
+                opticalGlassMat
+            );
+            opticalFrontWindow.rotation.z = Math.PI / 2;
+            opticalFrontWindow.position.set(2.38, 0, 0);
+            frontAssembly.add(opticalFrontWindow);
+
+            // Pelat Dudukan Kamera & Board di dalam jendela optik
+            const cameraMountPlate = new THREE.Mesh(
+                new THREE.CylinderGeometry(0.56, 0.56, 0.05, 36),
+                new THREE.MeshStandardMaterial({ color: 0x0f172a, roughness: 0.5 })
+            );
+            cameraMountPlate.rotation.z = Math.PI / 2;
+            cameraMountPlate.position.set(1.85, 0, 0);
+            frontAssembly.add(cameraMountPlate);
+
+            // PCB Kamera (ESP32-CAM / USB Camera / Pi Camera)
+            const cameraPcb = new THREE.Mesh(new THREE.BoxGeometry(0.04, 0.36, 0.36), pcbGreenMat);
+            cameraPcb.position.set(1.90, -0.02, 0);
+            frontAssembly.add(cameraPcb);
+
+            // Lensa Kamera Bawah Air (Multi-element barrel)
+            const lensOuterBarrel = new THREE.Mesh(
+                new THREE.CylinderGeometry(0.24, 0.28, 0.28, 32),
+                darkHousingMat
+            );
+            lensOuterBarrel.rotation.z = Math.PI / 2;
+            lensOuterBarrel.position.set(2.04, -0.02, 0);
+            frontAssembly.add(lensOuterBarrel);
+
+            const lensInnerGlass = new THREE.Mesh(
+                new THREE.SphereGeometry(0.18, 24, 24),
+                new THREE.MeshPhysicalMaterial({
+                    color: 0x1e3a8a,
+                    roughness: 0.05,
+                    metalness: 0.15,
+                    clearcoat: 1.0
+                })
+            );
+            lensInnerGlass.scale.set(0.45, 1, 1);
+            lensInnerGlass.position.set(2.16, -0.02, 0);
+            frontAssembly.add(lensInnerGlass);
+
+            // LED Indikator Merah Status Perekaman (sesuai Gambar 1 referensi dokumen)
+            const statusLed = new THREE.Mesh(
+                new THREE.SphereGeometry(0.042, 16, 16),
+                new THREE.MeshBasicMaterial({ color: 0xef4444 })
+            );
+            statusLed.position.set(1.92, 0.36, 0);
+            frontAssembly.add(statusLed);
+
+            // Bidang Pandang Pemindaian Kamera (FOV) saat mode Test Drive
+            const scanConeGeo = new THREE.ConeGeometry(1.45, 3.6, 32, 1, true);
+            scanConeGeo.rotateZ(Math.PI / 2);
+            const scanConeMat = new THREE.MeshBasicMaterial({
+                color: 0x38bdf8,
+                transparent: true,
+                opacity: 0.0,
+                side: THREE.DoubleSide,
+                depthWrite: false
+            });
+            cameraScanCone = new THREE.Mesh(scanConeGeo, scanConeMat);
+            cameraScanCone.position.set(4.15, -0.02, 0);
+            frontAssembly.add(cameraScanCone);
+
+            // =================================================================
+            // 2. CASING TABUNG UTAMA (Ø 64 mm -> R = 0.64 unit)
+            // =================================================================
+            mainBodyGroup = new THREE.Group();
+            deviceRoot.add(mainBodyGroup);
+
+            const mainCylinder = new THREE.Mesh(
+                new THREE.CylinderGeometry(0.64, 0.64, 2.75, 64),
+                mainTubeMat
+            );
+            mainCylinder.rotation.z = Math.PI / 2;
+            mainCylinder.position.set(0, 0, 0);
+            mainCylinder.castShadow = true;
+            mainCylinder.receiveShadow = true;
+            mainBodyGroup.add(mainCylinder);
+
+            // Lubang pengait atas (Eyelet) sesuai ilustrasi desain SI JITU
+            const topEyelet = new THREE.Mesh(new THREE.TorusGeometry(0.09, 0.028, 12, 24), darkHousingMat);
+            topEyelet.position.set(0.85, 0.68, 0);
+            mainBodyGroup.add(topEyelet);
+
+            // =================================================================
+            // 3. BAGIAN TENGAH INTERNAL: MIKROKONTROLER (ESP32), IMU (MPU6050) & MICROSD
+            // (Catatan dokumen: Tidak menggunakan antena GNSS/GPS)
+            // =================================================================
+            midElectronics = new THREE.Group();
+            deviceRoot.add(midElectronics);
+
+            // Rangka modular internal (3D-printed chassis sled)
+            const internalChassis = new THREE.Mesh(
+                new THREE.BoxGeometry(1.30, 0.06, 0.84),
+                new THREE.MeshStandardMaterial({ color: 0x334155, roughness: 0.6 })
+            );
+            internalChassis.position.set(0.45, -0.10, 0);
+            midElectronics.add(internalChassis);
+
+            // Board Mikrokontroler (ESP32)
+            const esp32Pcb = new THREE.Mesh(new THREE.BoxGeometry(0.82, 0.04, 0.44), pcbGreenMat);
+            esp32Pcb.position.set(0.55, 0.02, 0.16);
+            midElectronics.add(esp32Pcb);
+
+            const esp32Shield = new THREE.Mesh(new THREE.BoxGeometry(0.30, 0.05, 0.28), metalSilverMat);
+            esp32Shield.position.set(0.68, 0.065, 0.16);
+            midElectronics.add(esp32Shield);
+
+            // Sensor Gerak IMU (MPU6050 - Modul biru sesuai dokumen)
+            const mpuBoard = new THREE.Mesh(
+                new THREE.BoxGeometry(0.36, 0.035, 0.24),
+                new THREE.MeshStandardMaterial({ color: 0x0284c7, roughness: 0.4 })
+            );
+            mpuBoard.position.set(0.25, 0.02, -0.22);
+            midElectronics.add(mpuBoard);
+
+            const mpuChip = new THREE.Mesh(
+                new THREE.BoxGeometry(0.09, 0.03, 0.09),
+                new THREE.MeshStandardMaterial({ color: 0x0f172a })
+            );
+            mpuChip.position.set(0.25, 0.05, -0.22);
+            midElectronics.add(mpuChip);
+
+            // Modul Penyimpanan MicroSD (Menyimpan foto & log sensor saat offline)
+            const microSdHolder = new THREE.Mesh(new THREE.BoxGeometry(0.24, 0.04, 0.22), metalSilverMat);
+            microSdHolder.position.set(0.68, 0.02, -0.22);
+            midElectronics.add(microSdHolder);
+
+            const microSdCard = new THREE.Mesh(
+                new THREE.BoxGeometry(0.16, 0.015, 0.15),
+                new THREE.MeshStandardMaterial({ color: 0x1e293b })
+            );
+            microSdCard.position.set(0.77, 0.02, -0.22);
+            midElectronics.add(microSdCard);
+
+            // =================================================================
+            // 4. BAGIAN DAYA INTERNAL: BATERAI LI-PO & BMS PCB
+            // =================================================================
+            batteryPack = new THREE.Group();
+            deviceRoot.add(batteryPack);
+
+            // Sel Baterai Li-Po (±2000 mAh)
+            const lipoCell = new THREE.Mesh(
+                new THREE.BoxGeometry(1.02, 0.28, 0.62),
+                new THREE.MeshStandardMaterial({ color: 0xe2e8f0, roughness: 0.28, metalness: 0.6 })
+            );
+            lipoCell.position.set(-0.78, 0.04, 0);
+            batteryPack.add(lipoCell);
+
+            // Kapton Tape Oranye Pelindung Terminal Baterai
+            const kaptonWrap = new THREE.Mesh(
+                new THREE.BoxGeometry(0.18, 0.29, 0.63),
+                new THREE.MeshStandardMaterial({ color: 0xd97706, roughness: 0.3 })
+            );
+            kaptonWrap.position.set(-0.34, 0.04, 0);
+            batteryPack.add(kaptonWrap);
+
+            // Battery Management PCB (BMS) di ujung belakang kompartemen daya
+            const bmsBoard = new THREE.Mesh(new THREE.BoxGeometry(0.05, 0.46, 0.52), pcbGreenMat);
+            bmsBoard.position.set(-1.32, 0.04, 0);
+            batteryPack.add(bmsBoard);
+
+            // =================================================================
+            // 5. BAGIAN BELAKANG: END-CAP & ANTARMUKA KOMUNIKASI (TETHER / AKUSTIK)
+            // =================================================================
+            rearEndcapGroup = new THREE.Group();
+            deviceRoot.add(rearEndcapGroup);
+
+            // O-Ring karet belakang
+            const rearORing = new THREE.Mesh(new THREE.TorusGeometry(0.64, 0.028, 16, 48), oRingRubberMat);
+            rearORing.rotation.y = Math.PI / 2;
+            rearORing.position.set(-1.38, 0, 0);
+            rearEndcapGroup.add(rearORing);
+
+            // Cincin Oranye Belakang
+            const rearOrangeCollar = new THREE.Mesh(
+                new THREE.CylinderGeometry(0.68, 0.68, 0.24, 48),
+                orangeRingMat
+            );
+            rearOrangeCollar.rotation.z = Math.PI / 2;
+            rearOrangeCollar.position.set(-1.52, 0, 0);
+            rearEndcapGroup.add(rearOrangeCollar);
+
+            // Tutup Belakang Utama (Endcap)
+            const rearEndcap = new THREE.Mesh(
+                new THREE.CylinderGeometry(0.66, 0.60, 0.36, 48),
+                darkHousingMat
+            );
+            rearEndcap.rotation.z = Math.PI / 2;
+            rearEndcap.position.set(-1.80, 0, 0);
+            rearEndcapGroup.add(rearEndcap);
+
+            // Transduser Modem Akustik Bawah Air (Operasi Tanpa Kabel / Wireless)
+            acousticModemMesh = new THREE.Group();
+            const transducerCyl = new THREE.Mesh(
+                new THREE.CylinderGeometry(0.28, 0.34, 0.24, 32),
+                new THREE.MeshStandardMaterial({ color: 0x1e293b, roughness: 0.3, metalness: 0.55 })
+            );
+            transducerCyl.rotation.z = Math.PI / 2;
+            transducerCyl.position.set(-2.06, 0, 0);
+            acousticModemMesh.add(transducerCyl);
+
+            const transducerCap = new THREE.Mesh(
+                new THREE.CylinderGeometry(0.22, 0.28, 0.08, 32),
+                new THREE.MeshStandardMaterial({ color: 0x0f172a, roughness: 0.4, metalness: 0.4 })
+            );
+            transducerCap.rotation.z = Math.PI / 2;
+            transducerCap.position.set(-2.22, 0, 0);
+            acousticModemMesh.add(transducerCap);
+
+            // Gelombang Sinyal Akustik Bawah Air
+            acousticWavesGroup = new THREE.Group();
+            for (let i = 1; i <= 3; i++) {
+                const wave = new THREE.Mesh(
+                    new THREE.TorusGeometry(0.22 * i, 0.012, 12, 32),
+                    new THREE.MeshBasicMaterial({ color: 0x38bdf8, transparent: true, opacity: 0.65 - i * 0.15 })
+                );
+                wave.rotation.y = Math.PI / 2;
+                wave.position.set(-2.32 - i * 0.20, 0, 0);
+                acousticWavesGroup.add(wave);
+            }
+            acousticModemMesh.add(acousticWavesGroup);
+            rearEndcapGroup.add(acousticModemMesh);
+
+            // =================================================================
+            // 6. BAGIAN BAWAH: PEMBERAT YANG DAPAT DIATUR (ADJUSTABLE BALLAST)
+            // =================================================================
+            ballastGroup = new THREE.Group();
+            deviceRoot.add(ballastGroup);
+
+            // Rel dudukan bawah
+            const bottomRail = new THREE.Mesh(new THREE.BoxGeometry(1.75, 0.10, 0.36), darkHousingMat);
+            bottomRail.position.set(0.05, -0.66, 0);
+            ballastGroup.add(bottomRail);
+
+            // Blok pemberat yang dapat digeser sepanjang rel untuk menyetel trim
+            adjustableWeightMesh = new THREE.Group();
+            const weightBlock = new THREE.Mesh(
+                new THREE.BoxGeometry(0.95, 0.20, 0.30),
+                new THREE.MeshStandardMaterial({ color: 0x334155, roughness: 0.35, metalness: 0.75 })
+            );
+            adjustableWeightMesh.add(weightBlock);
+
+            const clampBoltGeo = new THREE.CylinderGeometry(0.036, 0.036, 0.34, 6);
+            clampBoltGeo.rotateX(Math.PI / 2);
+            const boltA = new THREE.Mesh(clampBoltGeo, metalSilverMat);
+            boltA.position.set(-0.30, 0, 0);
+            const boltB = new THREE.Mesh(clampBoltGeo, metalSilverMat);
+            boltB.position.set(0.30, 0, 0);
+            adjustableWeightMesh.add(boltA, boltB);
+
+            adjustableWeightMesh.position.set(0.05, -0.80, 0);
+            ballastGroup.add(adjustableWeightMesh);
+        }
+
+        // =========================================================================
+        // KONTROL INTERAKSI PENGGUNA
+        // =========================================================================
+        function setupUIEvents() {
+            // 1. Pilihan Bagian Perangkat
+            const partButtons = document.querySelectorAll('.part-btn');
+            partButtons.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const partKey = btn.getAttribute('data-part');
+                    selectComponent(partKey);
+
+                    partButtons.forEach(b => {
+                        b.classList.remove('btn-active');
+                        b.classList.add('bg-slate-800/50', 'text-slate-200', 'border-slate-700/50');
+                    });
+                    btn.classList.add('btn-active');
+                    btn.classList.remove('bg-slate-800/50', 'text-slate-200', 'border-slate-700/50');
+                });
+            });
+
+            // 2. Slider Penyetelan Posisi Pemberat Bawah (Trim)
+            const ballastSlider = document.getElementById('ballast-slider');
+            const ballastVal = document.getElementById('ballast-val');
+            ballastSlider.addEventListener('input', (e) => {
+                const mm = parseInt(e.target.value, 10);
+                ballastOffset = mm / 100; // Konversi ke unit 3D (-0.40 sampai +0.40)
+                if (adjustableWeightMesh) {
+                    adjustableWeightMesh.position.x = 0.05 + ballastOffset;
+                }
+                if (mm === 0) {
+                    ballastVal.textContent = "0 mm (Netral)";
+                } else if (mm > 0) {
+                    ballastVal.textContent = `+${mm} mm (Depan)`;
+                } else {
+                    ballastVal.textContent = `${mm} mm (Belakang)`;
+                }
+            });
+
+            // 3. Toggle Cutaway / Casing Transparan
+            const btnXray = document.getElementById('btn-xray');
+            btnXray.addEventListener('click', () => {
+                toggleXray(!isXray);
+            });
+
+            // 4. Toggle Bongkar Rakitan (Exploded View)
+            const btnExplode = document.getElementById('btn-explode');
+            btnExplode.addEventListener('click', () => {
+                isExploded = !isExploded;
+                btnExplode.classList.toggle('btn-active', isExploded);
+                if (isExploded && !isXray) {
+                    toggleXray(true);
+                }
+            });
+
+            // 5. Toggle Pulsa Gelombang Akustik (Tanpa Kabel)
+            const btnComm = document.getElementById('btn-comm-mode');
+            const commLabel = document.getElementById('comm-label');
+            btnComm.addEventListener('click', () => {
+                showAcousticPulse = !showAcousticPulse;
+                if (acousticWavesGroup) {
+                    acousticWavesGroup.visible = showAcousticPulse;
+                }
+                commLabel.textContent = showAcousticPulse ? "Sinyal Akustik: ON" : "Sinyal Akustik: OFF";
+                btnComm.classList.toggle('btn-active', showAcousticPulse);
+            });
+
+            // 6. Toggle Simulasi Arus Pasif
+            const btnDrift = document.getElementById('btn-drift');
+            btnDrift.addEventListener('click', () => {
+                isDrifting = !isDrifting;
+                btnDrift.classList.toggle('btn-active', isDrifting);
+                btnDrift.querySelector('span').textContent = isDrifting ? "Arus Pasif: ON" : "Arus Pasif: OFF";
+            });
+
+            // 7. Toggle Putar Otomatis 360°
+            const btnRotate = document.getElementById('btn-rotate');
+            btnRotate.addEventListener('click', () => {
+                isAutoRotate = !isAutoRotate;
+                controls.autoRotate = isAutoRotate;
+                controls.autoRotateSpeed = 2.0;
+                btnRotate.classList.toggle('btn-active', isAutoRotate);
+            });
+
+            // 8. Reset
+            document.getElementById('btn-reset').addEventListener('click', () => {
+                if (isTestDrive) {
+                    stopTestDrive();
+                }
+                selectComponent('all');
+                if (isExploded) {
+                    isExploded = false;
+                    btnExplode.classList.remove('btn-active');
+                }
+                if (isXray) {
+                    toggleXray(false);
+                }
+                ballastSlider.value = 0;
+                ballastOffset = 0;
+                if (adjustableWeightMesh) adjustableWeightMesh.position.x = 0.05;
+                ballastVal.textContent = "0 mm (Netral)";
+
+                document.querySelectorAll('.part-btn').forEach((b, idx) => {
+                    if (idx === 0) {
+                        b.classList.add('btn-active');
+                        b.classList.remove('bg-slate-800/50', 'text-slate-200', 'border-slate-700/50');
+                    } else {
+                        b.classList.remove('btn-active');
+                        b.classList.add('bg-slate-800/50', 'text-slate-200', 'border-slate-700/50');
+                    }
+                });
+            });
+
+            // 9. Buka/Tutup Panel Kanan
+            const infoPanel = document.getElementById('info-panel');
+            const toggleBtn = document.getElementById('toggle-panel-btn');
+            const openBtn = document.getElementById('open-panel-btn');
+
+            toggleBtn.addEventListener('click', () => {
+                infoPanel.classList.add('hidden');
+                openBtn.classList.remove('hidden');
+                openBtn.classList.add('flex');
+            });
+
+            openBtn.addEventListener('click', () => {
+                infoPanel.classList.remove('hidden');
+                openBtn.classList.add('hidden');
+                openBtn.classList.remove('flex');
+            });
+
+            // 10. Kontrol Simulasi Test Drive Deteksi Ghost Gear
+            const btnTestDrive = document.getElementById('btn-testdrive');
+            const btnRestartTd = document.getElementById('btn-restart-td');
+
+            btnTestDrive.addEventListener('click', () => {
+                if (isTestDrive) {
+                    stopTestDrive();
+                } else {
+                    startTestDrive();
+                }
+            });
+
+            btnRestartTd.addEventListener('click', () => {
+                startTestDrive();
+            });
+        }
+
+        function startTestDrive() {
+            isTestDrive = true;
+            testDriveTime = 0;
+
+            // Pastikan perangkat dalam keadaan utuh dan arus aktif
+            if (isExploded) {
+                isExploded = false;
+                document.getElementById('btn-explode').classList.remove('btn-active');
+            }
+            if (isXray) {
+                toggleXray(false);
+            }
+            isDrifting = true;
+            const btnDrift = document.getElementById('btn-drift');
+            btnDrift.classList.add('btn-active');
+            btnDrift.querySelector('span').textContent = "Arus Pasif: ON";
+
+            // Tampilkan HUD Test Drive & ubah style tombol
+            const btnTestDrive = document.getElementById('btn-testdrive');
+            btnTestDrive.classList.add('btn-testdrive-active');
+            document.getElementById('testdrive-btn-label').textContent = "Hentikan Test Drive";
+            document.getElementById('testdrive-hud').classList.remove('hidden');
+
+            // Reset tampilan langkah HUD
+            updateTestDriveHUD(1, 6.5);
+
+            // Posisikan kamera sudut sinematik melihat perangkat mendekati Ghost Gear
+            targetCamPos.set(1.8, 2.2, 6.8);
+            targetLookAt.set(2.2, -0.7, 0);
+            isTransitioningCamera = true;
+        }
+
+        function stopTestDrive() {
+            isTestDrive = false;
+            testDriveTime = 0;
+
+            const btnTestDrive = document.getElementById('btn-testdrive');
+            btnTestDrive.classList.remove('btn-testdrive-active');
+            document.getElementById('testdrive-btn-label').textContent = "Test Drive: Deteksi Ghost Gear";
+            document.getElementById('testdrive-hud').classList.add('hidden');
+
+            if (deviceRoot) {
+                deviceRoot.position.x = 0;
+            }
+            if (cameraScanCone) {
+                cameraScanCone.material.opacity = 0.0;
+            }
+            if (detectionRing3D) {
+                detectionRing3D.material.opacity = 0.0;
+            }
+            if (ghostNetMesh) {
+                ghostNetMesh.material.color.setHex(0x38bdf8);
+                ghostNetMesh.material.opacity = 0.35;
+            }
+            selectComponent('all');
+        }
+
+        function updateTestDriveHUD(stage, distanceMeters) {
+            const step1 = document.getElementById('td-step-1');
+            const step2 = document.getElementById('td-step-2');
+            const step3 = document.getElementById('td-step-3');
+            const distEl = document.getElementById('td-distance-readout');
+            const camSvg = document.getElementById('td-cam-net-svg');
+            const camBbox = document.getElementById('td-cam-bbox');
+            const camScan = document.getElementById('td-cam-scanning');
+            const alertBanner = document.getElementById('td-alert-banner');
+            const statusDot = document.getElementById('td-status-dot');
+
+            distEl.textContent = `Jarak Objek: ${distanceMeters.toFixed(1)} m`;
+
+            if (stage === 1) {
+                step1.className = "flex items-center gap-2.5 p-2 rounded-xl bg-sky-950/70 border border-sky-500/60 transition";
+                step2.className = "flex items-center gap-2.5 p-2 rounded-xl bg-slate-900/40 border border-slate-800 opacity-60 transition";
+                step3.className = "flex items-center gap-2.5 p-2 rounded-xl bg-slate-900/40 border border-slate-800 opacity-60 transition";
+                camSvg.classList.remove('scale-110', 'text-red-400');
+                camSvg.classList.add('scale-75', 'text-sky-400/35');
+                camBbox.classList.add('hidden');
+                camScan.classList.remove('hidden');
+                alertBanner.classList.add('hidden');
+                statusDot.className = "w-2.5 h-2.5 rounded-full bg-sky-400 animate-ping";
+            } else if (stage === 2) {
+                step1.className = "flex items-center gap-2.5 p-2 rounded-xl bg-slate-900/70 border border-slate-700/60 transition";
+                step2.className = "flex items-center gap-2.5 p-2 rounded-xl bg-amber-950/70 border border-amber-500/60 transition";
+                step3.className = "flex items-center gap-2.5 p-2 rounded-xl bg-slate-900/40 border border-slate-800 opacity-60 transition";
+                camSvg.classList.remove('scale-75', 'text-sky-400/35');
+                camSvg.classList.add('scale-100', 'text-amber-300');
+                camBbox.classList.add('hidden');
+                camScan.textContent = "Memfokuskan citra jaring...";
+                camScan.classList.remove('hidden');
+                alertBanner.classList.add('hidden');
+                statusDot.className = "w-2.5 h-2.5 rounded-full bg-amber-400 animate-ping";
+            } else if (stage === 3) {
+                step1.className = "flex items-center gap-2.5 p-2 rounded-xl bg-slate-900/70 border border-slate-700/60 transition";
+                step2.className = "flex items-center gap-2.5 p-2 rounded-xl bg-slate-900/70 border border-slate-700/60 transition";
+                step3.className = "flex items-center gap-2.5 p-2 rounded-xl bg-red-950/70 border border-red-500/70 transition";
+                camSvg.classList.remove('scale-100', 'text-amber-300');
+                camSvg.classList.add('scale-110', 'text-red-400');
+                camBbox.classList.remove('hidden');
+                camScan.classList.add('hidden');
+                alertBanner.classList.remove('hidden');
+                statusDot.className = "w-2.5 h-2.5 rounded-full bg-red-500 animate-ping";
+            }
+        }
+
+        function toggleXray(state) {
+            isXray = state;
+            const btnXray = document.getElementById('btn-xray');
+            btnXray.classList.toggle('btn-active', isXray);
+
+            outerBodyMaterials.forEach(mat => {
+                mat.opacity = isXray ? 0.22 : 1.0;
+                mat.depthWrite = !isXray;
+                mat.needsUpdate = true;
+            });
+        }
+
+        function selectComponent(key) {
+            const info = COMPONENT_INFO[key];
+            if (!info) return;
+
+            document.getElementById('comp-badge').textContent = info.badge;
+            document.getElementById('comp-dim').textContent = info.dim;
+            document.getElementById('comp-title').textContent = info.title;
+            document.getElementById('comp-desc').textContent = info.desc;
+
+            if ((key === 'electronics' || key === 'battery') && !isXray) {
+                toggleXray(true);
+            }
+
+            targetCamPos.copy(info.camPos);
+            targetLookAt.copy(info.target);
+            isTransitioningCamera = true;
+        }
+
+        function onWindowResize() {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        }
+
+        // =========================================================================
+        // LOOP ANIMASI & SIMULASI PASSIVE DRIFTING
+        // =========================================================================
+        function animate() {
+            requestAnimationFrame(animate);
+            const delta = clock.getDelta();
+            const elapsedTime = clock.getElapsedTime();
+
+            // 1. Transisi Exploded View (Membongkar modul depan, tengah, baterai, belakang, pemberat)
+            const targetExplode = isExploded ? 1.0 : 0.0;
+            explodeProgress += (targetExplode - explodeProgress) * 0.08;
+
+            if (frontAssembly && rearEndcapGroup && ballastGroup && midElectronics && batteryPack) {
+                frontAssembly.position.x = explodeProgress * 1.15;
+                rearEndcapGroup.position.x = -explodeProgress * 1.15;
+                ballastGroup.position.y = -explodeProgress * 0.55;
+                midElectronics.position.y = explodeProgress * 0.35;
+                batteryPack.position.y = explodeProgress * 0.35;
+                batteryPack.position.x = -explodeProgress * 0.35;
+            }
+
+            // 2. Simulasi Test Drive di Laut Lepas (Berjalan bertahap saat mode Test Drive aktif)
+            let testDrivePitchOffset = 0;
+            if (isTestDrive && deviceRoot) {
+                testDriveTime += delta;
+                const cycleDuration = 14.0; // Siklus 14 detik dari pelepasan hingga deteksi & notifikasi
+                const t = Math.min(testDriveTime, cycleDuration);
+
+                // Pergerakan maju pasif mengikuti arus dari x = -3.2 menuju x = 1.6 (di depan Ghost Gear pada x = 4.8)
+                const progress = t / cycleDuration;
+                const easeProgress = 1 - Math.pow(1 - progress, 2);
+                deviceRoot.position.x = -3.2 + easeProgress * 4.8;
+
+                // Sedikit menunduk ke bawah (-12 derajat) untuk memindai dasar laut saat mendekat
+                testDrivePitchOffset = -0.18 * Math.min(progress * 1.5, 1.0);
+
+                // Hitung jarak simulasi ke Ghost Gear (6.5m -> 1.4m)
+                const simDist = Math.max(1.4, 6.5 - easeProgress * 5.1);
+
+                if (t < 4.5) {
+                    updateTestDriveHUD(1, simDist);
+                    if (cameraScanCone) cameraScanCone.material.opacity = 0.07;
+                    if (detectionRing3D) detectionRing3D.material.opacity = 0.0;
+                    if (ghostNetMesh) {
+                        ghostNetMesh.material.color.setHex(0x38bdf8);
+                        ghostNetMesh.material.opacity = 0.35;
+                    }
+                } else if (t < 8.5) {
+                    updateTestDriveHUD(2, simDist);
+                    if (cameraScanCone) {
+                        cameraScanCone.material.color.setHex(0x38bdf8);
+                        cameraScanCone.material.opacity = 0.14 + Math.sin(elapsedTime * 8) * 0.04;
+                    }
+                    if (detectionRing3D) {
+                        detectionRing3D.material.opacity = 0.35;
+                        detectionRing3D.rotation.z = elapsedTime * 0.8;
+                    }
+                } else {
+                    updateTestDriveHUD(3, simDist);
+                    if (cameraScanCone) {
+                        cameraScanCone.material.color.setHex(0xef4444);
+                        cameraScanCone.material.opacity = 0.18;
+                    }
+                    if (detectionRing3D) {
+                        detectionRing3D.material.opacity = 0.75 + Math.sin(elapsedTime * 6) * 0.2;
+                        const s = 1 + Math.sin(elapsedTime * 5) * 0.06;
+                        detectionRing3D.scale.set(s, s, 1);
+                    }
+                    if (ghostNetMesh) {
+                        ghostNetMesh.material.color.setHex(0xf87171);
+                        ghostNetMesh.material.opacity = 0.72;
+                    }
+                    // Pastikan pulsa sinyal akustik aktif saat mengirim notifikasi
+                    if (acousticWavesGroup) {
+                        acousticWavesGroup.visible = true;
+                    }
+                }
+            } else if (deviceRoot) {
+                deviceRoot.position.x += (0 - deviceRoot.position.x) * 0.08;
+            }
+
+            // 3. Pengaruh Trim Pemberat Bawah + Gerakan Arus Pasif (Passive Drifting)
+            const staticTrimPitch = -ballastOffset * 0.38; // Menggeser pemberat ke depan menundukkan hidung perangkat
+
+            if (deviceRoot) {
+                if (isDrifting) {
+                    const heaveY = (isTestDrive ? -0.45 : 0) + Math.sin(elapsedTime * 1.25) * 0.13;
+                    const wavePitch = Math.sin(elapsedTime * 0.9) * 0.055;
+                    const waveRoll = Math.cos(elapsedTime * 1.05) * 0.045;
+                    const waveYaw = Math.sin(elapsedTime * 0.55) * 0.035;
+
+                    const totalPitch = staticTrimPitch + testDrivePitchOffset + wavePitch;
+
+                    deviceRoot.position.y = heaveY;
+                    deviceRoot.rotation.set(waveRoll, waveYaw, totalPitch);
+
+                    // Update pembacaan sensor IMU MPU6050
+                    const pitchDeg = (totalPitch * (180 / Math.PI)).toFixed(1);
+                    const rollDeg = (waveRoll * (180 / Math.PI)).toFixed(1);
+                    const imuEl = document.getElementById('imu-readout');
+                    if (imuEl) {
+                        imuEl.textContent = `Pitch: ${pitchDeg}° Roll: ${rollDeg}°`;
+                    }
+                } else {
+                    deviceRoot.position.y += (0 - deviceRoot.position.y) * 0.1;
+                    deviceRoot.rotation.x += (0 - deviceRoot.rotation.x) * 0.1;
+                    deviceRoot.rotation.y += (0 - deviceRoot.rotation.y) * 0.1;
+                    deviceRoot.rotation.z += (staticTrimPitch - deviceRoot.rotation.z) * 0.1;
+
+                    const pitchDeg = (staticTrimPitch * (180 / Math.PI)).toFixed(1);
+                    const imuEl = document.getElementById('imu-readout');
+                    if (imuEl) {
+                        imuEl.textContent = `Pitch: ${pitchDeg}° Roll: 0.0°`;
+                    }
+                }
+            }
+
+            // 3. Animasi Aliran Partikel Air Melewati Tabung
+            if (waterParticles) {
+                const posAttr = waterParticles.geometry.attributes.position;
+                const speed = isDrifting ? 0.032 : 0.005;
+                for (let i = 0; i < posAttr.count; i++) {
+                    let x = posAttr.getX(i);
+                    x -= speed;
+                    if (x < -12) x = 12;
+                    posAttr.setX(i, x);
+                }
+                posAttr.needsUpdate = true;
+            }
+
+            // 4. Animasi Gelombang Akustik Nirkabel
+            if (acousticWavesGroup && acousticWavesGroup.visible) {
+                acousticWavesGroup.children.forEach((wave, idx) => {
+                    const scale = 1 + Math.sin(elapsedTime * 4 - idx) * 0.12;
+                    wave.scale.set(scale, scale, 1);
+                });
+            }
+
+            // 5. Transisi Kamera Halus
+            if (isTransitioningCamera) {
+                camera.position.lerp(targetCamPos, 0.07);
+                controls.target.lerp(targetLookAt, 0.07);
+                if (camera.position.distanceTo(targetCamPos) < 0.03) {
+                    isTransitioningCamera = false;
+                }
+            }
+
+            controls.update();
+            renderer.render(scene, camera);
+        }
+
+        window.onload = init;
+    </script>
+
+    <!-- Floating Technical Specification Card -->
+    <div class="floating-technical-card" id="techSpecCard">
+        <div class="card-header">
+            <h4><i class="fa-solid fa-satellite text-cyan-400"></i> Spesifikasi Perangkat SIJITU</h4>
+            <button class="toggle-min-btn" aria-label="Minimize"><i class="fa-solid fa-chevron-down"></i></button>
+        </div>
+        <div class="card-content">
+            <p class="text-slate-300">Sistem Informasi Jaring dan Alat Tangkap Terpadu (SIJITU) - Wahana Telemetri Deteksi Bawah Air.</p>
+            <div style="margin-top: 0.5rem; display: flex; flex-direction: column; gap: 0.35rem; font-size: 0.78rem;" class="text-slate-200">
+                <div><strong class="text-cyan-300">Dimensi Bodi:</strong> 261 mm &times; 76 mm (Diameter bodi 64 mm)</div>
+                <div><strong class="text-amber-300">Target Kedalaman:</strong> Operasional 3.8 - 5.0 m (Rating IP68)</div>
+                <div><strong class="text-emerald-300">Sensor Pintar:</strong> MPU-6050 6-DOF IMU + Kamera Optik Bawah Air</div>
+                <div><strong class="text-sky-300">Telemetri:</strong> Transceiver Akustik Subsea &amp; GPS Telemetry</div>
+            </div>
+            <div class="spec-badge-pill"><i class="fa-solid fa-microchip"></i> Marine IoT Telemetry Ready</div>
+        </div>
+    </div>
+
+    <!-- Shared Controller Script (for Navbar Dropdown & UI Controls) -->
+    <script src="script.js"></script>
+</body>
+</html>

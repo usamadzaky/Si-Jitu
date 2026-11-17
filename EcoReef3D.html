@@ -1,0 +1,922 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="3D Interactive Eco Reef Habitat Module - Simulasi Rekayasa Struktur Terumbu Buatan Berbasis Jaring Hantu Daur Ulang di Teluk Banten.">
+  <title>GHOST-TRACK Banten — 3D Interactive Eco Reef Module</title>
+
+  <!-- Google Fonts: Plus Jakarta Sans & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- FontAwesome 6 Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <!-- Three.js & OrbitControls -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+
+  <!-- Shared Enterprise Stylesheet -->
+  <link rel="stylesheet" href="style.css">
+
+  <style>
+    /* Specific Styles for 3D Interactive EcoReef Simulation */
+    .ecoreef-simulation-viewport {
+      position: relative;
+      width: 100%;
+      height: calc(100vh - var(--navbar-height));
+      background-color: #050814;
+      overflow: hidden;
+      user-select: none;
+    }
+
+    #canvas-container {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    /* Enterprise Floating Overlay Header */
+    .overlay-title-card {
+      position: absolute;
+      top: 18px;
+      left: 18px;
+      z-index: 10;
+      background: rgba(10, 25, 47, 0.88);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      padding: 0.75rem 1.25rem;
+      border-radius: var(--radius-md);
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+      display: flex;
+      align-items: center;
+      gap: 0.85rem;
+    }
+
+    .overlay-title-card .icon-box {
+      width: 36px;
+      height: 36px;
+      background: var(--teal-primary);
+      border-radius: var(--radius-sm);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-size: 1.1rem;
+    }
+
+    .overlay-title-card h1 {
+      font-size: 0.98rem;
+      font-weight: 800;
+      color: #ffffff;
+      letter-spacing: -0.01em;
+      line-height: 1.2;
+    }
+
+    .overlay-title-card p {
+      font-size: 0.72rem;
+      color: #94a3b8;
+      margin-top: 0.15rem;
+    }
+
+    /* Floating Control Panel Sidebar */
+    .overlay-sidebar-panel {
+      position: absolute;
+      top: 86px;
+      left: 18px;
+      z-index: 10;
+      width: 310px;
+      background: rgba(10, 25, 47, 0.88);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: var(--radius-md);
+      padding: 1.15rem;
+      box-shadow: 0 16px 36px rgba(0, 0, 0, 0.6);
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      font-size: 0.85rem;
+      max-height: calc(100% - 105px);
+      overflow-y: auto;
+      color: #ffffff;
+    }
+
+    .overlay-sidebar-panel::-webkit-scrollbar {
+      width: 5px;
+    }
+    .overlay-sidebar-panel::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 4px;
+    }
+
+    .panel-section-title {
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: #94a3b8;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      padding-bottom: 0.4rem;
+    }
+
+    .layer-item-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.5rem 0.65rem;
+      border-radius: var(--radius-sm);
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      cursor: pointer;
+      transition: all var(--transition);
+    }
+    .layer-item-row:hover {
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    .layer-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      display: inline-block;
+      margin-right: 0.5rem;
+    }
+
+    /* Hotspots Scroll List */
+    .hotspot-scroll-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+      max-height: 200px;
+      overflow-y: auto;
+      padding-right: 0.25rem;
+    }
+
+    .hotspot-btn {
+      width: 100%;
+      text-align: left;
+      padding: 0.45rem 0.6rem;
+      border-radius: var(--radius-sm);
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      color: #cbd5e1;
+      font-size: 0.78rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.55rem;
+      transition: all var(--transition);
+      font-family: inherit;
+    }
+    .hotspot-btn:hover {
+      background: rgba(13, 148, 136, 0.2);
+      border-color: var(--teal-primary);
+      color: #ffffff;
+    }
+
+    .hotspot-num-badge {
+      width: 20px;
+      height: 20px;
+      border-radius: 4px;
+      background: var(--teal-primary);
+      color: #fff;
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    /* Camera Preset Grid */
+    .cam-preset-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.4rem;
+    }
+
+    .cam-btn-3d {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      color: #ffffff;
+      padding: 0.45rem 0;
+      border-radius: var(--radius-sm);
+      font-size: 0.75rem;
+      font-weight: 600;
+      cursor: pointer;
+      text-align: center;
+      transition: all var(--transition);
+    }
+    .cam-btn-3d:hover {
+      background: var(--teal-primary);
+      border-color: var(--teal-primary);
+    }
+    .cam-btn-3d.active {
+      background: var(--teal-primary);
+      border-color: var(--teal-primary);
+    }
+
+    .btn-reset-cam {
+      width: 100%;
+      padding: 0.55rem;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: #cbd5e1;
+      border-radius: var(--radius-sm);
+      font-size: 0.78rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.45rem;
+      transition: all var(--transition);
+    }
+    .btn-reset-cam:hover {
+      background: rgba(255, 255, 255, 0.15);
+      color: #ffffff;
+    }
+
+    /* Active Hotspot Floating Detail Card */
+    .detail-floating-card {
+      position: absolute;
+      bottom: 24px;
+      right: 24px;
+      z-index: 10;
+      max-width: 340px;
+      background: rgba(10, 25, 47, 0.92);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border: 1px solid var(--teal-primary);
+      border-radius: var(--radius-md);
+      padding: 1.15rem;
+      box-shadow: 0 16px 36px rgba(0, 0, 0, 0.7);
+      color: #ffffff;
+      display: none;
+      flex-direction: column;
+      gap: 0.45rem;
+    }
+
+    .detail-card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .detail-badge-pill {
+      background: var(--teal-primary);
+      color: #fff;
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      font-weight: 700;
+      padding: 0.15rem 0.5rem;
+      border-radius: 4px;
+    }
+
+    .btn-close-detail {
+      background: transparent;
+      border: none;
+      color: #94a3b8;
+      cursor: pointer;
+      font-size: 0.9rem;
+    }
+    .btn-close-detail:hover {
+      color: #fff;
+    }
+
+    .detail-title {
+      font-size: 0.9rem;
+      font-weight: 800;
+      color: #ffffff;
+    }
+
+    .detail-desc {
+      font-size: 0.78rem;
+      color: #cbd5e1;
+      line-height: 1.5;
+    }
+
+    /* 3D DOM Labels */
+    #labels-container {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      z-index: 5;
+    }
+
+    .screen-marker {
+      position: absolute;
+      pointer-events: auto;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.25rem 0.55rem;
+      border-radius: var(--radius-full);
+      background: rgba(10, 25, 47, 0.88);
+      border: 1px solid var(--teal-primary);
+      color: #fff;
+      font-size: 0.72rem;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6);
+      transition: transform var(--transition), background-color var(--transition);
+      white-space: nowrap;
+    }
+    .screen-marker:hover {
+      background: var(--teal-primary);
+      transform: scale(1.1);
+    }
+    .marker-badge {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: var(--teal-primary);
+      color: #fff;
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ========================================================================
+       STICKY TOP NAVBAR (UNIFORM ACROSS ALL PAGES)
+       ======================================================================== -->
+  <header class="site-navbar">
+    <div class="nav-container">
+      <a href="index.html" class="nav-brand">
+        <div class="brand-icon-box">
+          <i class="fa-solid fa-satellite-dish"></i>
+        </div>
+        <div class="brand-text">
+          <span class="brand-title">GHOST-TRACK</span>
+          <span class="brand-subtitle">Teluk Banten GIS</span>
+        </div>
+      </a>
+
+      <nav>
+        <ul class="nav-menu" id="navMenu">
+          <li><a href="index.html" class="nav-link"><i class="fa-solid fa-house"></i> Beranda</a></li>
+          <li><a href="peta.html" class="nav-link"><i class="fa-solid fa-map-location-dot"></i> Peta Utama</a></li>
+
+          <!-- Dropdown EcoReef 3D Studio -->
+          <li class="nav-item-dropdown">
+            <a class="nav-link nav-dropdown-toggle active">
+              <i class="fa-solid fa-cubes"></i> EcoReef 3D Studio <i class="fa-solid fa-chevron-down chevron"></i>
+            </a>
+            <div class="nav-dropdown-menu">
+              <a href="ecoreef-1cube.html" class="nav-dropdown-item">
+                <i class="fa-solid fa-cube"></i>
+                <div>
+                  <strong>Modul 1-Cube</strong>
+                  <span>Struktur Kubus Tunggal PVC & Jaring</span>
+                </div>
+              </a>
+              <a href="ecoreef-2cube.html" class="nav-dropdown-item">
+                <i class="fa-solid fa-cubes-stacked"></i>
+                <div>
+                  <strong>Modul 2-Cube</strong>
+                  <span>Struktur Bertingkat Ekosistem Dalam</span>
+                </div>
+              </a>
+              <a href="EcoReef3D.html" class="nav-dropdown-item active">
+                <i class="fa-solid fa-landmark"></i>
+                <div>
+                  <strong>Overview EcoReef 3D</strong>
+                  <span>Blueprint Rekayasa & Daur Ulang</span>
+                </div>
+              </a>
+            </div>
+          </li>
+
+          <li><a href="sijitu-3d.html" class="nav-link"><i class="fa-solid fa-satellite"></i> Perangkat SIJITU 3D</a></li>
+          <li><a href="ai-model.html" class="nav-link"><i class="fa-solid fa-robot"></i> GHOST-AI Analytics</a></li>
+          <li><a href="index.html#lapor" class="nav-link nav-cta-btn"><i class="fa-solid fa-plus-circle"></i> Lapor Temuan</a></li>
+        </ul>
+      </nav>
+
+      <button class="nav-hamburger" id="navHamburger" aria-label="Toggle Menu">
+        <i class="fa-solid fa-bars"></i>
+      </button>
+    </div>
+  </header>
+
+  <!-- ========================================================================
+       3D INTERACTIVE SIMULATION VIEWPORT (ORIGINAL THREE.JS EXPERIENCE)
+       ======================================================================== -->
+  <main class="ecoreef-simulation-viewport">
+    <!-- Three.js Canvas Container -->
+    <div id="canvas-container"></div>
+
+    <!-- Floating Info Header -->
+    <div class="overlay-title-card">
+      <div class="icon-box">
+        <i class="fa-solid fa-cube"></i>
+      </div>
+      <div>
+        <h1>Reef Habitat Module 3D</h1>
+        <p>Desain Konversi & Budidaya Terumbu Karang (Ø50mm PVC)</p>
+      </div>
+    </div>
+
+    <!-- Floating Control Panel Sidebar -->
+    <div class="overlay-sidebar-panel">
+      <div class="panel-section-title">
+        <span>Kontrol Visualisasi</span>
+        <i class="fa-solid fa-sliders"></i>
+      </div>
+
+      <!-- Toggle Layers -->
+      <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+        <label class="layer-item-row" for="toggle-pipes">
+          <span style="display: flex; align-items: center;">
+            <span class="layer-dot" style="background: #1d4ed8; box-shadow: 0 0 8px #1d4ed8;"></span>
+            Pipa Biru & Hijau
+          </span>
+          <input type="checkbox" id="toggle-pipes" checked style="accent-color: var(--teal-primary); cursor: pointer;">
+        </label>
+
+        <label class="layer-item-row" for="toggle-net">
+          <span style="display: flex; align-items: center;">
+            <span class="layer-dot" style="background: #93c5fd; box-shadow: 0 0 8px #93c5fd;"></span>
+            Jaring Pelindung (Net)
+          </span>
+          <input type="checkbox" id="toggle-net" checked style="accent-color: var(--teal-primary); cursor: pointer;">
+        </label>
+
+        <label class="layer-item-row" for="toggle-corals">
+          <span style="display: flex; align-items: center;">
+            <span class="layer-dot" style="background: #f43f5e; box-shadow: 0 0 8px #f43f5e;"></span>
+            Fragmen Karang (Coral)
+          </span>
+          <input type="checkbox" id="toggle-corals" checked style="accent-color: var(--teal-primary); cursor: pointer;">
+        </label>
+      </div>
+
+      <!-- Hotspots Legend Section -->
+      <div class="panel-section-title" style="margin-top: 0.25rem;">
+        <span>Keterangan Bernomor</span>
+        <i class="fa-solid fa-list-ol"></i>
+      </div>
+
+      <div id="hotspot-list" class="hotspot-scroll-list">
+        <!-- Dynamically populated via JS -->
+      </div>
+
+      <!-- Camera Presets Section -->
+      <div class="panel-section-title" style="margin-top: 0.25rem;">
+        <span>Sudut Pandang Kamera</span>
+        <i class="fa-solid fa-camera"></i>
+      </div>
+
+      <div class="cam-preset-grid">
+        <button type="button" onclick="setCameraView('front')" class="cam-btn-3d">Depan</button>
+        <button type="button" onclick="setCameraView('top')" class="cam-btn-3d">Atas</button>
+        <button type="button" onclick="setCameraView('iso')" class="cam-btn-3d active">Isometrik</button>
+      </div>
+
+      <!-- Reset Camera Button -->
+      <button type="button" onclick="resetCamera()" class="btn-reset-cam">
+        <i class="fa-solid fa-rotate"></i> Reset Kamera & Posisi
+      </button>
+    </div>
+
+    <!-- Active Hotspot Detail Floating Card -->
+    <div id="detail-card" class="detail-floating-card">
+      <div class="detail-card-header">
+        <span id="detail-badge" class="detail-badge-pill">No. 1</span>
+        <button type="button" onclick="closeDetailCard()" class="btn-close-detail"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <h3 id="detail-title" class="detail-title">Judul Komponen</h3>
+      <p id="detail-desc" class="detail-desc">Deskripsi komponen teknis modul terumbu karang.</p>
+    </div>
+
+    <!-- 3D DOM Hotspot Labels Overlay -->
+    <div id="labels-container"></div>
+  </main>
+
+  <!-- ========================================================================
+       GLOBAL FOOTER (PRESERVED)
+       ======================================================================== -->
+  <footer class="site-footer">
+    <div class="footer-container">
+      <div style="display: flex; align-items: center; gap: 0.5rem; color: #ffffff; font-weight: 700; font-size: 1rem;">
+        <i class="fa-solid fa-satellite-dish" style="color: var(--teal-primary);"></i>
+        <span>GHOST-TRACK Banten &copy; 2026</span>
+      </div>
+      <ul class="footer-nav">
+        <li><a href="index.html">Beranda</a></li>
+        <li><a href="peta.html">Peta Utama</a></li>
+        <li><a href="EcoReef3D.html">Solusi Ecoreef</a></li>
+        <li><a href="sijitu-3d.html">Perangkat SIJITU</a></li>
+        <li><a href="ai-model.html">GHOST-AI</a></li>
+      </ul>
+      <span class="footer-credits">
+        Inisiatif Sains Terbuka Konservasi Bahari &amp; Hilirisasi Daur Ulang Ghost Gear Teluk Banten, Indonesia.
+      </span>
+    </div>
+  </footer>
+
+  <!-- Shared Controller Script (for Navbar & Mobile Menu) -->
+  <script src="script.js"></script>
+
+  <!-- ========================================================================
+       THREE.JS SCRIPT UTAMA - KODE SIMULASI ASLI ECOREFF3D
+       ======================================================================== -->
+  <script>
+    let scene, camera, renderer, controls;
+    let moduleGroup;
+    let pipesMeshGroup, netMeshGroup, coralsMeshGroup;
+
+    // Data Keterangan Bernomor Berdasarkan Blueprint Asli
+    const hotspotsData = [
+      { id: 1, title: "Puncak Atap / 3-way T-Joint Puncak", desc: "Titik temu struktur atap kerucut menggunakan sambungan T-joint 3-way dengan lebar puncak 34cm.", pos: new THREE.Vector3(0, 1.8, 0), viewFocus: new THREE.Vector3(0, 1.5, 0) },
+      { id: 2, title: "Kerangka Pipa PVC Ø50mm (Hijau & Biru)", desc: "Pipa utama berdiameter 50mm yang tahan air laut, dirakit membentuk modul oktagonal kuat dan ringan.", pos: new THREE.Vector3(2.2, 0.5, 0), viewFocus: new THREE.Vector3(2, 0.5, 0) },
+      { id: 3, title: "Sambungan 4-way Cross & T-Joint", desc: "Konektor sudut modular yang memastikan kekokohan sambungan vertikal dan horizontal antar segmen.", pos: new THREE.Vector3(-2.2, -0.6, 1.5), viewFocus: new THREE.Vector3(-2, -0.6, 1.5) },
+      { id: 4, title: "Pintu Masuk Utama (Ø50mm PVC Frame)", desc: "Bukaan melingkar berdiameter 220mm sebagai akses biota laut besar keluar-masuk habitat.", pos: new THREE.Vector3(0, -1.25, 3.2), viewFocus: new THREE.Vector3(0, -1, 3) },
+      { id: 5, title: "Plat Identifikasi / ID Tag Habitat", desc: "Plat penanda serial modul dan informasi riset terpasang di atas pintu masuk utama.", pos: new THREE.Vector3(0, -0.1, 3.25), viewFocus: new THREE.Vector3(0, -0.1, 3) },
+      { id: 6, title: "Jaring Pelindung Polietilena (Netting)", desc: "Jaring pelindung yang membungkus dinding dan atap untuk melindungi fragmen karang dari predator.", pos: new THREE.Vector3(2.5, -1.25, 0), viewFocus: new THREE.Vector3(2.5, -1.25, 0) },
+      { id: 7, title: "Fragmen Terumbu Karang (Coral Frags)", desc: "Bibit terumbu karang yang diikat menggunakan cable tie pada rangka pipa untuk proses transplantasi & pertumbuhan.", pos: new THREE.Vector3(1.2, -1.9, 3.1), viewFocus: new THREE.Vector3(1.2, -1.9, 3) },
+      { id: 8, title: "Segmen Dasar 120cm (Base Segment)", desc: "Panjang setiap sisi dasar oktagonal modul adalah 120cm, memberikan stabilitas dasar di atas substrat laut.", pos: new THREE.Vector3(0, -2.0, 3.2), viewFocus: new THREE.Vector3(0, -2, 3) }
+    ];
+
+    let hotspotElements = [];
+
+    function init() {
+      const container = document.getElementById('canvas-container');
+      const width = container.clientWidth;
+      const height = container.clientHeight;
+
+      // Scene
+      scene = new THREE.Scene();
+      scene.background = new THREE.Color(0x050814);
+      scene.fog = new THREE.FogExp2(0x050814, 0.015);
+
+      // Camera
+      camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 1000);
+      camera.position.set(5, 3.5, 7);
+
+      // Renderer
+      renderer = new THREE.WebGLRenderer({ antialias: true });
+      renderer.setSize(width, height);
+      renderer.setPixelRatio(window.devicePixelRatio);
+      renderer.shadowMap.enabled = true;
+      renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+      container.appendChild(renderer.domElement);
+
+      // Orbit Controls
+      controls = new THREE.OrbitControls(camera, renderer.domElement);
+      controls.enableDamping = true;
+      controls.dampingFactor = 0.05;
+      controls.maxPolarAngle = Math.PI / 2 - 0.01;
+      controls.minDistance = 4;
+      controls.maxDistance = 25;
+
+      // Lighting
+      const ambientLight = new THREE.AmbientLight(0xdbeafe, 0.8);
+      scene.add(ambientLight);
+
+      const dirLight = new THREE.DirectionalLight(0xffffff, 1.2);
+      dirLight.position.set(10, 20, 10);
+      dirLight.castShadow = true;
+      dirLight.shadow.mapSize.width = 2048;
+      dirLight.shadow.mapSize.height = 2048;
+      scene.add(dirLight);
+
+      const blueFillLight = new THREE.DirectionalLight(0x3b82f6, 0.6);
+      blueFillLight.position.set(-10, -5, -10);
+      scene.add(blueFillLight);
+
+      // Ocean Floor
+      const floorGeo = new THREE.PlaneGeometry(50, 50);
+      const floorMat = new THREE.MeshStandardMaterial({ 
+        color: 0x0b1329, 
+        roughness: 0.9, 
+        metalness: 0.1 
+      });
+      const floor = new THREE.Mesh(floorGeo, floorMat);
+      floor.rotation.x = -Math.PI / 2;
+      floor.position.y = -2;
+      floor.receiveShadow = true;
+      scene.add(floor);
+
+      // Build Reef Module Structure
+      buildReefModule();
+
+      // Populate Hotspot List in Sidebar
+      populateHotspotUI();
+
+      // UI Toggles
+      document.getElementById('toggle-pipes').addEventListener('change', (e) => {
+        pipesMeshGroup.visible = e.target.checked;
+      });
+      document.getElementById('toggle-net').addEventListener('change', (e) => {
+        netMeshGroup.visible = e.target.checked;
+      });
+      document.getElementById('toggle-corals').addEventListener('change', (e) => {
+        coralsMeshGroup.visible = e.target.checked;
+      });
+
+      window.addEventListener('resize', onWindowResize);
+    }
+
+    function buildReefModule() {
+      moduleGroup = new THREE.Group();
+
+      pipesMeshGroup = new THREE.Group();
+      netMeshGroup = new THREE.Group();
+      coralsMeshGroup = new THREE.Group();
+
+      const radiusBase = 3.2;
+      const radiusTop = 1.6;
+      const segments = 8; // Oktagonal
+
+      const pipeRadius = 0.12;
+      const blueMat = new THREE.MeshStandardMaterial({ color: 0x1d4ed8, roughness: 0.3, metalness: 0.2 });
+      const greenMat = new THREE.MeshStandardMaterial({ color: 0x059669, roughness: 0.3, metalness: 0.2 });
+      const jointMat = new THREE.MeshStandardMaterial({ color: 0x1e3a8a, roughness: 0.4 });
+      const coralMat = new THREE.MeshStandardMaterial({ color: 0xf43f5e, roughness: 0.5 });
+      const coralGreenMat = new THREE.MeshStandardMaterial({ color: 0x10b981, roughness: 0.5 });
+      const netMat = new THREE.MeshStandardMaterial({ 
+        color: 0x93c5fd, 
+        wireframe: true, 
+        transparent: true, 
+        opacity: 0.4 
+      });
+
+      const baseBottomPoints = [];
+      const baseTopPoints = [];
+      const roofTopPoints = [];
+
+      for (let i = 0; i < segments; i++) {
+        const angle = (i / segments) * Math.PI * 2;
+        const x = Math.cos(angle) * radiusBase;
+        const z = Math.sin(angle) * radiusBase;
+
+        const vBottom = new THREE.Vector3(x, -2.0, z);
+        const vMid = new THREE.Vector3(x, -0.6, z);
+        createCylinder(vBottom, vMid, pipeRadius, blueMat, pipesMeshGroup);
+        createSphere(vMid, pipeRadius * 1.3, jointMat, pipesMeshGroup);
+
+        const vUpperMid = new THREE.Vector3(x, 0.5, z);
+        createCylinder(vMid, vUpperMid, pipeRadius, greenMat, pipesMeshGroup);
+        createSphere(vUpperMid, pipeRadius * 1.3, jointMat, pipesMeshGroup);
+
+        baseBottomPoints.push(vBottom);
+        baseTopPoints.push(vUpperMid);
+
+        const roofAngle = (i / segments) * Math.PI * 2;
+        const rx = Math.cos(roofAngle) * radiusTop;
+        const rz = Math.sin(roofAngle) * radiusTop;
+        const vPeak = new THREE.Vector3(rx, 1.8, rz);
+        createCylinder(vUpperMid, vPeak, pipeRadius, blueMat, pipesMeshGroup);
+        roofTopPoints.push(vPeak);
+      }
+
+      for (let i = 0; i < segments; i++) {
+        const next = (i + 1) % segments;
+        createCylinder(baseBottomPoints[i], baseBottomPoints[next], pipeRadius, blueMat, pipesMeshGroup);
+        createCylinder(baseTopPoints[i], baseTopPoints[next], pipeRadius, greenMat, pipesMeshGroup);
+        createCylinder(roofTopPoints[i], roofTopPoints[(i+1)%segments], pipeRadius, greenMat, pipesMeshGroup);
+      }
+
+      // Pintu Masuk
+      const doorGroup = new THREE.Group();
+      const doorRadius = 1.0;
+      const doorTubeGeo = new THREE.TorusGeometry(doorRadius, pipeRadius, 16, 32);
+      const doorMesh = new THREE.Mesh(doorTubeGeo, blueMat);
+      doorMesh.position.set(0, -1.25, radiusBase);
+      doorGroup.add(doorMesh);
+      pipesMeshGroup.add(doorGroup);
+
+      // Placard
+      const plaqueGeo = new THREE.BoxGeometry(0.8, 0.3, 0.05);
+      const plaqueMat = new THREE.MeshStandardMaterial({ color: 0x94a3b8, metalness: 0.8, roughness: 0.2 });
+      const plaque = new THREE.Mesh(plaqueGeo, plaqueMat);
+      plaque.position.set(0, -0.1, radiusBase + 0.05);
+      pipesMeshGroup.add(plaque);
+
+      // Jaring
+      const wallNetGeo = new THREE.CylinderGeometry(radiusBase, radiusBase, 1.3, segments, 4, true);
+      const wallNet = new THREE.Mesh(wallNetGeo, netMat);
+      wallNet.position.set(0, -1.25, 0);
+      netMeshGroup.add(wallNet);
+
+      const roofNetGeo = new THREE.ConeGeometry(radiusTop + 0.1, 1.3, segments, 3, true);
+      const roofNet = new THREE.Mesh(roofNetGeo, netMat);
+      roofNet.position.set(0, 1.15, 0);
+      netMeshGroup.add(roofNet);
+
+      // Karang
+      const coralPositions = [
+        { pos: new THREE.Vector3(1.2, -1.9, 3.1), type: 'branch', color: coralMat },
+        { pos: new THREE.Vector3(-1.5, -1.9, 2.9), type: 'brain', color: coralGreenMat },
+        { pos: new THREE.Vector3(2.2, -0.4, 2.3), type: 'branch', color: coralGreenMat },
+        { pos: new THREE.Vector3(-2.3, -0.5, 2.2), type: 'brain', color: coralMat },
+        { pos: new THREE.Vector3(0.8, 0.8, 1.2), type: 'branch', color: coralMat },
+        { pos: new THREE.Vector3(-0.9, 0.7, 1.3), type: 'brain', color: coralGreenMat },
+        { pos: new THREE.Vector3(0, 1.5, 1.5), type: 'branch', color: coralMat },
+      ];
+
+      coralPositions.forEach(item => {
+        const coralGroup = createCoralModel(item.type, item.color);
+        coralGroup.position.copy(item.pos);
+        coralsMeshGroup.add(coralGroup);
+      });
+
+      moduleGroup.add(pipesMeshGroup);
+      moduleGroup.add(netMeshGroup);
+      moduleGroup.add(coralsMeshGroup);
+
+      scene.add(moduleGroup);
+    }
+
+    function createCylinder(v1, v2, radius, material, parentGroup) {
+      const distance = v1.distanceTo(v2);
+      const geometry = new THREE.CylinderGeometry(radius, radius, distance, 12);
+      const mesh = new THREE.Mesh(geometry, material);
+      mesh.castShadow = true;
+      mesh.receiveShadow = true;
+      mesh.position.copy(v1).lerp(v2, 0.5);
+      mesh.lookAt(v2);
+      mesh.rotateX(Math.PI / 2);
+      parentGroup.add(mesh);
+    }
+
+    function createSphere(pos, radius, material, parentGroup) {
+      const geometry = new THREE.SphereGeometry(radius, 16, 16);
+      const mesh = new THREE.Mesh(geometry, material);
+      mesh.position.copy(pos);
+      mesh.castShadow = true;
+      parentGroup.add(mesh);
+    }
+
+    function createCoralModel(type, material) {
+      const group = new THREE.Group();
+      if (type === 'branch') {
+        for (let i = 0; i < 5; i++) {
+          const height = 0.3 + Math.random() * 0.2;
+          const geo = new THREE.CylinderGeometry(0.02, 0.05, height, 6);
+          const mesh = new THREE.Mesh(geo, material);
+          mesh.position.set((Math.random() - 0.5) * 0.2, height / 2, (Math.random() - 0.5) * 0.2);
+          mesh.rotation.z = (Math.random() - 0.5) * 0.5;
+          mesh.rotation.x = (Math.random() - 0.5) * 0.5;
+          group.add(mesh);
+        }
+      } else {
+        const geo = new THREE.DodecahedronGeometry(0.18, 1);
+        const mesh = new THREE.Mesh(geo, material);
+        mesh.scale.set(1, 0.7, 1);
+        group.add(mesh);
+      }
+      return group;
+    }
+
+    // Hotspot UI
+    function populateHotspotUI() {
+      const listContainer = document.getElementById('hotspot-list');
+      const labelsContainer = document.getElementById('labels-container');
+
+      hotspotsData.forEach((item) => {
+        // Sidebar item
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'hotspot-btn';
+        btn.innerHTML = `
+          <span class="hotspot-num-badge">${item.id}</span>
+          <span style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${item.title}</span>
+        `;
+        btn.onclick = () => focusHotspot(item);
+        listContainer.appendChild(btn);
+
+        // 3D DOM Screen Marker
+        const marker = document.createElement('div');
+        marker.className = 'screen-marker';
+        marker.innerHTML = `
+          <span class="marker-badge">${item.id}</span>
+          <span>${item.title.split('/')[0]}</span>
+        `;
+        marker.onclick = () => focusHotspot(item);
+        labelsContainer.appendChild(marker);
+
+        hotspotElements.push({ element: marker, vector: item.pos });
+      });
+    }
+
+    function focusHotspot(item) {
+      const card = document.getElementById('detail-card');
+      document.getElementById('detail-badge').innerText = `No. ${item.id}`;
+      document.getElementById('detail-title').innerText = item.title;
+      document.getElementById('detail-desc').innerText = item.desc;
+      card.style.display = 'flex';
+
+      const startPos = camera.position.clone();
+      let targetPos = item.viewFocus.clone().add(new THREE.Vector3(0, 1, 3.5));
+      let targetLook = item.viewFocus.clone();
+      let progress = 0;
+
+      function animateCam() {
+        progress += 0.05;
+        camera.position.lerpVectors(startPos, targetPos, progress);
+        controls.target.lerp(targetLook, progress);
+        controls.update();
+        if (progress < 1) {
+          requestAnimationFrame(animateCam);
+        }
+      }
+      animateCam();
+    }
+
+    function closeDetailCard() {
+      document.getElementById('detail-card').style.display = 'none';
+    }
+
+    function updateHotspotPositions() {
+      const container = document.getElementById('canvas-container');
+      const widthHalf = container.clientWidth / 2;
+      const heightHalf = container.clientHeight / 2;
+
+      hotspotElements.forEach(item => {
+        const vector = item.vector.clone();
+        vector.project(camera);
+
+        if (vector.z > 1) {
+          item.element.style.display = 'none';
+          return;
+        }
+
+        const x = (vector.x * widthHalf) + widthHalf;
+        const y = -(vector.y * heightHalf) + heightHalf;
+
+        item.element.style.display = 'flex';
+        item.element.style.transform = `translate(-50%, -50%) translate(${x}px, ${y}px)`;
+      });
+    }
+
+    function setCameraView(view) {
+      let targetPos = new THREE.Vector3();
+      let targetLook = new THREE.Vector3(0, -0.5, 0);
+
+      if (view === 'front') {
+        targetPos.set(0, -0.5, 7.5);
+      } else if (view === 'top') {
+        targetPos.set(0, 9, 0.1);
+      } else if (view === 'iso') {
+        targetPos.set(5, 3.5, 7);
+      }
+
+      const startPos = camera.position.clone();
+      let progress = 0;
+
+      function animateCam() {
+        progress += 0.05;
+        camera.position.lerpVectors(startPos, targetPos, progress);
+        controls.target.lerp(targetLook, progress);
+        controls.update();
+        if (progress < 1) {
+          requestAnimationFrame(animateCam);
+        }
+      }
+      animateCam();
+    }
+
+    function resetCamera() {
+      setCameraView('iso');
+      closeDetailCard();
+    }
+
+    function onWindowResize() {
+      const container = document.getElementById('canvas-container');
+      camera.aspect = container.clientWidth / container.clientHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(container.clientWidth, container.clientHeight);
+    }
+
+    function animate() {
+      requestAnimationFrame(animate);
+      controls.update();
+      updateHotspotPositions();
+      renderer.render(scene, camera);
+    }
+
+    window.onload = () => {
+      init();
+      animate();
+    };
+  </script>
+
+  <!-- Shared Controller Script (for Navbar Mobile Toggle) -->
+  <script src="script.js"></script>
+</body>
+</html>

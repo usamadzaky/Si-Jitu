@@ -1,0 +1,108 @@
+{
+  "type": "FeatureCollection",
+  "name": "titik_ghostgear_teluk_banten",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "GG-BTN-001",
+        "alat": "Jaring Insang (Gillnet)",
+        "kategori": "jaring",
+        "kedalaman": "9 meter",
+        "kondisi": "Menyelimuti Karang Acropora, Masih Menjebak Ikan Karang",
+        "lokasi_deskripsi": "Barat Laut Pulau Lima",
+        "tanggal_lapor": "2026-10-14",
+        "status": "Prioritas Evakuasi"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [106.148, -5.998]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "GG-BTN-002",
+        "alat": "Bubu Lipat (Wire Trap)",
+        "kategori": "bubu",
+        "kedalaman": "14 meter",
+        "kondisi": "Terguling di Dasar Pasir Berbatu, Pintu Perangkap Rusak",
+        "lokasi_deskripsi": "Selatan Pulau Panjang",
+        "tanggal_lapor": "2026-10-22",
+        "status": "Terjadwal Pengangkatan"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [106.162, -5.955]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "GG-BTN-003",
+        "alat": "Potongan Jaring Monofilamen",
+        "kategori": "jaring",
+        "kedalaman": "6 meter",
+        "kondisi": "Tersangkut di Rangka Karang Buatan Tradisional",
+        "lokasi_deskripsi": "Perairan Pulau Semut",
+        "tanggal_lapor": "2026-11-01",
+        "status": "Prioritas Evakuasi"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [106.143, -6.008]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "GG-BTN-004",
+        "alat": "Bubu Lipat Bambu & Kawat",
+        "kategori": "bubu",
+        "kedalaman": "11 meter",
+        "kondisi": "Tertimbun Sebagian oleh Sedimen Lumpur Alur",
+        "lokasi_deskripsi": "Muara Kanal Karangantu Luar",
+        "tanggal_lapor": "2026-11-04",
+        "status": "Sedang Diverifikasi"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [106.168, -6.018]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "GG-BTN-005",
+        "alat": "Jaring Trammel Net",
+        "kategori": "jaring",
+        "kedalaman": "16 meter",
+        "kondisi": "Membentuk Gulungan Tali dan Nilon Panjang ±40 meter",
+        "lokasi_deskripsi": "Tengah Teluk Banten (Dekat Suar)",
+        "tanggal_lapor": "2026-11-07",
+        "status": "Prioritas Evakuasi"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [106.176, -5.975]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "GG-BTN-006",
+        "alat": "Bubu Lipat Kepiting",
+        "kategori": "bubu",
+        "kedalaman": "7 meter",
+        "kondisi": "Tersangkut Akar Mangrove Tepi Pulau Dua",
+        "lokasi_deskripsi": "Laguna Luar Cagar Alam Pulau Dua",
+        "tanggal_lapor": "2026-11-09",
+        "status": "Terjadwal Pengangkatan"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [106.202, -6.012]
+      }
+    }
+  ]
+}

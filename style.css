@@ -1,0 +1,1246 @@
+/* ==========================================================================
+   GHOST-TRACK BANTEN - ENTERPRISE MULTI-PAGE STYLESHEET
+   Design System: Anti-AI Aesthetic, Bento Grid, Clean Off-White & Deep Navy
+   Typography: Plus Jakarta Sans (UI & Titles) + JetBrains Mono (Stats & Coords)
+   ========================================================================== */
+
+:root {
+  /* Surface & Background */
+  --bg-canvas: #f8fafc;        /* Clean Off-White */
+  --bg-surface: #ffffff;       /* Pure White Cards */
+  --bg-surface-subtle: #f1f5f9;/* Light Slate Surface */
+  --bg-navy-dark: #0a192f;     /* Maritime Deep Navy */
+  --bg-navy-surface: #112240;  /* Deep Navy Card Surface */
+
+  /* Borders & Dividers - Sharp & Crisp */
+  --border-subtle: rgba(0, 0, 0, 0.08);
+  --border-light: #e2e8f0;     /* Slate-200 */
+  --border-focus: #0d9488;     /* Seafoam Focus */
+  --border-dark-subtle: rgba(255, 255, 255, 0.1);
+
+  /* Brand Accents - Maritime Professional */
+  --teal-primary: #0d9488;     /* Seafoam Primary */
+  --teal-hover: #0f766e;
+  --teal-subtle: #f0fdfa;      /* Teal 50 */
+  --teal-border: #99f6e4;      /* Teal 200 */
+  --blue-primary: #0284c7;     /* Ocean Blue */
+  --blue-subtle: #f0f9ff;
+  --danger-primary: #e11d48;   /* Rose Red */
+  --danger-subtle: #ffe4e6;
+  --warning-primary: #d97706;  /* Amber */
+  --warning-subtle: #fef3c7;
+
+  /* Typography Colors */
+  --text-heading: #0f172a;     /* Slate 900 */
+  --text-body: #334155;        /* Slate 700 */
+  --text-muted: #64748b;       /* Slate 500 */
+  --text-light: #f8fafc;
+  --text-light-muted: #94a3b8;
+
+  /* Fonts */
+  --font-ui: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'JetBrains Mono', 'SF Mono', Consolas, Menlo, monospace;
+
+  /* Elevations */
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-card: 0 1px 3px 0 rgba(0, 0, 0, 0.06), 0 1px 2px -1px rgba(0, 0, 0, 0.06);
+  --shadow-hover: 0 10px 25px -5px rgba(15, 23, 42, 0.08), 0 8px 10px -6px rgba(15, 23, 42, 0.04);
+  --shadow-floating: 0 20px 35px -10px rgba(10, 25, 47, 0.18), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+
+  /* Layout Constants */
+  --navbar-height: 70px;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-full: 9999px;
+  --transition: 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Base Reset */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-family: var(--font-ui);
+  background-color: var(--bg-canvas);
+  color: var(--text-body);
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+}
+
+body {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--bg-canvas);
+  color: var(--text-body);
+  line-height: 1.6;
+}
+
+/* ==========================================================================
+   STICKY TOP NAVBAR (UNIFORM ACROSS ALL 3 PAGES)
+   ========================================================================== */
+.site-navbar {
+  position: sticky;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: var(--navbar-height);
+  background: var(--bg-navy-dark);
+  border-bottom: 1px solid var(--border-dark-subtle);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+}
+
+.nav-container {
+  width: 100%;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.nav-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  text-decoration: none;
+  color: #ffffff;
+}
+
+.brand-icon-box {
+  width: 38px;
+  height: 38px;
+  background: var(--teal-primary);
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  font-size: 1.1rem;
+}
+
+.brand-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.brand-title {
+  font-size: 1.05rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: #ffffff;
+  line-height: 1.2;
+}
+
+.brand-subtitle {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  color: #94a3b8;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.nav-menu {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  list-style: none;
+}
+
+.nav-link {
+  text-decoration: none;
+  color: #cbd5e1;
+  font-size: 0.9rem;
+  font-weight: 600;
+  padding: 0.55rem 1rem;
+  border-radius: var(--radius-sm);
+  transition: all var(--transition);
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.nav-link:hover {
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.nav-link.active {
+  color: #ffffff;
+  background: rgba(13, 148, 136, 0.25);
+  border: 1px solid rgba(13, 148, 136, 0.5);
+}
+
+.nav-cta-btn {
+  background: var(--teal-primary);
+  color: #ffffff !important;
+  font-weight: 700;
+  margin-left: 0.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.nav-cta-btn:hover {
+  background: var(--teal-hover);
+  transform: translateY(-1px);
+}
+
+/* Glassmorphism Dropdown Suite */
+.nav-item-dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.nav-dropdown-toggle {
+  cursor: pointer;
+}
+
+.nav-dropdown-toggle i.chevron {
+  font-size: 0.7rem;
+  margin-left: 0.3rem;
+  transition: transform var(--transition);
+}
+
+.nav-item-dropdown:hover .nav-dropdown-toggle i.chevron,
+.nav-item-dropdown.open .nav-dropdown-toggle i.chevron {
+  transform: rotate(180deg);
+}
+
+.nav-dropdown-menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  min-width: 250px;
+  background: rgba(7, 19, 36, 0.96);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(56, 189, 248, 0.25);
+  border-radius: 12px;
+  padding: 0.5rem;
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.7);
+  display: none;
+  flex-direction: column;
+  gap: 0.35rem;
+  z-index: 1050;
+  margin-top: 0.35rem;
+}
+
+.nav-item-dropdown:hover .nav-dropdown-menu,
+.nav-item-dropdown.open .nav-dropdown-menu {
+  display: flex;
+  animation: fadeInDropdown 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes fadeInDropdown {
+  from { opacity: 0; transform: translateY(-6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.nav-dropdown-item {
+  padding: 0.65rem 0.85rem;
+  border-radius: 8px;
+  color: #cbd5e1;
+  text-decoration: none;
+  font-size: 0.85rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  transition: all var(--transition);
+}
+
+.nav-dropdown-item:hover {
+  background: rgba(13, 148, 136, 0.22);
+  color: #38bdf8;
+  transform: translateX(3px);
+}
+
+.nav-dropdown-item.active {
+  background: rgba(13, 148, 136, 0.35);
+  color: #ffffff;
+  border-left: 3px solid var(--teal-primary);
+}
+
+.nav-dropdown-item i {
+  width: 18px;
+  text-align: center;
+  color: var(--teal-primary);
+}
+
+/* Floating Technical Card for 3D Visualizations */
+.floating-technical-card {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 900;
+  max-width: 350px;
+  background: rgba(7, 19, 36, 0.94);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(56, 189, 248, 0.32);
+  border-radius: 14px;
+  padding: 1.15rem;
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.7);
+  color: #f8fafc;
+  font-size: 0.82rem;
+  line-height: 1.5;
+  transition: all var(--transition);
+}
+
+.floating-technical-card.minimized .card-content {
+  display: none;
+}
+
+.floating-technical-card .card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.65rem;
+  padding-bottom: 0.45rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.floating-technical-card .card-header h4 {
+  font-size: 0.88rem;
+  font-weight: 800;
+  color: var(--cyan-glow, #38bdf8);
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.floating-technical-card .toggle-min-btn {
+  background: transparent;
+  border: none;
+  color: #94a3b8;
+  cursor: pointer;
+  padding: 0.2rem;
+  font-size: 0.85rem;
+}
+.floating-technical-card .toggle-min-btn:hover {
+  color: #fff;
+}
+
+.spec-badge-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.25rem 0.6rem;
+  border-radius: 9999px;
+  background: rgba(13, 148, 136, 0.2);
+  border: 1px solid rgba(13, 148, 136, 0.4);
+  color: #2dd4bf;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 700;
+  margin-top: 0.4rem;
+}
+
+/* Upcycling Action Button in Map Popups */
+.btn-popup-upcycle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  width: 100%;
+  padding: 0.55rem 0.85rem;
+  background: linear-gradient(135deg, #0d9488, #0284c7);
+  color: #ffffff !important;
+  font-weight: 700;
+  font-size: 0.8rem;
+  border-radius: 8px;
+  text-decoration: none;
+  margin-top: 0.65rem;
+  box-shadow: 0 4px 12px rgba(13, 148, 136, 0.35);
+  transition: all var(--transition);
+}
+
+.btn-popup-upcycle:hover {
+  background: linear-gradient(135deg, #0f766e, #0369a1);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(13, 148, 136, 0.5);
+}
+
+.nav-hamburger {
+  display: none;
+  background: transparent;
+  border: none;
+  color: #ffffff;
+  font-size: 1.35rem;
+  cursor: pointer;
+  padding: 0.4rem;
+}
+
+/* ==========================================================================
+   TYPOGRAPHY & UTILITY SYSTEM
+   ========================================================================== */
+.font-mono {
+  font-family: var(--font-mono);
+}
+
+.badge-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.3rem 0.75rem;
+  border-radius: var(--radius-full);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.badge-teal {
+  background: var(--teal-subtle);
+  color: var(--teal-primary);
+  border: 1px solid var(--teal-border);
+}
+
+.badge-blue {
+  background: var(--blue-subtle);
+  color: var(--blue-primary);
+  border: 1px solid #bae6fd;
+}
+
+.badge-dark {
+  background: rgba(255, 255, 255, 0.1);
+  color: #38bdf8;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.section-container {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 4rem 1.5rem;
+  width: 100%;
+}
+
+.section-header-block {
+  margin-bottom: 2.5rem;
+}
+
+.section-header-block h2 {
+  font-size: clamp(1.75rem, 2.5vw, 2.25rem);
+  font-weight: 800;
+  color: var(--text-heading);
+  letter-spacing: -0.025em;
+  line-height: 1.25;
+}
+
+.section-header-block p {
+  color: var(--text-muted);
+  font-size: 1rem;
+  max-width: 680px;
+  margin-top: 0.5rem;
+}
+
+/* Buttons */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.55rem;
+  padding: 0.75rem 1.4rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.92rem;
+  font-weight: 700;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all var(--transition);
+  border: 1px solid transparent;
+}
+
+.btn-teal {
+  background: var(--teal-primary);
+  color: #ffffff;
+}
+
+.btn-teal:hover {
+  background: var(--teal-hover);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(13, 148, 136, 0.25);
+}
+
+.btn-outline-white {
+  background: rgba(255, 255, 255, 0.1);
+  color: #ffffff;
+  border-color: rgba(255, 255, 255, 0.25);
+}
+
+.btn-outline-white:hover {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: #ffffff;
+}
+
+/* ==========================================================================
+   HALAMAN 1 (index.html): HERO SECTION
+   ========================================================================== */
+.hero-wrapper {
+  position: relative;
+  background-color: var(--bg-navy-dark);
+  padding: 6rem 1.5rem 5rem;
+  overflow: hidden;
+  border-bottom: 1px solid var(--border-dark-subtle);
+}
+
+.hero-bg-overlay {
+  position: absolute;
+  inset: 0;
+  background: 
+    linear-gradient(180deg, rgba(10, 25, 47, 0.88) 0%, rgba(10, 25, 47, 0.98) 100%),
+    url('https://images.unsplash.com/photo-1544551763-46a013bb70d5?auto=format&fit=crop&w=2000&q=80') center/cover no-repeat;
+  filter: contrast(1.05);
+}
+
+.hero-inner {
+  position: relative;
+  z-index: 2;
+  max-width: 900px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.hero-inner h1 {
+  font-size: clamp(2.2rem, 4.5vw, 3.5rem);
+  font-weight: 800;
+  color: #ffffff;
+  letter-spacing: -0.03em;
+  line-height: 1.15;
+  margin: 1.25rem 0 1.25rem;
+}
+
+.hero-inner p {
+  font-size: clamp(1rem, 1.6vw, 1.15rem);
+  color: #cbd5e1;
+  max-width: 720px;
+  margin: 0 auto 2.25rem;
+  line-height: 1.7;
+}
+
+.hero-cta-group {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.hero-stat-ribbon {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.5rem;
+  margin-top: 4rem;
+  padding-top: 2rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.stat-item {
+  display: flex;
+  flex-direction: column;
+}
+
+.stat-val {
+  font-family: var(--font-mono);
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #38bdf8;
+}
+
+.stat-lbl {
+  font-size: 0.78rem;
+  color: #94a3b8;
+  margin-top: 0.2rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+/* ==========================================================================
+   HALAMAN 1: BENTO GRID DASHBOARD ANALISIS
+   ========================================================================== */
+.bento-grid {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 1.25rem;
+  margin-bottom: 2rem;
+}
+
+.bento-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 1.5rem;
+  box-shadow: var(--shadow-card);
+  transition: transform var(--transition), box-shadow var(--transition);
+}
+
+.bento-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-hover);
+}
+
+/* 3 Metric Cards Top Row: 4 cols each */
+.metric-col-4 {
+  grid-column: span 4;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.metric-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.metric-header .icon-badge {
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+}
+
+.icon-loss { background: var(--danger-subtle); color: var(--danger-primary); }
+.icon-net { background: var(--blue-subtle); color: var(--blue-primary); }
+.icon-trap { background: var(--teal-subtle); color: var(--teal-primary); }
+
+.metric-number {
+  font-family: var(--font-mono);
+  font-size: clamp(1.5rem, 2.2vw, 2rem);
+  font-weight: 700;
+  color: var(--text-heading);
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+}
+
+.metric-title {
+  font-size: 0.82rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+  margin-bottom: 0.35rem;
+}
+
+.metric-desc {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin-top: 0.5rem;
+  border-top: 1px solid var(--border-light);
+  padding-top: 0.65rem;
+}
+
+/* 2 Chart Cards Bottom Row: 6 cols each */
+.chart-col-6 {
+  grid-column: span 6;
+  display: flex;
+  flex-direction: column;
+}
+
+.chart-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--border-light);
+  padding-bottom: 0.75rem;
+  margin-bottom: 1.25rem;
+}
+
+.chart-card-header h3 {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--text-heading);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.chart-canvas-container {
+  position: relative;
+  width: 100%;
+  height: 300px;
+}
+
+/* ==========================================================================
+   HALAMAN 1: FORM LAPOR MANDIRI (CITIZEN SCIENCE)
+   ========================================================================== */
+.form-section-bg {
+  background-color: var(--bg-surface-subtle);
+  border-top: 1px solid var(--border-light);
+  border-bottom: 1px solid var(--border-light);
+}
+
+.form-enterprise-card {
+  max-width: 680px;
+  margin: 0 auto;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  padding: 2.25rem;
+  box-shadow: var(--shadow-card);
+}
+
+.form-group-field {
+  margin-bottom: 1.35rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.form-group-field label {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--text-heading);
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.form-input {
+  width: 100%;
+  padding: 0.75rem 0.95rem;
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-ui);
+  font-size: 0.92rem;
+  color: var(--text-heading);
+  background: #ffffff;
+  transition: border-color var(--transition), box-shadow var(--transition);
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: var(--border-focus);
+  box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.15);
+}
+
+.form-input::placeholder {
+  color: #94a3b8;
+}
+
+textarea.form-input {
+  min-height: 95px;
+  resize: vertical;
+}
+
+.coords-split-group {
+  display: flex;
+  gap: 0.65rem;
+}
+
+.coords-split-group input {
+  font-family: var(--font-mono);
+  font-size: 0.88rem;
+  background: var(--bg-canvas);
+  color: var(--teal-primary);
+  font-weight: 600;
+}
+
+.btn-get-location {
+  background: var(--bg-surface-subtle);
+  border: 1px solid var(--border-light);
+  color: var(--text-heading);
+  font-size: 0.85rem;
+  font-weight: 700;
+  padding: 0 1.25rem;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  transition: all var(--transition);
+}
+
+.btn-get-location:hover {
+  background: #e2e8f0;
+  border-color: #cbd5e1;
+}
+
+.form-field-hint {
+  font-size: 0.76rem;
+  color: var(--text-muted);
+}
+
+.btn-submit-full {
+  width: 100%;
+  margin-top: 0.5rem;
+  padding: 0.9rem;
+  font-size: 0.98rem;
+}
+
+/* ==========================================================================
+   HALAMAN 2 (peta.html): FULLSCREEN WEBGIS LAYOUT
+   ========================================================================== */
+.peta-page-body {
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+.webgis-viewport {
+  position: relative;
+  width: 100%;
+  /* Strict PRD requirement */
+  height: calc(100vh - var(--navbar-height));
+  background: #0f172a;
+}
+
+#map {
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+}
+
+/* Floating Enterprise Legend & Filter Panel */
+.gis-floating-panel {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  width: 320px;
+  background: rgba(255, 255, 255, 0.96);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 1.25rem;
+  box-shadow: var(--shadow-floating);
+  z-index: 1000;
+}
+
+.gis-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--border-light);
+  padding-bottom: 0.65rem;
+  margin-bottom: 0.85rem;
+}
+
+.gis-panel-header h3 {
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: var(--text-heading);
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.layer-toggle-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.5rem 0;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-body);
+}
+
+.layer-lbl {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.swatch-danger-poly {
+  width: 16px;
+  height: 16px;
+  background: rgba(225, 29, 72, 0.25);
+  border: 2px solid var(--danger-primary);
+  border-radius: 3px;
+}
+
+.swatch-pin-icon {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.7rem;
+  color: #fff;
+}
+
+.swatch-pin-gear { background: var(--teal-primary); }
+.swatch-pin-report { background: var(--danger-primary); }
+
+.gis-stats-chips {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--border-light);
+}
+
+.chip-box {
+  background: var(--bg-canvas);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm);
+  padding: 0.4rem 0.6rem;
+  text-align: center;
+}
+
+.chip-val {
+  font-family: var(--font-mono);
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--teal-primary);
+}
+
+.chip-lbl {
+  font-size: 0.68rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+}
+
+/* Custom Marker Pins for Leaflet */
+.leaflet-custom-marker {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  color: #ffffff;
+  font-size: 0.85rem;
+  border: 2px solid #ffffff;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.35);
+  cursor: pointer;
+  transition: transform var(--transition);
+}
+
+.leaflet-custom-marker:hover {
+  transform: scale(1.15);
+}
+
+.marker-jaring { background: var(--teal-primary); }
+.marker-bubu { background: var(--warning-primary); }
+.marker-user { background: var(--danger-primary); }
+
+/* Custom Popup Styling */
+.leaflet-popup-content-wrapper {
+  background: #ffffff !important;
+  border-radius: var(--radius-md) !important;
+  border: 1px solid var(--border-light) !important;
+  box-shadow: var(--shadow-floating) !important;
+  color: var(--text-body) !important;
+}
+
+.popup-data-table {
+  font-family: var(--font-ui);
+  font-size: 0.82rem;
+  min-width: 220px;
+}
+
+.popup-title {
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: var(--text-heading);
+  border-bottom: 1px solid var(--border-light);
+  padding-bottom: 0.35rem;
+  margin-bottom: 0.5rem;
+}
+
+.popup-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.3rem;
+}
+
+.popup-row span:first-child { color: var(--text-muted); }
+.popup-row span:last-child { font-weight: 700; color: var(--text-heading); }
+
+/* ==========================================================================
+   HALAMAN 3 (EcoReef3D.html): ENTERPRISE 2-COLUMN PRESENTATION
+   ========================================================================== */
+.ecoreef-two-col-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 3.5rem;
+  align-items: center;
+}
+
+.ecoreef-left-col {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.ecoreef-left-col h1 {
+  font-size: clamp(2rem, 3.2vw, 2.75rem);
+  font-weight: 800;
+  color: var(--text-heading);
+  letter-spacing: -0.025em;
+  line-height: 1.2;
+}
+
+.ecoreef-lead-text {
+  font-size: 1.05rem;
+  color: var(--text-body);
+  line-height: 1.7;
+}
+
+.concept-points-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 1.15rem;
+}
+
+.concept-point-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.9rem;
+  font-size: 0.95rem;
+  color: var(--text-body);
+  line-height: 1.6;
+}
+
+.concept-icon-box {
+  width: 36px;
+  height: 36px;
+  background: var(--teal-subtle);
+  border: 1px solid var(--teal-border);
+  color: var(--teal-primary);
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-top: 0.15rem;
+  font-size: 0.95rem;
+}
+
+.specs-badge-row {
+  display: flex;
+  gap: 0.65rem;
+  flex-wrap: wrap;
+  margin-top: 0.5rem;
+}
+
+/* 3D Model Viewer Card Right Column */
+.ecoreef-right-col {
+  display: flex;
+  flex-direction: column;
+}
+
+.model-enterprise-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  padding: 1.25rem;
+  box-shadow: var(--shadow-card);
+}
+
+.model-card-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.85rem;
+  padding: 0 0.25rem;
+}
+
+.model-card-topbar h3 {
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: var(--text-heading);
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.canvas-viewport-3d {
+  position: relative;
+  width: 100%;
+  height: 500px; /* PRD requirement ~500px */
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  background: radial-gradient(circle at 50% 50%, #1e293b 0%, #0f172a 100%);
+  border: 1px solid var(--border-light);
+}
+
+model-viewer {
+  width: 100%;
+  height: 500px;
+  display: block;
+  outline: none;
+  --poster-color: transparent;
+}
+
+#threejs-ecoreef-fallback {
+  width: 100% !important;
+  height: 500px !important;
+  display: none;
+}
+
+.model-card-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 0.85rem;
+  padding: 0 0.25rem;
+}
+
+.model-hint {
+  font-size: 0.76rem;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.cam-btn-group {
+  display: flex;
+  gap: 0.35rem;
+}
+
+.cam-btn {
+  background: var(--bg-surface-subtle);
+  border: 1px solid var(--border-light);
+  color: var(--text-heading);
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 0.35rem 0.75rem;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all var(--transition);
+}
+
+.cam-btn:hover {
+  background: var(--teal-primary);
+  border-color: var(--teal-primary);
+  color: #ffffff;
+}
+
+/* ==========================================================================
+   GLOBAL FOOTER
+   ========================================================================== */
+.site-footer {
+  margin-top: auto;
+  background: var(--bg-navy-dark);
+  border-top: 1px solid var(--border-dark-subtle);
+  padding: 2.5rem 1.5rem;
+  color: #94a3b8;
+  font-size: 0.85rem;
+}
+
+.footer-container {
+  max-width: 1280px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.25rem;
+  text-align: center;
+}
+
+.footer-nav {
+  display: flex;
+  gap: 1.75rem;
+  list-style: none;
+}
+
+.footer-nav a {
+  color: #cbd5e1;
+  text-decoration: none;
+  font-weight: 600;
+  transition: color var(--transition);
+}
+
+.footer-nav a:hover {
+  color: var(--teal-primary);
+}
+
+.footer-credits {
+  font-size: 0.78rem;
+  color: #64748b;
+}
+
+/* ==========================================================================
+   RESPONSIVE DESIGN (MEDIA QUERIES)
+   ========================================================================== */
+@media (max-width: 1024px) {
+  .metric-col-4 {
+    grid-column: span 12;
+  }
+  .chart-col-6 {
+    grid-column: span 12;
+  }
+  .ecoreef-two-col-grid {
+    grid-template-columns: 1fr;
+    gap: 2.5rem;
+  }
+  .hero-stat-ribbon {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .nav-menu {
+    position: fixed;
+    top: var(--navbar-height);
+    left: 0;
+    width: 100%;
+    background: var(--bg-navy-dark);
+    flex-direction: column;
+    padding: 1.5rem;
+    gap: 0.75rem;
+    border-bottom: 1px solid var(--border-dark-subtle);
+    transform: translateY(-120%);
+    transition: transform var(--transition);
+  }
+
+  .nav-menu.open {
+    transform: translateY(0);
+  }
+
+  .nav-item-dropdown {
+    width: 100%;
+  }
+
+  .nav-dropdown-menu {
+    position: static;
+    box-shadow: none;
+    border: none;
+    background: rgba(255, 255, 255, 0.05);
+    padding-left: 0.75rem;
+    margin-top: 0.25rem;
+    width: 100%;
+  }
+
+  .nav-hamburger {
+    display: block;
+  }
+
+  .hero-wrapper {
+    padding: 4rem 1.25rem 3rem;
+  }
+
+  .coords-split-group {
+    flex-direction: column;
+  }
+
+  .gis-floating-panel {
+    position: static;
+    width: 100%;
+    margin-bottom: 1rem;
+    border-radius: 0;
+  }
+
+  .canvas-viewport-3d {
+    height: 380px;
+  }
+
+  model-viewer, #threejs-ecoreef-fallback {
+    height: 380px !important;
+  }
+}

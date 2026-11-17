@@ -1,0 +1,76 @@
+{
+  "type": "FeatureCollection",
+  "name": "zona_bahaya_teluk_banten",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "ZB-01",
+        "nama": "Zona Rawan Karang Pulau Panjang",
+        "tingkat_risiko": "Sangat Tinggi",
+        "faktor": "Arus Selat Sunda & Kontur Terumbu Karang Dangkal",
+        "estimasi_kehilangan_tahunan": "45 unit jaring/tahun",
+        "deskripsi": "Area pertemuan arus kencang di utara Pulau Panjang dengan tutupan karang bercabang, sering menyebabkan jaring insang hanyut dan tersangkut kuat pada substrat keras."
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [106.140, -5.935],
+            [106.175, -5.938],
+            [106.180, -5.960],
+            [106.150, -5.965],
+            [106.135, -5.950],
+            [106.140, -5.935]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "ZB-02",
+        "nama": "Zona Konflik Alur Pelayaran Karangantu",
+        "tingkat_risiko": "Tinggi",
+        "faktor": "Kepadatan Lalu Lintas Kapal Nelayan & Pemotongan Tali Pelampung",
+        "estimasi_kehilangan_tahunan": "38 unit bubu/tahun",
+        "deskripsi": "Koridor padat kapal nelayan tradisional dan tongkang di mulut muara Karangantu, memicu tabrakan alat tangkap dan tali pelampung bubu yang putus terpotong baling-baling."
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [106.150, -6.010],
+            [106.180, -6.005],
+            [106.185, -6.030],
+            [106.155, -6.032],
+            [106.150, -6.010]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "ZB-03",
+        "nama": "Zona Tubir Terumbu Karang Pulau Lima & Pamujan",
+        "tingkat_risiko": "Tinggi",
+        "faktor": "Gelombang Pasang & Patahan Karang Masif",
+        "estimasi_kehilangan_tahunan": "32 unit jaring/tahun",
+        "deskripsi": "Kawasan lereng terumbu karang dangkal berarus balik. Bubu lipat dan jaring hanyut sering terperangkap di dasar berbatu dan mengancam ekosistem bentik."
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [106.135, -5.990],
+            [106.160, -5.985],
+            [106.165, -6.010],
+            [106.138, -6.012],
+            [106.135, -5.990]
+          ]
+        ]
+      }
+    }
+  ]
+}
