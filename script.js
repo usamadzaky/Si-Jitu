@@ -198,21 +198,32 @@ function initNavbarMenu() {
     }
   });
 
-  // Floating technical specification card minimization toggle
+  // Floating technical specification card toggle & minimize
+  const btnToggleSpec = document.getElementById('btnToggleTechSpec');
+  const techSpecCard = document.getElementById('techSpecCard');
+  if (btnToggleSpec && techSpecCard) {
+    btnToggleSpec.addEventListener('click', (e) => {
+      e.stopPropagation();
+      techSpecCard.classList.toggle('active');
+    });
+  }
+
   const toggleMinBtns = document.querySelectorAll('.toggle-min-btn');
   toggleMinBtns.forEach(btn => {
     btn.addEventListener('click', (e) => {
       e.stopPropagation();
       const card = btn.closest('.floating-technical-card');
       if (card) {
-        card.classList.toggle('minimized');
-        const icon = btn.querySelector('i');
-        if (icon) {
-          icon.classList.toggle('fa-chevron-down');
-          icon.classList.toggle('fa-chevron-up');
-        }
+        card.classList.remove('active');
       }
     });
+  });
+
+  // Close floating spec card when clicking outside
+  document.addEventListener('click', (e) => {
+    if (techSpecCard && !techSpecCard.contains(e.target) && e.target !== btnToggleSpec && !btnToggleSpec?.contains(e.target)) {
+      techSpecCard.classList.remove('active');
+    }
   });
 }
 

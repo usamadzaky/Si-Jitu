@@ -3,7 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>3D Modul Terumbu Karang Buatan - Kubus Interaktif Edukasi</title>
+    <meta name="description" content="SI-JITU (Sistem Informasi Jaring Terpadu) - 3D Visualisasi Interaktif Modul Terumbu Karang Buatan EcoReef 1-Cube Teluk Banten.">
+    <title>SI-JITU — 3D Studio Modul EcoReef 1-Cube</title>
+
+    <!-- Favicon & App Icons -->
+    <link rel="icon" type="image/x-icon" href="icon/favicon.ico">
+    <link rel="icon" type="image/png" sizes="32x32" href="icon/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="icon/favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="icon/apple-touch-icon.png">
+    <link rel="manifest" href="icon/site.webmanifest">
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- FontAwesome Icons -->
@@ -90,11 +98,11 @@
         <div class="nav-container">
             <a href="index.html" class="nav-brand">
                 <div class="brand-icon-box">
-                    <i class="fa-solid fa-satellite-dish"></i>
+                    <img src="icon/favicon-32x32.png" alt="Logo SI-JITU">
                 </div>
                 <div class="brand-text">
-                    <span class="brand-title">GHOST-TRACK</span>
-                    <span class="brand-subtitle">Teluk Banten GIS</span>
+                    <span class="brand-title">SI-JITU</span>
+                    <span class="brand-subtitle">Sistem Informasi Jaring Terpadu</span>
                 </div>
             </a>
 
@@ -167,18 +175,21 @@
             </div>
         </div>
 
-        <div class="flex gap-2 pointer-events-auto">
+        <div class="flex flex-wrap gap-2 pointer-events-auto">
             <button id="btn-mode-explore" onclick="setMode('explore')" class="glass-btn px-4 py-2.5 rounded-xl text-xs md:text-sm font-bold flex items-center gap-2 bg-cyan-500/30 border-cyan-400">
                 <i class="fa-solid fa-fish text-cyan-300"></i> Mode Jelajah
             </button>
             <button id="btn-mode-xray" onclick="setMode('xray')" class="glass-btn px-4 py-2.5 rounded-xl text-xs md:text-sm font-bold flex items-center gap-2">
                 <i class="fa-solid fa-bone text-amber-300"></i> Mode Sinar-X Pemberat
             </button>
+            <button id="btnToggleTechSpec" class="glass-btn px-4 py-2.5 rounded-xl text-xs md:text-sm font-bold flex items-center gap-2 text-cyan-300 border-cyan-400/60" title="Buka Spesifikasi Teknis">
+                <i class="fa-solid fa-circle-info"></i> Spesifikasi Teknis
+            </button>
         </div>
     </header>
 
-    <!-- Side Interactive Specs Panel (Offset below top header) -->
-    <aside class="absolute left-4 top-40 bottom-6 z-20 w-72 md:w-80 glass-card rounded-3xl p-5 flex flex-col justify-start hidden md:flex pointer-events-auto overflow-y-auto">
+    <!-- Side Interactive Specs Panel (Offset below top header, ends above bottom toolbar) -->
+    <aside class="absolute left-4 top-40 bottom-24 z-20 w-72 md:w-80 glass-card rounded-3xl p-5 flex flex-col justify-start hidden md:flex pointer-events-auto overflow-y-auto">
         <div>
             <div class="flex items-center justify-between border-b border-cyan-500/30 pb-3 mb-4">
                 <h2 class="font-kids text-lg text-cyan-300 flex items-center gap-2">
@@ -993,7 +1004,7 @@
     <div class="floating-technical-card" id="techSpecCard">
         <div class="card-header">
             <h4><i class="fa-solid fa-cube text-cyan-400"></i> Spesifikasi Teknis 1-Cube</h4>
-            <button class="toggle-min-btn" aria-label="Minimize"><i class="fa-solid fa-chevron-down"></i></button>
+            <button class="toggle-min-btn" aria-label="Tutup Spesifikasi" title="Tutup"><i class="fa-solid fa-xmark"></i></button>
         </div>
         <div class="card-content">
             <p class="text-slate-300">Modul kubus tunggal upcycling jaring rajungan Teluk Banten untuk nursery habitat karang mikro.</p>

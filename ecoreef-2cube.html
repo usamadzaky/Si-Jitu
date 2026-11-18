@@ -3,7 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>3D Modul Terumbu Karang Buatan - Blueprint Replica</title>
+    <meta name="description" content="SI-JITU (Sistem Informasi Jaring Terpadu) - 3D Visualisasi Interaktif Modul Terumbu Karang Buatan EcoReef 2-Cube Teluk Banten.">
+    <title>SI-JITU — 3D Studio Modul EcoReef 2-Cube</title>
+
+    <!-- Favicon & App Icons -->
+    <link rel="icon" type="image/x-icon" href="icon/favicon.ico">
+    <link rel="icon" type="image/png" sizes="32x32" href="icon/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="icon/favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="icon/apple-touch-icon.png">
+    <link rel="manifest" href="icon/site.webmanifest">
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- FontAwesome Icons -->
@@ -128,11 +136,11 @@
         <div class="nav-container">
             <a href="index.html" class="nav-brand">
                 <div class="brand-icon-box">
-                    <i class="fa-solid fa-satellite-dish"></i>
+                    <img src="icon/favicon-32x32.png" alt="Logo SI-JITU">
                 </div>
                 <div class="brand-text">
-                    <span class="brand-title">GHOST-TRACK</span>
-                    <span class="brand-subtitle">Teluk Banten GIS</span>
+                    <span class="brand-title">SI-JITU</span>
+                    <span class="brand-subtitle">Sistem Informasi Jaring Terpadu</span>
                 </div>
             </a>
 
@@ -203,7 +211,7 @@
         </div>
 
         <!-- View Angle Controls -->
-        <div class="flex flex-wrap gap-1.5 pointer-events-auto glass-card p-1.5 rounded-2xl">
+        <div class="flex flex-wrap gap-1.5 pointer-events-auto glass-card p-1.5 rounded-2xl items-center">
             <button id="view-iso" onclick="setViewAngle('iso')" class="glass-btn active px-3 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5">
                 <i class="fa-solid fa-cube"></i> ISOMETRI 3D
             </button>
@@ -216,11 +224,14 @@
             <button id="view-top" onclick="setViewAngle('top')" class="glass-btn px-3 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5">
                 <i class="fa-solid fa-border-all"></i> TAMPAK ATAS
             </button>
+            <button id="btnToggleTechSpec" class="glass-btn px-3 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 text-cyan-300 border-cyan-400/60" title="Buka Spesifikasi Teknis">
+                <i class="fa-solid fa-circle-info"></i> SPESIFIKASI
+            </button>
         </div>
     </header>
 
-    <!-- Left Side Legend & Interactive Specs Panel (Offset below top header) -->
-    <aside class="absolute left-4 top-40 bottom-6 z-20 w-80 glass-card rounded-3xl p-4 flex flex-col justify-between hidden md:flex pointer-events-auto overflow-y-auto">
+    <!-- Left Side Legend & Interactive Specs Panel (Offset below top header, ends above bottom toolbar) -->
+    <aside class="absolute left-4 top-40 bottom-24 z-20 w-80 glass-card rounded-3xl p-4 flex flex-col justify-between hidden md:flex pointer-events-auto overflow-y-auto">
         <div class="space-y-4">
             <!-- Specifications -->
             <div>
@@ -287,8 +298,8 @@
         </div>
     </aside>
 
-    <!-- Dynamic Detail Drawer / Modal Overlay -->
-    <div id="info-drawer" class="absolute right-4 top-24 bottom-20 z-30 w-80 md:w-96 glass-card rounded-3xl p-5 flex flex-col justify-between hidden pointer-events-auto info-card-pop border-cyan-400/50 shadow-2xl">
+    <!-- Dynamic Detail Drawer / Modal Overlay (Offset between top controls & bottom toolbar) -->
+    <div id="info-drawer" class="absolute right-4 top-36 bottom-24 z-30 w-80 md:w-96 glass-card rounded-3xl p-5 flex flex-col justify-between hidden pointer-events-auto info-card-pop border-cyan-400/50 shadow-2xl overflow-y-auto max-h-[calc(100vh-250px)]">
         <div>
             <div class="flex items-center justify-between border-b border-cyan-500/30 pb-3 mb-3">
                 <span id="drawer-tag" class="bg-cyan-500/20 text-cyan-300 text-xs px-2.5 py-1 rounded-full font-bold uppercase">KOMPONEN #1</span>
@@ -928,7 +939,7 @@
     <div class="floating-technical-card" id="techSpecCard">
         <div class="card-header">
             <h4><i class="fa-solid fa-cubes-stacked text-cyan-400"></i> Spesifikasi Teknis 2-Cube</h4>
-            <button class="toggle-min-btn" aria-label="Minimize"><i class="fa-solid fa-chevron-down"></i></button>
+            <button class="toggle-min-btn" aria-label="Tutup Spesifikasi" title="Tutup"><i class="fa-solid fa-xmark"></i></button>
         </div>
         <div class="card-content">
             <p class="text-slate-300">Modul bertingkat ganda (dual-cube stack) untuk zona perairan tubir sedang (kedalaman 8-18 meter).</p>

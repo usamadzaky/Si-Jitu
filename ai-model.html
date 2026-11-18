@@ -3,8 +3,15 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="GHOST-AI Analytics - Deteksi Pintar ALDFG (Computer Vision) dan Mesin Prediksi Risiko Spasial Berbasis Hidrodinamika Arus Teluk Banten.">
-  <title>GHOST-TRACK Banten — GHOST-AI Analytics &amp; Risk Predictor</title>
+  <meta name="description" content="SI-JITU (Sistem Informasi Jaring Terpadu) - GHOST-AI Analytics: Deteksi Cerdas Alat Tangkap Terbengkalai (ALDFG) berbasis Computer Vision bawah air di Teluk Banten.">
+  <title>SI-JITU — GHOST-AI Ghost Gear Detector</title>
+
+  <!-- Favicon & App Icons -->
+  <link rel="icon" type="image/x-icon" href="icon/favicon.ico">
+  <link rel="icon" type="image/png" sizes="32x32" href="icon/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="icon/favicon-16x16.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="icon/apple-touch-icon.png">
+  <link rel="manifest" href="icon/site.webmanifest">
 
   <!-- Google Fonts: Plus Jakarta Sans & JetBrains Mono -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -207,56 +214,66 @@
       flex-shrink: 0;
     }
 
-    /* Spatial Risk Predictor Layout */
-    .predictor-grid {
+    /* Pipeline Workflow Cards */
+    .pipeline-grid {
       display: grid;
-      grid-template-columns: 1fr 1.4fr;
-      gap: 1.5rem;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1.25rem;
+      margin-top: 1.5rem;
     }
 
-    @media (max-width: 960px) {
-      .predictor-grid {
+    @media (max-width: 992px) {
+      .pipeline-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+    @media (max-width: 580px) {
+      .pipeline-grid {
         grid-template-columns: 1fr;
       }
     }
 
-    .risk-matrix-canvas-box {
-      width: 100%;
-      height: 320px;
-      background: #071324;
+    .pipeline-card {
+      background: #ffffff;
+      border: 1px solid var(--border-light);
       border-radius: var(--radius-md);
+      padding: 1.5rem;
       position: relative;
-      overflow: hidden;
-      border: 1px solid rgba(56, 189, 248, 0.2);
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      padding: 1rem;
+      transition: all var(--transition);
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
+    }
+    .pipeline-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+      border-color: var(--teal-primary);
     }
 
-    .risk-hotspot-pulse {
-      position: absolute;
-      width: 48px;
-      height: 48px;
+    .pipeline-step-badge {
+      width: 32px;
+      height: 32px;
       border-radius: 50%;
-      background: radial-gradient(circle, rgba(239, 68, 68, 0.8) 0%, rgba(239, 68, 68, 0.2) 60%, transparent 80%);
-      animation: pulseZone 2s infinite ease-out;
-      transform: translate(-50%, -50%);
+      background: rgba(13, 148, 136, 0.12);
+      color: var(--teal-primary);
+      font-weight: 800;
+      font-size: 0.85rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 1rem;
+      font-family: var(--font-mono);
     }
 
-    @keyframes pulseZone {
-      0% { transform: translate(-50%, -50%) scale(0.8); opacity: 0.9; }
-      50% { transform: translate(-50%, -50%) scale(1.4); opacity: 0.5; }
-      100% { transform: translate(-50%, -50%) scale(0.8); opacity: 0.9; }
-    }
-
-    .radar-grid-svg {
-      position: absolute;
-      inset: 0;
+    .model-spec-table {
       width: 100%;
-      height: 100%;
-      pointer-events: none;
-      opacity: 0.25;
+      border-collapse: collapse;
+      font-size: 0.85rem;
+    }
+    .model-spec-table td {
+      padding: 0.65rem 0.75rem;
+      border-bottom: 1px solid var(--border-light);
+    }
+    .model-spec-table tr:last-child td {
+      border-bottom: none;
     }
   </style>
 </head>
@@ -269,11 +286,11 @@
     <div class="nav-container">
       <a href="index.html" class="nav-brand">
         <div class="brand-icon-box">
-          <i class="fa-solid fa-satellite-dish"></i>
+          <img src="icon/favicon-32x32.png" alt="Logo SI-JITU">
         </div>
         <div class="brand-text">
-          <span class="brand-title">GHOST-TRACK</span>
-          <span class="brand-subtitle">Teluk Banten GIS</span>
+          <span class="brand-title">SI-JITU</span>
+          <span class="brand-subtitle">Sistem Informasi Jaring Terpadu</span>
         </div>
       </a>
 
@@ -323,13 +340,13 @@
   <section class="ai-page-hero">
     <div class="ai-hero-inner">
       <div class="badge-tag badge-dark" style="margin-bottom: 0.75rem; border-color: rgba(56, 189, 248, 0.4);">
-        <i class="fa-solid fa-brain" style="color: var(--cyan-glow);"></i> GHOST-AI v2.4 &bull; Computer Vision &amp; Hydrodynamic Risk Model
+        <i class="fa-solid fa-brain" style="color: var(--cyan-glow);"></i> GHOST-AI v2.4 &bull; Deep Learning ALDFG Vision Model
       </div>
       <h1 style="color: #ffffff; font-size: 2.2rem; font-weight: 800; letter-spacing: -0.02em; line-height: 1.2; margin-bottom: 0.85rem;">
-        GHOST-AI: Deteksi Pintar &amp; Prediksi Risiko Spasial
+        GHOST-AI: Deteksi Cerdas Alat Tangkap Terbengkalai
       </h1>
       <p style="color: #94a3b8; font-size: 1.05rem; max-width: 820px; line-height: 1.6;">
-        Arsitektur <em>Deep Learning</em> ganda untuk deteksi otomatis alat tangkap terbengkalai (ALDFG) bawah air serta peramalan spasial risiko jeratan karang berbasis dinamika arus dan kepadatan tangkap Teluk Banten.
+        Sistem <em>Computer Vision Deep Learning</em> terlatih (YOLOv8x-MarineALDFG) untuk identifikasi dan lokalisasi instan jaring rajungan, bubu kawat, dan tali monofilamen bawah air di kawasan Teluk Banten.
       </p>
     </div>
   </section>
@@ -337,12 +354,12 @@
   <main class="ai-container">
 
     <!-- ======================================================================
-         FITUR 1: AI GHOST GEAR DETECTOR (COMPUTER VISION SHOWCASE)
+         AI GHOST GEAR DETECTOR (COMPUTER VISION SHOWCASE)
          ====================================================================== -->
     <div class="ai-section-title">
       <h2>
         <i class="fa-solid fa-camera-viewfinder" style="color: var(--teal-primary);"></i>
-        Modul A: AI Ghost Gear Detector (Computer Vision Showcase)
+        AI Ghost Gear Detector (Computer Vision Showcase)
       </h2>
       <span class="badge-tag badge-teal">
         <i class="fa-solid fa-microchip"></i> YOLOv8x-MarineALDFG Fine-tuned
@@ -461,167 +478,134 @@
     </div>
 
     <!-- ======================================================================
-         FITUR 2: AI SPATIAL RISK PREDICTOR (HYDRODYNAMIC ENTANGLEMENT MODEL)
+         ALUR PIPELINE DETEKSI KOMPUTER VISION ALDFG
          ====================================================================== -->
-    <div class="ai-section-title" style="margin-top: 1.5rem;">
+    <div class="ai-section-title" style="margin-top: 2rem;">
       <h2>
-        <i class="fa-solid fa-chart-line-up" style="color: #0284c7;"></i>
-        Modul B: AI Spatial Risk Predictor (Simulasi Risiko Spasial)
+        <i class="fa-solid fa-diagram-project" style="color: var(--teal-primary);"></i>
+        Alur Pipeline Deteksi Komputer Vision ALDFG
       </h2>
-      <span class="badge-tag badge-teal" style="background: rgba(2, 132, 199, 0.15); color: #0284c7; border-color: rgba(2, 132, 199, 0.4);">
-        <i class="fa-solid fa-water"></i> Hydrodynamic Coupling Engine
+      <span class="badge-tag badge-teal">
+        <i class="fa-solid fa-code-branch"></i> End-to-End Inference Pipeline
       </span>
     </div>
 
-    <div class="predictor-grid">
-      <!-- Predictor Form & Sliders -->
-      <div class="bento-card" style="display: flex; flex-direction: column; gap: 1.25rem;">
-        <div>
-          <h3 style="font-size: 1.05rem; font-weight: 700; color: #0f172a; margin-bottom: 0.35rem;">
-            <i class="fa-solid fa-sliders" style="color: #0284c7;"></i> Variabel Prediksi Risiko
-          </h3>
-          <p style="font-size: 0.82rem; color: #64748b;">
-            Sesuaikan parameter oseanografi Teluk Banten untuk mensimulasikan akumulasi drift jaring dan probabilitas jeratan terumbu karang.
-          </p>
-        </div>
-
-        <!-- Musim -->
-        <div class="form-group">
-          <label class="form-label" for="simSeason">Musim Angin &amp; Oseanografi:</label>
-          <select id="simSeason" class="form-control" onchange="updateRiskPrediction()">
-            <option value="barat" selected>Musim Barat (Arus Kencang ke Tenggara 129.5&deg; - Risiko Maksimum)</option>
-            <option value="timur">Musim Timur (Arus Sedang ke Barat Laut 310&deg;)</option>
-            <option value="pancaroba">Musim Pancaroba (Arus Variabel &amp; Tenang)</option>
-          </select>
-        </div>
-
-        <!-- Kecepatan Arus Slider -->
-        <div class="form-group">
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.35rem;">
-            <label class="form-label" style="margin-bottom: 0;" for="simCurrentSpeed">Kecepatan Arus Permukaan (speed_all):</label>
-            <span id="currentSpeedDisplay" style="font-family: var(--font-mono); font-size: 0.85rem; font-weight: 700; color: #0284c7;">0.42 m/s</span>
-          </div>
-          <input type="range" id="simCurrentSpeed" min="0.05" max="0.85" step="0.01" value="0.42" style="width: 100%; accent-color: #0284c7;" oninput="updateRiskPrediction()">
-          <div style="display: flex; justify-content: space-between; font-size: 0.68rem; color: #94a3b8; font-family: var(--font-mono); margin-top: 0.2rem;">
-            <span>0.05 m/s (Tenang)</span>
-            <span>0.45 m/s (Rerata Teluk)</span>
-            <span>0.85 m/s (Ekstrem)</span>
-          </div>
-        </div>
-
-        <!-- Intensitas Penangkapan -->
-        <div class="form-group">
-          <label class="form-label" for="simFishingIntensity">Densitas Armada Nelayan &amp; Bubu:</label>
-          <select id="simFishingIntensity" class="form-control" onchange="updateRiskPrediction()">
-            <option value="high" selected>Sangat Padat (&gt;140 Kapal/km&sup2; - Koridor Karangantu &amp; P. Panjang)</option>
-            <option value="medium">Sedang (60 - 100 Kapal/km&sup2; - Teluk Bagian Tengah)</option>
-            <option value="low">Rendah (&lt;30 Kapal/km&sup2; - Lepas Pantai)</option>
-          </select>
-        </div>
-
-        <!-- Substrat Dasar Laut -->
-        <div class="form-group">
-          <label class="form-label" for="simSubstrate">Substrat Perairan Rawan:</label>
-          <select id="simSubstrate" class="form-control" onchange="updateRiskPrediction()">
-            <option value="coral" selected>Terumbu Karang Dangkal Acropora (Pemicu Sangkut &amp; Robek Jaring)</option>
-            <option value="mud">Lumpur Sedimen Muara (Pemicu Bubu Tenggelam)</option>
-            <option value="sand">Pasir &amp; Tubir Terbuka</option>
-          </select>
-        </div>
-
-        <button class="btn btn-teal" style="width: 100%; justify-content: center; background: #0284c7;" onclick="updateRiskPrediction()">
-          <i class="fa-solid fa-rotate"></i> Hitung Ulang Matriks Risiko AI
-        </button>
+    <div class="pipeline-grid">
+      <!-- Step 1 -->
+      <div class="pipeline-card">
+        <div class="pipeline-step-badge">1</div>
+        <h4 style="font-size: 0.95rem; font-weight: 700; color: #0f172a; margin-bottom: 0.4rem;">
+          <i class="fa-solid fa-image" style="color: #0284c7;"></i> Akuisisi &amp; Preprocessing
+        </h4>
+        <p style="font-size: 0.8rem; color: #64748b; line-height: 1.5; margin: 0;">
+          Koreksi red-channel attenuation bawah air, penajaman kontras adaptif (CLAHE), dan normalisasi citra masukan ke resolusi 640&times;640 px.
+        </p>
       </div>
 
-      <!-- Predictor Results & Metric Cards -->
-      <div class="bento-card" style="display: flex; flex-direction: column; justify-content: space-between;">
-        <div>
-          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem;">
-            <h3 style="font-size: 1.05rem; font-weight: 700; color: #0f172a;">
-              <i class="fa-solid fa-chart-pie" style="color: #0284c7;"></i> Output Proyeksi Bahaya Hidrodinamika
-            </h3>
-            <span class="badge-tag" style="background: rgba(239, 68, 68, 0.15); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.3);" id="riskBadgeAlert">
-              RISIKO KRITIS: ZONA 3
-            </span>
-          </div>
+      <!-- Step 2 -->
+      <div class="pipeline-card">
+        <div class="pipeline-step-badge">2</div>
+        <h4 style="font-size: 0.95rem; font-weight: 700; color: #0f172a; margin-bottom: 0.4rem;">
+          <i class="fa-solid fa-network-wired" style="color: var(--teal-primary);"></i> Ekstraksi Fitur Tekstur
+        </h4>
+        <p style="font-size: 0.8rem; color: #64748b; line-height: 1.5; margin: 0;">
+          Backbone CSPDarknet mendeteksi pola kisi benang polietilena, serat monofilamen terurai, dan geometri kawat bubu di sela karang.
+        </p>
+      </div>
 
-          <!-- 3 Dynamic Risk Metric Cards -->
-          <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.75rem; margin-bottom: 1.25rem;">
-            <!-- Metric 1 -->
-            <div style="background: #f8fafc; border: 1px solid var(--border-light); border-radius: var(--radius-sm); padding: 0.85rem;">
-              <div style="font-size: 0.7rem; color: #64748b; font-weight: 700; text-transform: uppercase;">Risk Density Index</div>
-              <div id="metricRiskIndex" style="font-size: 1.35rem; font-weight: 800; color: #800000; font-family: var(--font-mono); margin: 0.25rem 0 0.15rem;">
-                Zona 3 (4.8/5)
-              </div>
-              <div style="font-size: 0.68rem; color: #94a3b8;">Konsentrasi temuan tertinggi</div>
-            </div>
+      <!-- Step 3 -->
+      <div class="pipeline-card">
+        <div class="pipeline-step-badge">3</div>
+        <h4 style="font-size: 0.95rem; font-weight: 700; color: #0f172a; margin-bottom: 0.4rem;">
+          <i class="fa-solid fa-crosshairs" style="color: #d97706;"></i> Lokalisasi &amp; Klasifikasi
+        </h4>
+        <p style="font-size: 0.8rem; color: #64748b; line-height: 1.5; margin: 0;">
+          Multi-head bounding box predictor menghasilkan estimasi koordinat bounding box, klasifikasi jenis alat, serta skor confidence (&gt;85%).
+        </p>
+      </div>
 
-            <!-- Metric 2 -->
-            <div style="background: #f8fafc; border: 1px solid var(--border-light); border-radius: var(--radius-sm); padding: 0.85rem;">
-              <div style="font-size: 0.7rem; color: #64748b; font-weight: 700; text-transform: uppercase;">Vektor Drift Arus</div>
-              <div id="metricDriftVector" style="font-size: 1.35rem; font-weight: 800; color: #0284c7; font-family: var(--font-mono); margin: 0.25rem 0 0.15rem;">
-                129.5&deg; SE
-              </div>
-              <div id="metricDriftSub" style="font-size: 0.68rem; color: #94a3b8;">Hanyutan 1.8 km/hari</div>
-            </div>
+      <!-- Step 4 -->
+      <div class="pipeline-card">
+        <div class="pipeline-step-badge">4</div>
+        <h4 style="font-size: 0.95rem; font-weight: 700; color: #0f172a; margin-bottom: 0.4rem;">
+          <i class="fa-solid fa-recycle" style="color: #059669;"></i> Rekomendasi Upcycling EcoReef
+        </h4>
+        <p style="font-size: 0.8rem; color: #64748b; line-height: 1.5; margin: 0;">
+          Sistem otomatis mengarahkan hasil evakuasi jaring untuk diubah menjadi substrat terumbu karang buatan (EcoReef 1-Cube / 2-Cube).
+        </p>
+      </div>
+    </div>
 
-            <!-- Metric 3 -->
-            <div style="background: #f8fafc; border: 1px solid var(--border-light); border-radius: var(--radius-sm); padding: 0.85rem;">
-              <div style="font-size: 0.7rem; color: #64748b; font-weight: 700; text-transform: uppercase;">Prob. Entanglement</div>
-              <div id="metricEntanglementProb" style="font-size: 1.35rem; font-weight: 800; color: #ef4444; font-family: var(--font-mono); margin: 0.25rem 0 0.15rem;">
-                88.4%
-              </div>
-              <div style="font-size: 0.68rem; color: #94a3b8;">Jeratan karang parah</div>
-            </div>
-          </div>
+    <!-- ======================================================================
+         SPESIFIKASI TEKNIS & BENCHMARK MODEL
+         ====================================================================== -->
+    <div class="ai-section-title" style="margin-top: 2rem;">
+      <h2>
+        <i class="fa-solid fa-microchip" style="color: var(--teal-primary);"></i>
+        Spesifikasi Teknis &amp; Tolok Ukur Model
+      </h2>
+      <span class="badge-tag badge-dark">
+        <i class="fa-solid fa-check-double" style="color: #10b981;"></i> Validasi Ground-Truth Banten
+      </span>
+    </div>
 
-          <!-- Radar/Map Matrix Visual Box -->
-          <div class="risk-matrix-canvas-box">
-            <svg class="radar-grid-svg" viewBox="0 0 400 300">
-              <circle cx="200" cy="150" r="120" fill="none" stroke="#38bdf8" stroke-width="1" stroke-dasharray="3,3" />
-              <circle cx="200" cy="150" r="80" fill="none" stroke="#38bdf8" stroke-width="1" />
-              <circle cx="200" cy="150" r="40" fill="none" stroke="#38bdf8" stroke-width="1" stroke-dasharray="3,3" />
-              <line x1="200" y1="20" x2="200" y2="280" stroke="#38bdf8" stroke-width="1" />
-              <line x1="50" y1="150" x2="350" y2="150" stroke="#38bdf8" stroke-width="1" />
-              <path d="M120 70 Q 200 120 280 220" fill="none" stroke="#0284c7" stroke-width="3" stroke-linecap="round" />
-            </svg>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.5rem; margin-bottom: 2rem;">
+      <!-- Card 1: Model Specs -->
+      <div class="bento-card">
+        <h3 style="font-size: 1.05rem; font-weight: 700; color: #0f172a; margin-bottom: 0.85rem; display: flex; align-items: center; gap: 0.5rem;">
+          <i class="fa-solid fa-server" style="color: var(--teal-primary);"></i> Parameter Arsitektur Model
+        </h3>
+        <table class="model-spec-table">
+          <tr>
+            <td style="color: #64748b; font-weight: 600; width: 45%;">Arsitektur Jaringan</td>
+            <td style="color: #0f172a; font-weight: 700; font-family: var(--font-mono);">YOLOv8x-Marine Fine-Tuned</td>
+          </tr>
+          <tr>
+            <td style="color: #64748b; font-weight: 600;">Resolusi Input</td>
+            <td style="color: #0f172a; font-family: var(--font-mono);">640 &times; 640 px (RGB 3-Channel)</td>
+          </tr>
+          <tr>
+            <td style="color: #64748b; font-weight: 600;">Dataset Latih &amp; Uji</td>
+            <td style="color: #0f172a;">1.250 citra bawah air Teluk Banten &amp; Karangantu</td>
+          </tr>
+          <tr>
+            <td style="color: #64748b; font-weight: 600;">Mean Average Precision</td>
+            <td style="color: #10b981; font-weight: 700; font-family: var(--font-mono);">mAP@50: 94.8% &bull; mAP@50-95: 78.2%</td>
+          </tr>
+          <tr>
+            <td style="color: #64748b; font-weight: 600;">Rerata Latensi Edge</td>
+            <td style="color: #0284c7; font-weight: 700; font-family: var(--font-mono);">~38.4 ms (TensorRT / ONNX Runtime)</td>
+          </tr>
+        </table>
+      </div>
 
-            <!-- Hotspot 1: Zona 3 (P. Panjang) -->
-            <div class="risk-hotspot-pulse" style="top: 36%; left: 38%;" title="Zona 3: Karang P. Panjang"></div>
-            <!-- Hotspot 2: Zona 2 (Karangantu) -->
-            <div class="risk-hotspot-pulse" style="top: 68%; left: 62%; background: radial-gradient(circle, rgba(245, 158, 11, 0.8) 0%, rgba(245, 158, 11, 0.2) 60%, transparent 80%);" title="Zona 2: Alur Karangantu"></div>
-            <!-- Hotspot 3: Zona 1 (P. Lima) -->
-            <div class="risk-hotspot-pulse" style="top: 52%; left: 45%; background: radial-gradient(circle, rgba(239, 68, 68, 0.6) 0%, rgba(239, 68, 68, 0.15) 60%, transparent 80%);" title="Zona 1: Tubir P. Lima"></div>
-
-            <div style="z-index: 5; display: flex; justify-content: space-between; align-items: flex-start; color: #fff;">
-              <div style="font-family: var(--font-mono); font-size: 0.72rem; background: rgba(3, 14, 28, 0.8); padding: 0.25rem 0.5rem; border-radius: 4px; border: 1px solid rgba(56,189,248,0.3);">
-                <i class="fa-solid fa-compass"></i> GRID HYDRODYNAMICS: TELUK BANTEN
-              </div>
-              <div style="font-family: var(--font-mono); font-size: 0.7rem; color: #38bdf8;">
-                ARAH ANGIN: BARAT &rarr; TENGGARA
-              </div>
-            </div>
-
-            <div style="z-index: 5; display: flex; justify-content: space-between; align-items: flex-end; color: #94a3b8; font-size: 0.7rem;">
-              <span>P. Panjang [106.14&deg;E, -5.93&deg;S]</span>
-              <span>Muara Karangantu [106.17&deg;E, -6.02&deg;S]</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- AI Mitigation Prescription -->
-        <div style="margin-top: 1rem; background: rgba(13, 148, 136, 0.06); border: 1px solid rgba(13, 148, 136, 0.2); border-radius: var(--radius-sm); padding: 0.85rem;">
-          <div style="font-size: 0.8rem; font-weight: 700; color: #0f172a; margin-bottom: 0.35rem; display: flex; align-items: center; gap: 0.45rem;">
-            <i class="fa-solid fa-shield-halved" style="color: var(--teal-primary);"></i>
-            Rekomendasi Tindakan Mitigasi Presisi AI:
-          </div>
-          <p id="aiPrescriptionText" style="font-size: 0.78rem; color: #334155; line-height: 1.5; margin: 0;">
-            1. Peringatan Dini: Aktifkan transponder <strong>SIJITU 3D</strong> pada kapal jaring rajungan di Zona 3.<br>
-            2. Pengerahan Solusi: Pasang modul terumbu buatan <strong>EcoReef 2-Cube</strong> pada perbatasan tubir kedalaman 12m untuk memulihkan area terdampak.<br>
-            3. Jadwalkan patroli penyisiran ALDFG terpadu bersama Himpunan Nelayan Karangantu.
-          </p>
-        </div>
+      <!-- Card 2: Target Classes & Action Mapping -->
+      <div class="bento-card">
+        <h3 style="font-size: 1.05rem; font-weight: 700; color: #0f172a; margin-bottom: 0.85rem; display: flex; align-items: center; gap: 0.5rem;">
+          <i class="fa-solid fa-tags" style="color: var(--teal-primary);"></i> Taksonomi Kelas Deteksi &amp; Solusi
+        </h3>
+        <table class="model-spec-table">
+          <tr>
+            <td style="color: #0f172a; font-weight: 700;">Jaring Rajungan (Gillnet)</td>
+            <td style="color: #dc2626; font-size: 0.75rem; font-weight: 700; font-family: var(--font-mono);">RISK LVL 4</td>
+            <td style="color: #64748b; font-size: 0.78rem;">Daur ulang ke <strong>EcoReef 1-Cube</strong></td>
+          </tr>
+          <tr>
+            <td style="color: #0f172a; font-weight: 700;">Bubu Kawat (Wire Trap)</td>
+            <td style="color: #ea580c; font-size: 0.75rem; font-weight: 700; font-family: var(--font-mono);">RISK LVL 3</td>
+            <td style="color: #64748b; font-size: 0.78rem;">Daur ulang ke <strong>EcoReef 2-Cube</strong></td>
+          </tr>
+          <tr>
+            <td style="color: #0f172a; font-weight: 700;">Tali Monofilamen (Drift Line)</td>
+            <td style="color: #d97706; font-size: 0.75rem; font-weight: 700; font-family: var(--font-mono);">RISK LVL 2</td>
+            <td style="color: #64748b; font-size: 0.78rem;">Media ikat bibit karang fragmen</td>
+          </tr>
+          <tr>
+            <td style="color: #0f172a; font-weight: 700;">Jaring Cantrang Robek</td>
+            <td style="color: #800000; font-size: 0.75rem; font-weight: 700; font-family: var(--font-mono);">RISK LVL 4</td>
+            <td style="color: #64748b; font-size: 0.78rem;">Evakuasi darurat via Tim Relawan</td>
+          </tr>
+        </table>
       </div>
     </div>
 
@@ -633,8 +617,8 @@
   <footer class="site-footer">
     <div class="footer-container">
       <div style="display: flex; align-items: center; gap: 0.5rem; color: #ffffff; font-weight: 700; font-size: 1rem;">
-        <i class="fa-solid fa-satellite-dish" style="color: var(--teal-primary);"></i>
-        <span>GHOST-TRACK Banten &copy; 2026</span>
+        <img src="icon/favicon-32x32.png" alt="Logo SI-JITU" style="width: 24px; height: 24px; border-radius: 4px;">
+        <span>SI-JITU Banten &copy; 2026</span>
       </div>
       <ul class="footer-nav">
         <li><a href="index.html">Beranda</a></li>
@@ -772,72 +756,6 @@
         reader.readAsDataURL(file);
       }
     });
-
-    // Spatial Risk Predictor Simulation Logic
-    function updateRiskPrediction() {
-      const season = document.getElementById('simSeason').value;
-      const speed = parseFloat(document.getElementById('simCurrentSpeed').value);
-      const intensity = document.getElementById('simFishingIntensity').value;
-      const substrate = document.getElementById('simSubstrate').value;
-
-      document.getElementById('currentSpeedDisplay').textContent = speed.toFixed(2) + ' m/s';
-
-      // Risk score calculation based on variables
-      let baseScore = 2.0;
-      if (season === 'barat') baseScore += 1.4;
-      else if (season === 'timur') baseScore += 0.8;
-      else baseScore += 0.4;
-
-      baseScore += (speed * 1.8);
-
-      if (intensity === 'high') baseScore += 1.2;
-      else if (intensity === 'medium') baseScore += 0.6;
-
-      if (substrate === 'coral') baseScore += 0.8;
-      else if (substrate === 'mud') baseScore += 0.4;
-
-      const finalScore = Math.min(5.0, baseScore).toFixed(1);
-
-      // Prob calculation
-      const entanglementProb = Math.min(99.4, (finalScore / 5.0) * 92 + Math.random() * 2).toFixed(1);
-
-      // Update UI
-      const metricIndex = document.getElementById('metricRiskIndex');
-      const metricProb = document.getElementById('metricEntanglementProb');
-      const metricVector = document.getElementById('metricDriftVector');
-      const badgeAlert = document.getElementById('riskBadgeAlert');
-
-      metricIndex.textContent = `Zona 3 (${finalScore}/5)`;
-      metricProb.textContent = entanglementProb + '%';
-
-      if (season === 'barat') {
-        metricVector.textContent = '129.5° SE';
-        document.getElementById('metricDriftSub').textContent = `${(speed * 4.2).toFixed(1)} km/hari`;
-      } else if (season === 'timur') {
-        metricVector.textContent = '310.2° NW';
-        document.getElementById('metricDriftSub').textContent = `${(speed * 3.6).toFixed(1)} km/hari`;
-      } else {
-        metricVector.textContent = 'Variabel';
-        document.getElementById('metricDriftSub').textContent = `${(speed * 2.0).toFixed(1)} km/hari`;
-      }
-
-      if (finalScore >= 4.0) {
-        metricIndex.style.color = '#800000';
-        metricProb.style.color = '#ef4444';
-        badgeAlert.textContent = 'RISIKO KRITIS: ZONA 3';
-        badgeAlert.style.color = '#ef4444';
-      } else if (finalScore >= 3.0) {
-        metricIndex.style.color = '#dc2626';
-        metricProb.style.color = '#f59e0b';
-        badgeAlert.textContent = 'RISIKO TINGGI: ZONA 2';
-        badgeAlert.style.color = '#f59e0b';
-      } else {
-        metricIndex.style.color = '#0d9488';
-        metricProb.style.color = '#0284c7';
-        badgeAlert.textContent = 'RISIKO TERKENDALI';
-        badgeAlert.style.color = '#10b981';
-      }
-    }
   </script>
 </body>
 </html>

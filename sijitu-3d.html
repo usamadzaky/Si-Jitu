@@ -3,7 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SI JITU - 3D Interactive Prototype (Sesuai Dokumen Desain Awal)</title>
+    <meta name="description" content="SI-JITU (Sistem Informasi Jaring Terpadu) - Visualisasi 3D Interaktif Prototipe Perangkat SIJITU Wahana Telemetri Bawah Air.">
+    <title>SI-JITU — Visualisasi 3D Prototipe Perangkat SIJITU</title>
+
+    <!-- Favicon & App Icons -->
+    <link rel="icon" type="image/x-icon" href="icon/favicon.ico">
+    <link rel="icon" type="image/png" sizes="32x32" href="icon/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="icon/favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="icon/apple-touch-icon.png">
+    <link rel="manifest" href="icon/site.webmanifest">
     <!-- Tailwind CSS untuk antarmuka responsif -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Three.js & OrbitControls untuk visualisasi 3D penuh 360 derajat -->
@@ -73,11 +81,11 @@
         <div class="nav-container">
             <a href="index.html" class="nav-brand">
                 <div class="brand-icon-box">
-                    <i class="fa-solid fa-satellite-dish"></i>
+                    <img src="icon/favicon-32x32.png" alt="Logo SI-JITU">
                 </div>
                 <div class="brand-text">
-                    <span class="brand-title">GHOST-TRACK</span>
-                    <span class="brand-subtitle">Teluk Banten GIS</span>
+                    <span class="brand-title">SI-JITU</span>
+                    <span class="brand-subtitle">Sistem Informasi Jaring Terpadu</span>
                 </div>
             </a>
 
@@ -236,22 +244,27 @@
             </div>
         </div>
 
-        <!-- Telemetri & Target Desain Sesuai Dokumen -->
-        <div class="hidden lg:flex glass-panel rounded-2xl px-4 py-2.5 items-center gap-5 pointer-events-auto text-xs">
-            <div>
-                <div class="text-[10px] text-slate-400 uppercase tracking-wider">Target Kedalaman</div>
-                <div class="font-mono font-semibold text-sky-300">Maks. 5.0 m <span class="text-[10px] text-slate-400">(IP68)</span></div>
+        <!-- Telemetri & Target Desain Sesuai Dokumen + Tombol Spesifikasi -->
+        <div class="flex items-center gap-2 pointer-events-auto">
+            <div class="hidden lg:flex glass-panel rounded-2xl px-4 py-2.5 items-center gap-5 text-xs">
+                <div>
+                    <div class="text-[10px] text-slate-400 uppercase tracking-wider">Target Kedalaman</div>
+                    <div class="font-mono font-semibold text-sky-300">Maks. 5.0 m <span class="text-[10px] text-slate-400">(IP68)</span></div>
+                </div>
+                <div class="h-6 w-px bg-slate-700/70"></div>
+                <div>
+                    <div class="text-[10px] text-slate-400 uppercase tracking-wider">Dimensi Referensi</div>
+                    <div class="font-mono font-semibold text-slate-200">261 × 76 mm <span class="text-[10px] text-slate-400">(Bodi 64 mm)</span></div>
+                </div>
+                <div class="h-6 w-px bg-slate-700/70"></div>
+                <div>
+                    <div class="text-[10px] text-slate-400 uppercase tracking-wider">Sensor IMU (MPU6050)</div>
+                    <div id="imu-readout" class="font-mono font-semibold text-amber-300">Pitch: 0.0° Roll: 0.0°</div>
+                </div>
             </div>
-            <div class="h-6 w-px bg-slate-700/70"></div>
-            <div>
-                <div class="text-[10px] text-slate-400 uppercase tracking-wider">Dimensi Referensi</div>
-                <div class="font-mono font-semibold text-slate-200">261 × 76 mm <span class="text-[10px] text-slate-400">(Bodi 64 mm)</span></div>
-            </div>
-            <div class="h-6 w-px bg-slate-700/70"></div>
-            <div>
-                <div class="text-[10px] text-slate-400 uppercase tracking-wider">Sensor IMU (MPU6050)</div>
-                <div id="imu-readout" class="font-mono font-semibold text-amber-300">Pitch: 0.0° Roll: 0.0°</div>
-            </div>
+            <button id="btnToggleTechSpec" class="glass-panel hover:border-cyan-400 text-cyan-300 px-3.5 py-2.5 rounded-2xl text-xs font-bold flex items-center gap-2 shadow-lg transition" title="Buka Spesifikasi Perangkat">
+                <i class="fa-solid fa-circle-info text-cyan-400"></i> Spesifikasi
+            </button>
         </div>
     </header>
 
@@ -325,8 +338,8 @@
         </div>
     </section>
 
-    <!-- Panel Inspeksi Komponen & Penyetelan Trim (Sisi Kanan) -->
-    <aside id="info-panel" class="absolute top-20 right-3 md:top-24 md:right-6 z-10 w-72 sm:w-80 glass-panel rounded-2xl p-4 transition-all duration-300 max-h-[calc(100vh-195px)] overflow-y-auto">
+    <!-- Panel Inspeksi Komponen & Penyetelan Trim (Sisi Kanan di Bawah Header Telemetri) -->
+    <aside id="info-panel" class="absolute top-36 right-3 md:top-40 md:right-6 z-20 w-72 sm:w-80 glass-panel rounded-2xl p-4 transition-all duration-300 max-h-[calc(100vh-250px)] overflow-y-auto">
         <div class="flex items-center justify-between border-b border-slate-700/70 pb-2.5 mb-3">
             <div class="flex items-center gap-2">
                 <span class="w-2 h-2 rounded-full bg-sky-400 animate-pulse"></span>
@@ -410,8 +423,9 @@
         </div>
     </aside>
 
-    <!-- Tombol Buka Panel jika ditutup -->
-    <button id="open-panel-btn" class="hidden absolute top-20 right-3 md:top-24 md:right-6 z-10 glass-panel rounded-xl px-3.5 py-2 text-xs font-semibold text-sky-300 hover:text-white items-center gap-2">
+    <!-- Tombol Buka Panel jika ditutup (Posisikan di top-36/40 agar tidak menabrak bar telemetri & spec) -->
+    <button id="open-panel-btn" class="hidden absolute top-36 right-3 md:top-40 md:right-6 z-20 glass-panel hover:border-sky-400 rounded-xl px-3.5 py-2 text-xs font-semibold text-sky-300 hover:text-white items-center gap-2 shadow-lg">
+        <i class="fa-solid fa-layer-group text-sky-400"></i>
         <span>Rancangan Komponen</span>
     </button>
 
@@ -1574,7 +1588,7 @@
     <div class="floating-technical-card" id="techSpecCard">
         <div class="card-header">
             <h4><i class="fa-solid fa-satellite text-cyan-400"></i> Spesifikasi Perangkat SIJITU</h4>
-            <button class="toggle-min-btn" aria-label="Minimize"><i class="fa-solid fa-chevron-down"></i></button>
+            <button class="toggle-min-btn" aria-label="Tutup Spesifikasi" title="Tutup"><i class="fa-solid fa-xmark"></i></button>
         </div>
         <div class="card-content">
             <p class="text-slate-300">Sistem Informasi Jaring dan Alat Tangkap Terpadu (SIJITU) - Wahana Telemetri Deteksi Bawah Air.</p>
