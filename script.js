@@ -10,6 +10,7 @@ const GHOST_APP = {
   map: null,
   dangerZonesLayer: null,
   ghostPointsLayer: null,
+  citizenReportsLayer: null,
   currentsLayer: null,
   layerControl: null,
   charts: {},
@@ -464,6 +465,7 @@ function initWebGISMap() {
 
   // Layer Groups for Overlays
   GHOST_APP.ghostPointsLayer = L.layerGroup().addTo(GHOST_APP.map);
+  GHOST_APP.citizenReportsLayer = L.layerGroup().addTo(GHOST_APP.map);
   GHOST_APP.dangerZonesLayer = L.layerGroup().addTo(GHOST_APP.map);
   GHOST_APP.currentsLayer = L.layerGroup().addTo(GHOST_APP.map);
 
@@ -475,6 +477,7 @@ function initWebGISMap() {
 
   const overlayMaps = {
     "65 Titik ALDFG (Risk Level)": GHOST_APP.ghostPointsLayer,
+    "Laporan Warga (Citizen Science)": GHOST_APP.citizenReportsLayer,
     "Zona Bahaya ALDFG (Poligon)": GHOST_APP.dangerZonesLayer,
     "Dinamika Arus Laut (Grid)": GHOST_APP.currentsLayer
   };
@@ -509,7 +512,10 @@ function loadGeoJSONData() {
       .catch(() => renderGhostGear65(FALLBACK_TITIK_GHOSTGEAR));
   }
 
-  // 2. Fetch 'zona_bahaya.geojson'
+  // 2. Fetch Public Verified Reports from Supabase / Express API
+  loadPublicCitizenReports();
+
+  // 3. Fetch 'zona_bahaya.geojson'
   fetch('zona_bahaya.geojson')
     .then(res => {
       if (!res.ok) throw new Error('HTTP ' + res.status);
@@ -521,7 +527,7 @@ function loadGeoJSONData() {
       renderDangerPolygons(FALLBACK_ZONA_BAHAYA);
     });
 
-  // 3. Fetch 'arus.geojson' (Grid Hidrodinamika)
+  // 4. Fetch 'arus.geojson' (Grid Hidrodinamika)
   fetch('arus.geojson')
     .then(res => {
       if (!res.ok) throw new Error('HTTP ' + res.status);
@@ -531,6 +537,91 @@ function loadGeoJSONData() {
     .catch(err => {
       console.warn('Currents grid not available or error:', err);
     });
+}
+
+function loadPublicCitizenReports() {
+  fetch('/api/reports/public')
+    .then(res => {
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      return res.json();
+    })
+    .then(json => {
+      if (json.success && Array.isArray(json.data)) {
+        renderCitizenReports(json.data);
+      }
+    })
+    .catch(err => {
+      console.info('Backend Express /api/reports/public belum aktif atau error:', err.message);
+    });
+}
+
+function renderCitizenReports(reports) {
+  if (!GHOST_APP.citizenReportsLayer) return;
+  GHOST_APP.citizenReportsLayer.clearLayers();
+
+  if (!Array.isArray(reports) || reports.length === 0) return;
+
+  reports.forEach(r => {
+    const lat = parseFloat(r.latitude);
+    const lng = parseFloat(r.longitude);
+    if (isNaN(lat) || isNaN(lng)) return;
+
+    const risk = r.risk_level || 1;
+    const color = getRiskColor(risk);
+    const badgeText = getRiskBadgeText(risk);
+
+    // Glowing Star DivIcon for Citizen Verified Reports
+    const iconHtml = `
+      <div style="position: relative; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center;">
+        <div style="position: absolute; inset: 0; border-radius: 50%; background: ${color}; opacity: 0.35; animation: ping 2s cubic-bezier(0, 0, 0.2, 1) infinite;"></div>
+        <div style="position: relative; width: 22px; height: 22px; border-radius: 50%; background: #ffffff; border: 2.5px solid ${color}; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(0,0,0,0.35);">
+          <i class="fa-solid fa-star" style="color: ${color}; font-size: 10px;"></i>
+        </div>
+      </div>
+    `;
+
+    const customIcon = L.divIcon({
+      className: 'citizen-marker-div',
+      html: iconHtml,
+      iconSize: [30, 30],
+      iconAnchor: [15, 15],
+      popupAnchor: [0, -15]
+    });
+
+    const marker = L.marker([lat, lng], { icon: customIcon });
+
+    const photoHtml = r.photo_url 
+      ? `<div style="margin: 0.5rem 0; border-radius: 6px; overflow: hidden; max-height: 120px;"><img src="${r.photo_url}" alt="Foto Temuan" style="width: 100%; height: 100%; object-fit: cover;"></div>`
+      : '';
+
+    const popupHtml = `
+      <div class="popup-data-table">
+        <div class="popup-title" style="display:flex; justify-content:space-between; align-items:center; gap:0.5rem;">
+          <span style="color: #059669;"><i class="fa-solid fa-shield-halved"></i> Laporan Warga</span>
+          <span style="background:${color}; color:#fff; font-size:0.68rem; padding:0.18rem 0.5rem; border-radius:4px; font-weight:700;">${badgeText}</span>
+        </div>
+        <div class="popup-row"><span>Jenis Alat:</span><strong style="color:var(--teal-primary);">${r.gear_type || '-'}</strong></div>
+        <div class="popup-row"><span>Pelapor:</span><span>${r.reporter_name || 'Nelayan Teluk Banten'}</span></div>
+        <div class="popup-row"><span>Koordinat GPS:</span><span style="font-family:var(--font-mono); font-size:0.75rem;">${lat.toFixed(4)}, ${lng.toFixed(4)}</span></div>
+        ${photoHtml}
+        ${r.description ? `<div style="margin-top:0.35rem; font-size:0.75rem; color:#475569; line-height: 1.4;">${r.description}</div>` : ''}
+        ${r.admin_notes ? `<div style="margin-top:0.35rem; font-size:0.72rem; color:#059669; background:#ecfdf5; padding:0.25rem 0.45rem; border-radius:4px;"><strong>Admin:</strong> ${r.admin_notes}</div>` : ''}
+        <div style="margin-top:0.65rem; border-top:1px solid #e2e8f0; padding-top:0.5rem; text-align:center;">
+          <a href="ecoreef-1cube.html" class="btn-popup-upcycle">
+            <i class="fa-solid fa-cubes"></i> Lihat Solusi Upcycling 3D
+          </a>
+        </div>
+      </div>
+    `;
+
+    marker.bindPopup(popupHtml);
+    GHOST_APP.citizenReportsLayer.addLayer(marker);
+  });
+
+  const citizenChip = document.getElementById('countCitizenReports');
+  if (citizenChip) {
+    citizenChip.textContent = reports.length;
+  }
 }
 
 function getRiskColor(risk) {
@@ -596,7 +687,7 @@ function renderGhostGear65(data) {
         ${p.kedalaman ? `<div class="popup-row"><span>Kedalaman:</span><span>${p.kedalaman}</span></div>` : ''}
         ${p.kondisi ? `<div style="margin-top:0.35rem; font-size:0.75rem; color:#64748b;">${p.kondisi}</div>` : ''}
         <div style="margin-top:0.65rem; border-top:1px solid #e2e8f0; padding-top:0.5rem; text-align:center;">
-          <a href="EcoReef3D.html" class="btn-popup-upcycle">
+          <a href="ecoreef-1cube.html" class="btn-popup-upcycle">
             <i class="fa-solid fa-cubes"></i> Lihat Solusi Upcycling 3D
           </a>
         </div>
@@ -636,7 +727,7 @@ function renderDangerPolygons(data) {
           <div class="popup-row"><span>Estimasi Hilang:</span><span>${p.estimasi_kehilangan_tahunan || p.estimasi || '-'}</span></div>
           ${p.deskripsi ? `<div style="margin-top:0.35rem; font-size:0.75rem; color:#64748b;">${p.deskripsi}</div>` : ''}
           <div style="margin-top:0.65rem; border-top:1px solid #e2e8f0; padding-top:0.5rem; text-align:center;">
-            <a href="EcoReef3D.html" class="btn-popup-upcycle">
+            <a href="ecoreef-1cube.html" class="btn-popup-upcycle">
               <i class="fa-solid fa-cubes"></i> Lihat Solusi Upcycling 3D
             </a>
           </div>
@@ -718,6 +809,7 @@ function renderCurrents(data) {
 function setupLayerToggles() {
   const chkZones = document.getElementById('toggleDangerZones');
   const chkPoints = document.getElementById('toggleGhostPoints');
+  const chkCitizen = document.getElementById('toggleCitizenReports');
   const chkCurrents = document.getElementById('toggleCurrents');
 
   if (chkZones) {
@@ -731,6 +823,13 @@ function setupLayerToggles() {
     chkPoints.addEventListener('change', (e) => {
       if (e.target.checked) GHOST_APP.map.addLayer(GHOST_APP.ghostPointsLayer);
       else GHOST_APP.map.removeLayer(GHOST_APP.ghostPointsLayer);
+    });
+  }
+
+  if (chkCitizen) {
+    chkCitizen.addEventListener('change', (e) => {
+      if (e.target.checked) GHOST_APP.map.addLayer(GHOST_APP.citizenReportsLayer);
+      else GHOST_APP.map.removeLayer(GHOST_APP.citizenReportsLayer);
     });
   }
 

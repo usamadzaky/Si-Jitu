@@ -62,19 +62,12 @@
                   <span>Struktur Bertingkat Ekosistem Dalam</span>
                 </div>
               </a>
-              <a href="EcoReef3D.html" class="nav-dropdown-item">
-                <i class="fa-solid fa-landmark"></i>
-                <div>
-                  <strong>Overview EcoReef 3D</strong>
-                  <span>Blueprint Rekayasa & Daur Ulang</span>
-                </div>
-              </a>
             </div>
           </li>
 
           <li><a href="sijitu-3d.html" class="nav-link"><i class="fa-solid fa-satellite"></i> Perangkat SIJITU 3D</a></li>
           <li><a href="ai-model.html" class="nav-link"><i class="fa-solid fa-robot"></i> GHOST-AI Analytics</a></li>
-          <li><a href="index.html#lapor" class="nav-link nav-cta-btn"><i class="fa-solid fa-plus-circle"></i> Lapor Temuan</a></li>
+          <li><a href="laporkan.html" class="nav-link nav-cta-btn"><i class="fa-solid fa-plus-circle"></i> Lapor Temuan</a></li>
         </ul>
       </nav>
 
@@ -115,6 +108,17 @@
         <span style="display:flex; align-items:center; gap:0.25rem;"><span style="width:8px; height:8px; border-radius:50%; background:#ff9999;"></span> R1: Rendah</span>
       </div>
 
+      <!-- Layer 1.5: Laporan Warga (Citizen Science) -->
+      <div class="layer-toggle-row">
+        <label class="layer-lbl" for="toggleCitizenReports" style="cursor: pointer;">
+          <span style="display:inline-block; width:14px; height:14px; border:2px solid #059669; border-radius:50%; background:#ecfdf5; text-align:center; line-height:12px;">
+            <i class="fa-solid fa-star" style="font-size:7px; color:#059669; vertical-align:middle;"></i>
+          </span>
+          <span>Laporan Warga (Citizen Science)</span>
+        </label>
+        <input type="checkbox" id="toggleCitizenReports" checked style="accent-color: var(--teal-primary); cursor: pointer; width: 16px; height: 16px;">
+      </div>
+
       <!-- Layer 2: Zona Bahaya Polygon -->
       <div class="layer-toggle-row">
         <label class="layer-lbl" for="toggleDangerZones" style="cursor: pointer;">
@@ -138,6 +142,10 @@
         <div class="chip-box">
           <div class="chip-val" id="countGhostPoints">65</div>
           <div class="chip-lbl">Titik ALDFG</div>
+        </div>
+        <div class="chip-box">
+          <div class="chip-val" id="countCitizenReports">0</div>
+          <div class="chip-lbl">Laporan Warga</div>
         </div>
         <div class="chip-box">
           <div class="chip-val" id="countDangerZones">3</div>
@@ -168,9 +176,11 @@
       <ul class="footer-nav">
         <li><a href="index.html">Beranda</a></li>
         <li><a href="peta.html">Peta Utama</a></li>
-        <li><a href="EcoReef3D.html">Solusi Ecoreef</a></li>
+        <li><a href="ecoreef-1cube.html">Modul EcoReef 3D</a></li>
         <li><a href="sijitu-3d.html">Perangkat SIJITU</a></li>
         <li><a href="ai-model.html">GHOST-AI</a></li>
+        <li><a href="laporkan.html">Lapor Temuan</a></li>
+        <li><a href="admin.html" style="color: var(--teal-primary); opacity: 0.85;"><i class="fa-solid fa-lock"></i> Portal Admin</a></li>
       </ul>
       <span class="footer-credits">
         Inisiatif Sains Terbuka Konservasi Bahari &amp; Hilirisasi Daur Ulang Ghost Gear Teluk Banten, Indonesia.

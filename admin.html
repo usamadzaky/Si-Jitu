@@ -1,0 +1,934 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Dashboard Moderasi Admin GHOST-TRACK Banten - Verifikasi dan publikasi laporan citizen science ghost gear ke peta WebGIS.">
+  <title>GHOST-TRACK Banten — Dashboard Moderasi Admin</title>
+
+  <!-- Google Fonts: Plus Jakarta Sans & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- FontAwesome 6 Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <!-- Shared Enterprise Stylesheet -->
+  <link rel="stylesheet" href="style.css">
+
+  <style>
+    /* Admin Specific Styling */
+    .admin-wrapper {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      background-color: var(--bg-body-offwhite);
+    }
+
+    /* Login View Overlay */
+    .login-container {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+      background: linear-gradient(135deg, #071324 0%, #0a192f 50%, #0d2744 100%);
+      position: relative;
+    }
+
+    .login-card {
+      background: rgba(255, 255, 255, 0.96);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      border-radius: var(--radius-lg);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.4);
+      width: 100%;
+      max-width: 420px;
+      padding: 2.5rem;
+      text-align: center;
+    }
+
+    /* Dashboard Layout */
+    .admin-navbar {
+      background: var(--bg-navy-dark);
+      border-bottom: 1px solid var(--border-dark-subtle);
+      padding: 0.85rem 1.75rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      color: #ffffff;
+    }
+
+    .admin-content {
+      max-width: 1380px;
+      margin: 0 auto;
+      width: 100%;
+      padding: 2rem 1.5rem 4rem;
+      flex: 1;
+    }
+
+    /* Stat Cards */
+    .admin-stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1.25rem;
+      margin-bottom: 2rem;
+    }
+
+    @media (max-width: 900px) {
+      .admin-stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+    @media (max-width: 550px) {
+      .admin-stats-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .admin-stat-card {
+      background: #ffffff;
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-md);
+      padding: 1.25rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
+    }
+
+    .stat-icon-wrap {
+      width: 48px;
+      height: 48px;
+      border-radius: var(--radius-sm);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.35rem;
+    }
+
+    /* Moderation Table Container */
+    .table-container-card {
+      background: #ffffff;
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--border-light);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
+      overflow: hidden;
+    }
+
+    .table-filter-bar {
+      padding: 1rem 1.5rem;
+      border-bottom: 1px solid var(--border-light);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 1rem;
+      background: #f8fafc;
+    }
+
+    .filter-tabs {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .filter-btn {
+      padding: 0.45rem 0.85rem;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-light);
+      background: #ffffff;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: #64748b;
+      cursor: pointer;
+      transition: all var(--transition);
+    }
+
+    .filter-btn.active {
+      background: var(--teal-primary);
+      color: #ffffff;
+      border-color: var(--teal-primary);
+    }
+
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.85rem;
+      text-align: left;
+    }
+
+    .data-table th {
+      background: #f1f5f9;
+      padding: 0.85rem 1rem;
+      font-weight: 700;
+      color: #334155;
+      border-bottom: 1px solid var(--border-light);
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .data-table td {
+      padding: 1rem;
+      border-bottom: 1px solid var(--border-light);
+      vertical-align: top;
+      color: #1e293b;
+    }
+
+    .data-table tr:hover {
+      background: rgba(13, 148, 136, 0.02);
+    }
+
+    /* Badges */
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      padding: 0.25rem 0.65rem;
+      border-radius: 9999px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      font-family: var(--font-mono);
+    }
+
+    .badge-pending {
+      background: rgba(245, 158, 11, 0.15);
+      color: #d97706;
+      border: 1px solid rgba(245, 158, 11, 0.4);
+    }
+
+    .badge-verified {
+      background: rgba(16, 185, 129, 0.15);
+      color: #059669;
+      border: 1px solid rgba(16, 185, 129, 0.4);
+    }
+
+    .badge-rejected {
+      background: rgba(239, 68, 68, 0.15);
+      color: #dc2626;
+      border: 1px solid rgba(239, 68, 68, 0.4);
+    }
+
+    /* Action Buttons in Table */
+    .btn-action {
+      padding: 0.35rem 0.65rem;
+      border-radius: var(--radius-sm);
+      font-size: 0.75rem;
+      font-weight: 700;
+      border: none;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      transition: all var(--transition);
+    }
+
+    .btn-approve {
+      background: #10b981;
+      color: #ffffff;
+    }
+    .btn-approve:hover {
+      background: #059669;
+    }
+
+    .btn-reject {
+      background: #ef4444;
+      color: #ffffff;
+    }
+    .btn-reject:hover {
+      background: #dc2626;
+    }
+
+    /* Approval Modal */
+    .admin-modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(3, 14, 28, 0.75);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 2100;
+      padding: 1rem;
+    }
+
+    .admin-modal-overlay.active {
+      display: flex;
+    }
+
+    .admin-modal-box {
+      background: #ffffff;
+      border-radius: var(--radius-lg);
+      max-width: 520px;
+      width: 100%;
+      padding: 1.75rem;
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.3);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ========================================================================
+       SECTION 1: LOGIN VIEW (Shown when unauthenticated)
+       ======================================================================== -->
+  <div id="loginSection" class="login-container">
+    <div class="login-card">
+      <div style="width: 52px; height: 52px; background: var(--teal-primary); border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; color: #fff; font-size: 1.5rem; margin: 0 auto 1.25rem; box-shadow: 0 8px 20px rgba(13, 148, 136, 0.4);">
+        <i class="fa-solid fa-lock"></i>
+      </div>
+      <h2 style="font-size: 1.45rem; font-weight: 800; color: #0f172a; margin-bottom: 0.25rem;">Portal Moderasi Admin</h2>
+      <p style="font-size: 0.82rem; color: #64748b; margin-bottom: 1.75rem;">Masuk untuk memverifikasi laporan citizen science GHOST-TRACK Banten.</p>
+
+      <div id="loginErrorAlert" style="display: none; background: rgba(239, 68, 68, 0.1); border: 1px solid #ef4444; color: #b91c1c; font-size: 0.8rem; padding: 0.65rem; border-radius: var(--radius-sm); margin-bottom: 1rem;"></div>
+
+      <form id="adminLoginForm" style="text-align: left; display: flex; flex-direction: column; gap: 1rem;">
+        <div class="form-group">
+          <label class="form-label" for="loginUser">Username Admin:</label>
+          <input type="text" id="loginUser" class="form-control" placeholder="admin" required value="admin">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="loginPass">Password:</label>
+          <div style="position: relative;">
+            <input type="password" id="loginPass" class="form-control" placeholder="Password admin..." required>
+            <button type="button" id="btnTogglePass" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; color: #64748b; cursor: pointer;">
+              <i class="fa-solid fa-eye"></i>
+            </button>
+          </div>
+        </div>
+
+        <button type="submit" id="btnLoginSubmit" class="btn btn-teal" style="width: 100%; justify-content: center; padding: 0.85rem; font-weight: 700; margin-top: 0.5rem;">
+          <i class="fa-solid fa-arrow-right-to-bracket"></i> Masuk Dashboard
+        </button>
+      </form>
+
+      <div style="margin-top: 1.5rem; font-size: 0.75rem; color: #94a3b8;">
+        <a href="index.html" style="color: var(--teal-primary); text-decoration: none; font-weight: 600;">
+          <i class="fa-solid fa-arrow-left"></i> Kembali ke Beranda Publik
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================================
+       SECTION 2: ADMIN DASHBOARD (Shown when authenticated)
+       ======================================================================== -->
+  <div id="dashboardSection" class="admin-wrapper" style="display: none;">
+
+    <!-- Top Admin Header -->
+    <header class="admin-navbar">
+      <div style="display: flex; align-items: center; gap: 1rem;">
+        <a href="index.html" class="nav-brand" style="text-decoration: none; color: #fff; display: flex; align-items: center; gap: 0.65rem;">
+          <div class="brand-icon-box" style="width: 32px; height: 32px; font-size: 0.9rem;">
+            <i class="fa-solid fa-satellite-dish"></i>
+          </div>
+          <div>
+            <span style="font-weight: 800; font-size: 0.95rem; letter-spacing: -0.01em;">GHOST-TRACK</span>
+            <span style="font-size: 0.65rem; color: var(--teal-primary); font-family: var(--font-mono); display: block; line-height: 1;">ADMIN MODERATION</span>
+          </div>
+        </a>
+      </div>
+
+      <div style="display: flex; align-items: center; gap: 0.85rem;">
+        <a href="peta.html" class="btn btn-outline" style="padding: 0.4rem 0.8rem; font-size: 0.78rem; border-color: rgba(255,255,255,0.25); color: #fff;">
+          <i class="fa-solid fa-map"></i> Buka WebGIS
+        </a>
+        <a href="laporkan.html" class="btn btn-outline" style="padding: 0.4rem 0.8rem; font-size: 0.78rem; border-color: rgba(255,255,255,0.25); color: #fff;">
+          <i class="fa-solid fa-plus"></i> Form Lapor
+        </a>
+        <div style="height: 20px; width: 1px; background: rgba(255,255,255,0.2);"></div>
+        <span id="adminGreeting" style="font-size: 0.8rem; color: #94a3b8; font-family: var(--font-mono);">
+          <i class="fa-solid fa-user-shield" style="color: var(--teal-primary);"></i> admin
+        </span>
+        <button id="btnLogout" class="btn btn-outline" style="padding: 0.4rem 0.75rem; font-size: 0.75rem; color: #f87171; border-color: rgba(248, 113, 113, 0.4);">
+          <i class="fa-solid fa-power-off"></i> Keluar
+        </button>
+      </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="admin-content">
+
+      <!-- Header Title & Refresh -->
+      <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 0.75rem;">
+        <div>
+          <h1 style="font-size: 1.6rem; font-weight: 800; color: #0f172a; letter-spacing: -0.02em;">
+            Verifikasi &amp; Moderasi Laporan Citizen Science
+          </h1>
+          <p style="font-size: 0.85rem; color: #64748b; margin-top: 0.2rem;">
+            Setujui laporan valid untuk langsung ditampilkan pada WebGIS Sebaran Spasial Teluk Banten.
+          </p>
+        </div>
+        <button id="btnRefreshData" class="btn btn-teal" style="padding: 0.55rem 1rem; font-size: 0.85rem;">
+          <i class="fa-solid fa-arrows-rotate" id="refreshIcon"></i> Segarkan Data
+        </button>
+      </div>
+
+      <!-- 4 Stat Metric Cards -->
+      <div class="admin-stats-grid">
+        <!-- Card 1: Total -->
+        <div class="admin-stat-card">
+          <div class="stat-icon-wrap" style="background: rgba(2, 132, 199, 0.12); color: #0284c7;">
+            <i class="fa-solid fa-folder-open"></i>
+          </div>
+          <div>
+            <div style="font-size: 0.72rem; font-weight: 700; color: #64748b; text-transform: uppercase;">Total Laporan</div>
+            <div id="statTotal" style="font-size: 1.6rem; font-weight: 800; color: #0f172a; font-family: var(--font-mono);">0</div>
+          </div>
+        </div>
+
+        <!-- Card 2: Pending -->
+        <div class="admin-stat-card">
+          <div class="stat-icon-wrap" style="background: rgba(245, 158, 11, 0.12); color: #d97706;">
+            <i class="fa-solid fa-clock"></i>
+          </div>
+          <div>
+            <div style="font-size: 0.72rem; font-weight: 700; color: #64748b; text-transform: uppercase;">Menunggu Verifikasi</div>
+            <div id="statPending" style="font-size: 1.6rem; font-weight: 800; color: #d97706; font-family: var(--font-mono);">0</div>
+          </div>
+        </div>
+
+        <!-- Card 3: Verified -->
+        <div class="admin-stat-card">
+          <div class="stat-icon-wrap" style="background: rgba(16, 185, 129, 0.12); color: #059669;">
+            <i class="fa-solid fa-circle-check"></i>
+          </div>
+          <div>
+            <div style="font-size: 0.72rem; font-weight: 700; color: #64748b; text-transform: uppercase;">Aktif di WebGIS</div>
+            <div id="statVerified" style="font-size: 1.6rem; font-weight: 800; color: #059669; font-family: var(--font-mono);">0</div>
+          </div>
+        </div>
+
+        <!-- Card 4: Rejected -->
+        <div class="admin-stat-card">
+          <div class="stat-icon-wrap" style="background: rgba(239, 68, 68, 0.12); color: #dc2626;">
+            <i class="fa-solid fa-ban"></i>
+          </div>
+          <div>
+            <div style="font-size: 0.72rem; font-weight: 700; color: #64748b; text-transform: uppercase;">Ditolak / Invalid</div>
+            <div id="statRejected" style="font-size: 1.6rem; font-weight: 800; color: #dc2626; font-family: var(--font-mono);">0</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Moderation Table Card -->
+      <div class="table-container-card">
+        <!-- Filter Bar -->
+        <div class="table-filter-bar">
+          <div class="filter-tabs">
+            <button class="filter-btn active" data-filter="all" onclick="applyTableFilter('all')">
+              Semua (<span id="countTabAll">0</span>)
+            </button>
+            <button class="filter-btn" data-filter="pending" onclick="applyTableFilter('pending')">
+              <i class="fa-solid fa-hourglass-half text-amber-500"></i> Pending (<span id="countTabPending">0</span>)
+            </button>
+            <button class="filter-btn" data-filter="verified" onclick="applyTableFilter('verified')">
+              <i class="fa-solid fa-check text-emerald-500"></i> Verified (<span id="countTabVerified">0</span>)
+            </button>
+            <button class="filter-btn" data-filter="rejected" onclick="applyTableFilter('rejected')">
+              <i class="fa-solid fa-xmark text-rose-500"></i> Rejected (<span id="countTabRejected">0</span>)
+            </button>
+          </div>
+
+          <div style="position: relative;">
+            <input type="text" id="tableSearchInp" class="form-control" placeholder="Cari pelapor, alat, lokasi..." style="padding-left: 2rem; font-size: 0.8rem; width: 240px;" oninput="onSearchTable()">
+            <i class="fa-solid fa-magnifying-glass" style="position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: #94a3b8; font-size: 0.75rem;"></i>
+          </div>
+        </div>
+
+        <!-- Table Viewport -->
+        <div style="overflow-x: auto;">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th style="width: 70px;">Foto</th>
+                <th style="width: 170px;">Pelapor &amp; Kontak</th>
+                <th style="width: 170px;">Jenis Alat</th>
+                <th>Deskripsi &amp; Kondisi</th>
+                <th style="width: 150px;">Koordinat GPS</th>
+                <th style="width: 110px;">Status</th>
+                <th style="width: 90px;">Risk</th>
+                <th style="width: 130px; text-align: center;">Aksi Moderasi</th>
+              </tr>
+            </thead>
+            <tbody id="reportsTableBody">
+              <tr>
+                <td colspan="8" style="text-align: center; padding: 2.5rem; color: #94a3b8;">
+                  <i class="fa-solid fa-spinner fa-spin" style="font-size: 1.5rem; margin-bottom: 0.5rem; display: block; color: var(--teal-primary);"></i>
+                  Memuat data laporan dari server...
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <!-- ========================================================================
+       MODAL 1: APPROVE REPORT MODAL
+       ======================================================================== -->
+  <div class="admin-modal-overlay" id="approveModal">
+    <div class="admin-modal-box">
+      <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.25rem;">
+        <h3 style="font-size: 1.15rem; font-weight: 800; color: #0f172a; display: flex; align-items: center; gap: 0.5rem;">
+          <i class="fa-solid fa-circle-check" style="color: #10b981;"></i> Verifikasi &amp; Terbitkan ke WebGIS
+        </h3>
+        <button type="button" onclick="closeApproveModal()" style="background: none; border: none; font-size: 1.1rem; color: #94a3b8; cursor: pointer;">&times;</button>
+      </div>
+
+      <input type="hidden" id="approveReportId">
+
+      <div style="font-size: 0.85rem; color: #334155; margin-bottom: 1rem;" id="approveTargetSummary">
+        Menyetujui laporan ini akan memunculkannya secara publik pada peta Leaflet utama.
+      </div>
+
+      <div class="form-group" style="margin-bottom: 1rem;">
+        <label class="form-label" for="approveRiskLevel">Tentukan Tingkat Risiko Jeratan (Risk Level 1-4):</label>
+        <select id="approveRiskLevel" class="form-control">
+          <option value="4" selected>Risk Level 4 - Ekstrem (Warna Marun #800000 - Sangat Berbahaya bagi Karang)</option>
+          <option value="3">Risk Level 3 - Tinggi (Warna Merah #ff3333 - Menyelimuti Biota)</option>
+          <option value="2">Risk Level 2 - Sedang (Warna Oranye #ffa500 - Di Pasir/Tubir)</option>
+          <option value="1">Risk Level 1 - Rendah (Warna Merah Muda #ff9999 - Potongan Kecil)</option>
+        </select>
+      </div>
+
+      <div class="form-group" style="margin-bottom: 1.25rem;">
+        <label class="form-label" for="approveAdminNotes">Catatan Validasi Admin (Opsional):</label>
+        <textarea id="approveAdminNotes" class="form-control" rows="2" placeholder="Contoh: Dikonfirmasi oleh petugas pos Karangantu, siap evakuasi."></textarea>
+      </div>
+
+      <div style="display: flex; justify-content: flex-end; gap: 0.5rem;">
+        <button type="button" class="btn btn-outline" onclick="closeApproveModal()">Batal</button>
+        <button type="button" class="btn btn-teal" id="btnConfirmApprove" onclick="executeApprove()">
+          <i class="fa-solid fa-check"></i> Setujui &amp; Publikasikan
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================================
+       MODAL 2: REJECT REPORT MODAL
+       ======================================================================== -->
+  <div class="admin-modal-overlay" id="rejectModal">
+    <div class="admin-modal-box">
+      <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.25rem;">
+        <h3 style="font-size: 1.15rem; font-weight: 800; color: #dc2626; display: flex; align-items: center; gap: 0.5rem;">
+          <i class="fa-solid fa-triangle-exclamation"></i> Tolak / Arsipkan Laporan
+        </h3>
+        <button type="button" onclick="closeRejectModal()" style="background: none; border: none; font-size: 1.1rem; color: #94a3b8; cursor: pointer;">&times;</button>
+      </div>
+
+      <input type="hidden" id="rejectReportId">
+
+      <p style="font-size: 0.85rem; color: #64748b; margin-bottom: 1rem;">
+        Laporan yang ditolak tidak akan ditampilkan pada peta publik. Masukkan alasan penolakan untuk arsip dokumentasi.
+      </p>
+
+      <div class="form-group" style="margin-bottom: 1.25rem;">
+        <label class="form-label" for="rejectAdminNotes">Alasan Penolakan:</label>
+        <textarea id="rejectAdminNotes" class="form-control" rows="2" placeholder="Contoh: Koordinat tidak akurat / data duplikat / foto bukan jaring terbengkalai." required></textarea>
+      </div>
+
+      <div style="display: flex; justify-content: flex-end; gap: 0.5rem;">
+        <button type="button" class="btn btn-outline" onclick="closeRejectModal()">Batal</button>
+        <button type="button" class="btn btn-reject" id="btnConfirmReject" onclick="executeReject()">
+          <i class="fa-solid fa-ban"></i> Tolak Laporan
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================================
+       MODAL 3: PHOTO LIGHTBOX VIEWER
+       ======================================================================== -->
+  <div class="admin-modal-overlay" id="photoModal" onclick="closePhotoModal()">
+    <div style="max-width: 700px; width: 100%; text-align: center;" onclick="event.stopPropagation()">
+      <img id="lightboxImg" src="" alt="Bukti Foto Temuan" style="max-width: 100%; max-height: 80vh; border-radius: var(--radius-md); box-shadow: 0 20px 50px rgba(0,0,0,0.6);">
+      <div style="margin-top: 0.75rem;">
+        <button type="button" class="btn btn-outline" onclick="closePhotoModal()" style="color: #fff; border-color: rgba(255,255,255,0.4);">
+          Tutup Foto
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Admin Controller Script -->
+  <script>
+    let allReports = [];
+    let currentFilter = 'all';
+
+    document.addEventListener('DOMContentLoaded', () => {
+      checkAuthStatus();
+      setupLoginForm();
+      setupLogout();
+    });
+
+    // 1. Auth Status Checker
+    function checkAuthStatus() {
+      const token = localStorage.getItem('ghosttrack_admin_token');
+      if (token) {
+        document.getElementById('loginSection').style.display = 'none';
+        document.getElementById('dashboardSection').style.display = 'flex';
+        fetchAdminReports();
+      } else {
+        document.getElementById('loginSection').style.display = 'flex';
+        document.getElementById('dashboardSection').style.display = 'none';
+      }
+    }
+
+    // 2. Login Form Handler
+    function setupLoginForm() {
+      const form = document.getElementById('adminLoginForm');
+      const btnToggle = document.getElementById('btnTogglePass');
+      const passInp = document.getElementById('loginPass');
+      const errAlert = document.getElementById('loginErrorAlert');
+      const btnSubmit = document.getElementById('btnLoginSubmit');
+
+      btnToggle.addEventListener('click', () => {
+        const isPass = passInp.type === 'password';
+        passInp.type = isPass ? 'text' : 'password';
+        btnToggle.innerHTML = isPass ? '<i class="fa-solid fa-eye-slash"></i>' : '<i class="fa-solid fa-eye"></i>';
+      });
+
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        errAlert.style.display = 'none';
+
+        const username = document.getElementById('loginUser').value.trim();
+        const password = passInp.value;
+
+        btnSubmit.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Memverifikasi...';
+        btnSubmit.disabled = true;
+
+        try {
+          const res = await fetch('/api/admin/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username, password })
+          });
+
+          const data = await res.json();
+
+          if (res.ok && data.success && data.token) {
+            localStorage.setItem('ghosttrack_admin_token', data.token);
+            localStorage.setItem('ghosttrack_admin_user', data.admin?.username || 'admin');
+            checkAuthStatus();
+          } else {
+            errAlert.textContent = data.message || 'Username atau password salah.';
+            errAlert.style.display = 'block';
+          }
+        } catch (err) {
+          console.error('Login error:', err);
+          errAlert.textContent = 'Gagal terhubung ke backend Express server (/api/admin/login). Pastikan server telah dijalankan (npm start).';
+          errAlert.style.display = 'block';
+        } finally {
+          btnSubmit.innerHTML = '<i class="fa-solid fa-arrow-right-to-bracket"></i> Masuk Dashboard';
+          btnSubmit.disabled = false;
+        }
+      });
+    }
+
+    // 3. Logout Handler
+    function setupLogout() {
+      document.getElementById('btnLogout').addEventListener('click', () => {
+        if (confirm('Apakah Anda yakin ingin keluar dari portal admin?')) {
+          localStorage.removeItem('ghosttrack_admin_token');
+          localStorage.removeItem('ghosttrack_admin_user');
+          checkAuthStatus();
+        }
+      });
+
+      document.getElementById('btnRefreshData').addEventListener('click', () => {
+        const icon = document.getElementById('refreshIcon');
+        icon.classList.add('fa-spin');
+        fetchAdminReports().finally(() => {
+          setTimeout(() => icon.classList.remove('fa-spin'), 600);
+        });
+      });
+    }
+
+    // 4. Fetch All Reports from Protected Route
+    async function fetchAdminReports() {
+      const token = localStorage.getItem('ghosttrack_admin_token');
+      if (!token) return;
+
+      try {
+        const res = await fetch('/api/admin/reports', {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+
+        if (res.status === 401 || res.status === 403) {
+          alert('Sesi Anda telah berakhir. Silakan login kembali.');
+          localStorage.removeItem('ghosttrack_admin_token');
+          checkAuthStatus();
+          return;
+        }
+
+        const json = await res.json();
+
+        if (json.success && Array.isArray(json.data)) {
+          allReports = json.data;
+          updateDashboardStats();
+          renderReportsTable();
+        }
+      } catch (err) {
+        console.error('Fetch reports error:', err);
+      }
+    }
+
+    // 5. Update Stat Metric Cards
+    function updateDashboardStats() {
+      const total = allReports.length;
+      const pending = allReports.filter(r => r.status === 'pending').length;
+      const verified = allReports.filter(r => r.status === 'verified').length;
+      const rejected = allReports.filter(r => r.status === 'rejected').length;
+
+      document.getElementById('statTotal').textContent = total;
+      document.getElementById('statPending').textContent = pending;
+      document.getElementById('statVerified').textContent = verified;
+      document.getElementById('statRejected').textContent = rejected;
+
+      document.getElementById('countTabAll').textContent = total;
+      document.getElementById('countTabPending').textContent = pending;
+      document.getElementById('countTabVerified').textContent = verified;
+      document.getElementById('countTabRejected').textContent = rejected;
+    }
+
+    // 6. Filter Tabs Logic
+    function applyTableFilter(filter) {
+      currentFilter = filter;
+      document.querySelectorAll('.filter-btn').forEach(btn => {
+        if (btn.dataset.filter === filter) btn.classList.add('active');
+        else btn.classList.remove('active');
+      });
+      renderReportsTable();
+    }
+
+    function onSearchTable() {
+      renderReportsTable();
+    }
+
+    // 7. Render Reports into Table
+    function renderReportsTable() {
+      const tbody = document.getElementById('reportsTableBody');
+      const searchKeyword = (document.getElementById('tableSearchInp')?.value || '').toLowerCase().trim();
+
+      let filtered = allReports;
+      if (currentFilter !== 'all') {
+        filtered = filtered.filter(r => r.status === currentFilter);
+      }
+
+      if (searchKeyword) {
+        filtered = filtered.filter(r => 
+          (r.reporter_name && r.reporter_name.toLowerCase().includes(searchKeyword)) ||
+          (r.gear_type && r.gear_type.toLowerCase().includes(searchKeyword)) ||
+          (r.description && r.description.toLowerCase().includes(searchKeyword)) ||
+          (r.contact_num && r.contact_num.includes(searchKeyword))
+        );
+      }
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="8" style="text-align: center; padding: 2.5rem; color: #94a3b8;">
+              <i class="fa-solid fa-inbox" style="font-size: 1.75rem; margin-bottom: 0.5rem; display: block;"></i>
+              Tidak ada data laporan yang sesuai filter.
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      tbody.innerHTML = filtered.map(r => {
+        const photoHtml = r.photo_url 
+          ? `<img src="${r.photo_url}" alt="Foto" style="width: 48px; height: 48px; border-radius: 6px; object-fit: cover; cursor: pointer; border: 1px solid var(--border-light);" onclick="openPhotoModal('${r.photo_url}')" title="Klik untuk memperbesar">`
+          : `<div style="width: 48px; height: 48px; border-radius: 6px; background: #e2e8f0; display: flex; align-items: center; justify-content: center; color: #94a3b8; font-size: 0.8rem;"><i class="fa-solid fa-image-slash"></i></div>`;
+
+        let statusClass = 'badge-pending';
+        let statusLabel = 'Pending';
+        if (r.status === 'verified') { statusClass = 'badge-verified'; statusLabel = 'Verified'; }
+        else if (r.status === 'rejected') { statusClass = 'badge-rejected'; statusLabel = 'Rejected'; }
+
+        const dateStr = r.created_at ? new Date(r.created_at).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' }) : '-';
+
+        return `
+          <tr>
+            <td>${photoHtml}</td>
+            <td>
+              <div style="font-weight: 700; color: #0f172a;">${r.reporter_name || '-'}</div>
+              <div style="font-size: 0.75rem; color: #64748b; font-family: var(--font-mono); margin-top: 0.2rem;">
+                <i class="fa-brands fa-whatsapp" style="color: #10b981;"></i> ${r.contact_num || '-'}
+              </div>
+              <div style="font-size: 0.7rem; color: #94a3b8; margin-top: 0.2rem;">${dateStr}</div>
+            </td>
+            <td>
+              <strong style="color: var(--teal-primary);">${r.gear_type || '-'}</strong>
+            </td>
+            <td>
+              <div style="font-size: 0.8rem; line-height: 1.4; color: #334155;">${r.description || '-'}</div>
+              ${r.admin_notes ? `<div style="font-size: 0.72rem; color: #b45309; background: #fffbeb; border: 1px solid #fef3c7; padding: 0.25rem 0.5rem; border-radius: 4px; margin-top: 0.35rem;"><strong>Catatan Admin:</strong> ${r.admin_notes}</div>` : ''}
+            </td>
+            <td>
+              <div style="font-family: var(--font-mono); font-size: 0.75rem;">
+                ${Number(r.latitude).toFixed(4)}, ${Number(r.longitude).toFixed(4)}
+              </div>
+              <a href="peta.html" target="_blank" style="font-size: 0.7rem; color: #0284c7; text-decoration: none; display: inline-flex; align-items: center; gap: 0.25rem; margin-top: 0.25rem;">
+                <i class="fa-solid fa-arrow-up-right-from-square"></i> Cek di Peta
+              </a>
+            </td>
+            <td>
+              <span class="status-badge ${statusClass}">${statusLabel}</span>
+            </td>
+            <td>
+              <span style="font-family: var(--font-mono); font-weight: 700; font-size: 0.8rem; color: ${r.risk_level === 4 ? '#800000' : r.risk_level === 3 ? '#ef4444' : r.risk_level === 2 ? '#f59e0b' : '#10b981'};">
+                Lvl ${r.risk_level || 1}
+              </span>
+            </td>
+            <td style="text-align: center;">
+              <div style="display: flex; flex-direction: column; gap: 0.35rem; align-items: center;">
+                ${r.status !== 'verified' ? `
+                  <button class="btn-action btn-approve" onclick="openApproveModal('${r.id}', '${escapeHtml(r.reporter_name)}', '${escapeHtml(r.gear_type)}')">
+                    <i class="fa-solid fa-check"></i> Setujui
+                  </button>
+                ` : `
+                  <button class="btn-action" style="background:#e2e8f0; color:#64748b;" onclick="openApproveModal('${r.id}', '${escapeHtml(r.reporter_name)}', '${escapeHtml(r.gear_type)}')">
+                    <i class="fa-solid fa-pen"></i> Edit Risk
+                  </button>
+                `}
+                ${r.status !== 'rejected' ? `
+                  <button class="btn-action btn-reject" onclick="openRejectModal('${r.id}')">
+                    <i class="fa-solid fa-ban"></i> Tolak
+                  </button>
+                ` : ''}
+              </div>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str).replace(/'/g, "\\'").replace(/"/g, '&quot;');
+    }
+
+    // 8. Approve Modal Actions
+    function openApproveModal(id, reporter, gear) {
+      document.getElementById('approveReportId').value = id;
+      document.getElementById('approveTargetSummary').innerHTML = `Laporan dari <strong>${reporter}</strong> (${gear}).`;
+      document.getElementById('approveModal').classList.add('active');
+    }
+
+    function closeApproveModal() {
+      document.getElementById('approveModal').classList.remove('active');
+    }
+
+    async function executeApprove() {
+      const id = document.getElementById('approveReportId').value;
+      const riskLevel = document.getElementById('approveRiskLevel').value;
+      const notes = document.getElementById('approveAdminNotes').value.trim();
+      const token = localStorage.getItem('ghosttrack_admin_token');
+
+      const btn = document.getElementById('btnConfirmApprove');
+      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Menyimpan...';
+      btn.disabled = true;
+
+      try {
+        const res = await fetch(`/api/admin/reports/${id}`, {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({
+            status: 'verified',
+            risk_level: parseInt(riskLevel, 10),
+            admin_notes: notes || 'Diverifikasi admin dan dipublikasikan ke WebGIS.'
+          })
+        });
+
+        const data = await res.json();
+        if (res.ok && data.success) {
+          closeApproveModal();
+          fetchAdminReports();
+        } else {
+          alert('Gagal menyetujui: ' + (data.message || 'Terjadi kesalahan.'));
+        }
+      } catch (err) {
+        console.error('Approve error:', err);
+        alert('Gagal menghubungi backend server.');
+      } finally {
+        btn.innerHTML = '<i class="fa-solid fa-check"></i> Setujui &amp; Publikasikan';
+        btn.disabled = false;
+      }
+    }
+
+    // 9. Reject Modal Actions
+    function openRejectModal(id) {
+      document.getElementById('rejectReportId').value = id;
+      document.getElementById('rejectModal').classList.add('active');
+    }
+
+    function closeRejectModal() {
+      document.getElementById('rejectModal').classList.remove('active');
+    }
+
+    async function executeReject() {
+      const id = document.getElementById('rejectReportId').value;
+      const notes = document.getElementById('rejectAdminNotes').value.trim();
+      const token = localStorage.getItem('ghosttrack_admin_token');
+
+      const btn = document.getElementById('btnConfirmReject');
+      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Memproses...';
+      btn.disabled = true;
+
+      try {
+        const res = await fetch(`/api/admin/reports/${id}`, {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({
+            status: 'rejected',
+            admin_notes: notes || 'Ditolak oleh admin.'
+          })
+        });
+
+        const data = await res.json();
+        if (res.ok && data.success) {
+          closeRejectModal();
+          fetchAdminReports();
+        } else {
+          alert('Gagal menolak: ' + (data.message || 'Terjadi kesalahan.'));
+        }
+      } catch (err) {
+        console.error('Reject error:', err);
+        alert('Gagal menghubungi backend server.');
+      } finally {
+        btn.innerHTML = '<i class="fa-solid fa-ban"></i> Tolak Laporan';
+        btn.disabled = false;
+      }
+    }
+
+    // 10. Photo Lightbox Modal
+    function openPhotoModal(url) {
+      document.getElementById('lightboxImg').src = url;
+      document.getElementById('photoModal').classList.add('active');
+    }
+
+    function closePhotoModal() {
+      document.getElementById('photoModal').classList.remove('active');
+    }
+  </script>
+</body>
+</html>

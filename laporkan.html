@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Formulir Pelaporan Citizen Science - Laporkan temuan alat tangkap hilang (ALDFG) di Teluk Banten untuk mitigasi dan upcycling EcoReef.">
+  <title>GHOST-TRACK Banten — Laporkan Temuan Ghost Gear</title>
+
+  <!-- Google Fonts: Plus Jakarta Sans & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- FontAwesome 6 Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <!-- Leaflet CSS for Mini Map -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+
+  <!-- Shared Enterprise Stylesheet -->
+  <link rel="stylesheet" href="style.css">
+
+  <style>
+    /* Specific Styling for Citizen Science Reporting Page */
+    .lapor-page-header {
+      background: linear-gradient(180deg, #071324 0%, #0a192f 100%);
+      padding: 3.5rem 1.5rem 2.5rem;
+      border-bottom: 1px solid var(--border-dark-subtle);
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .lapor-page-header::before {
+      content: '';
+      position: absolute;
+      top: -100px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 500px;
+      height: 350px;
+      background: radial-gradient(circle, rgba(13, 148, 136, 0.25) 0%, rgba(2, 132, 199, 0.08) 50%, transparent 70%);
+      filter: blur(45px);
+      pointer-events: none;
+    }
+
+    .lapor-main-container {
+      max-width: 1100px;
+      margin: -2rem auto 4rem;
+      padding: 0 1.5rem;
+      position: relative;
+      z-index: 10;
+    }
+
+    .lapor-card-grid {
+      display: grid;
+      grid-template-columns: 1.2fr 1fr;
+      gap: 1.75rem;
+      background: rgba(255, 255, 255, 0.96);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--border-light);
+      box-shadow: 0 20px 45px rgba(0, 0, 0, 0.08);
+      padding: 2.25rem;
+    }
+
+    @media (max-width: 900px) {
+      .lapor-card-grid {
+        grid-template-columns: 1fr;
+        padding: 1.5rem;
+      }
+    }
+
+    /* Mini Leaflet Map Container */
+    #miniMap {
+      width: 100%;
+      height: 300px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-light);
+      box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.1);
+      z-index: 1;
+    }
+
+    .photo-preview-box {
+      width: 100%;
+      height: 180px;
+      border-radius: var(--radius-sm);
+      border: 1px dashed var(--teal-primary);
+      background: rgba(13, 148, 136, 0.03);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      position: relative;
+      margin-top: 0.5rem;
+    }
+
+    .photo-preview-box img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: none;
+    }
+
+    .photo-preview-placeholder {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.35rem;
+      color: #94a3b8;
+      font-size: 0.8rem;
+    }
+
+    /* Success / Feedback Modal */
+    .status-modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(3, 14, 28, 0.75);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 2000;
+      padding: 1rem;
+    }
+
+    .status-modal-overlay.active {
+      display: flex;
+      animation: modalFadeIn 0.25s ease-out;
+    }
+
+    @keyframes modalFadeIn {
+      from { opacity: 0; transform: scale(0.96); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .status-modal-card {
+      background: #ffffff;
+      border-radius: var(--radius-lg);
+      max-width: 480px;
+      width: 100%;
+      padding: 2rem;
+      text-align: center;
+      box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25);
+      border: 1px solid var(--border-light);
+    }
+  </style>
+</head>
+<body class="enterprise-bg">
+
+  <!-- ========================================================================
+       STICKY TOP NAVBAR (UNIFIED SUITE ACROSS ALL PAGES)
+       ======================================================================== -->
+  <header class="site-navbar">
+    <div class="nav-container">
+      <a href="index.html" class="nav-brand">
+        <div class="brand-icon-box">
+          <i class="fa-solid fa-satellite-dish"></i>
+        </div>
+        <div class="brand-text">
+          <span class="brand-title">GHOST-TRACK</span>
+          <span class="brand-subtitle">Teluk Banten GIS</span>
+        </div>
+      </a>
+
+      <nav>
+        <ul class="nav-menu" id="navMenu">
+          <li><a href="index.html" class="nav-link"><i class="fa-solid fa-house"></i> Beranda</a></li>
+          <li><a href="peta.html" class="nav-link"><i class="fa-solid fa-map-location-dot"></i> Peta Utama</a></li>
+
+          <!-- Dropdown EcoReef 3D Studio -->
+          <li class="nav-item-dropdown">
+            <a class="nav-link nav-dropdown-toggle">
+              <i class="fa-solid fa-cubes"></i> EcoReef 3D Studio <i class="fa-solid fa-chevron-down chevron"></i>
+            </a>
+            <div class="nav-dropdown-menu">
+              <a href="ecoreef-1cube.html" class="nav-dropdown-item">
+                <i class="fa-solid fa-cube"></i>
+                <div>
+                  <strong>Modul 1-Cube</strong>
+                  <span>Struktur Kubus Tunggal PVC &amp; Jaring</span>
+                </div>
+              </a>
+              <a href="ecoreef-2cube.html" class="nav-dropdown-item">
+                <i class="fa-solid fa-cubes-stacked"></i>
+                <div>
+                  <strong>Modul 2-Cube</strong>
+                  <span>Struktur Bertingkat Ekosistem Dalam</span>
+                </div>
+              </a>
+            </div>
+          </li>
+
+          <li><a href="sijitu-3d.html" class="nav-link"><i class="fa-solid fa-satellite"></i> Perangkat SIJITU 3D</a></li>
+          <li><a href="ai-model.html" class="nav-link"><i class="fa-solid fa-robot"></i> GHOST-AI Analytics</a></li>
+          <li><a href="laporkan.html" class="nav-link nav-cta-btn active"><i class="fa-solid fa-plus-circle"></i> Lapor Temuan</a></li>
+        </ul>
+      </nav>
+
+      <button class="nav-hamburger" id="navHamburger" aria-label="Toggle Menu">
+        <i class="fa-solid fa-bars"></i>
+      </button>
+    </div>
+  </header>
+
+  <!-- ========================================================================
+       HERO BANNER: CITIZEN SCIENCE REPORTING
+       ======================================================================== -->
+  <header class="lapor-page-header">
+    <div style="max-width: 800px; margin: 0 auto; position: relative; z-index: 2;">
+      <div class="badge-tag badge-dark" style="margin-bottom: 0.75rem; border-color: rgba(56, 189, 248, 0.4);">
+        <i class="fa-solid fa-hands-holding-circle" style="color: var(--teal-primary);"></i> Inisiatif Partisipasi Nelayan &amp; Warga Pesisir
+      </div>
+      <h1 style="color: #ffffff; font-size: 2.1rem; font-weight: 800; letter-spacing: -0.02em; line-height: 1.25; margin-bottom: 0.75rem;">
+        Laporkan Temuan Jaring &amp; Bubu Terbengkalai
+      </h1>
+      <p style="color: #94a3b8; font-size: 0.98rem; line-height: 1.6;">
+        Setiap titik koordinat yang Anda laporkan membantu tim konservasi memetakan sebaran ALDFG dan mengevakuasi sampah jaring untuk didaur ulang menjadi modul terumbu karang <strong>EcoReef 3D</strong>.
+      </p>
+    </div>
+  </header>
+
+  <!-- ========================================================================
+       MAIN FORM & INTERACTIVE MINI MAP SECTION
+       ======================================================================== -->
+  <main class="lapor-main-container">
+    <form id="publicReportForm" class="lapor-card-grid">
+
+      <!-- Left Column: Data Pelapor & Detail Temuan -->
+      <div style="display: flex; flex-direction: column; gap: 1.25rem;">
+        <div style="border-bottom: 1px solid var(--border-light); pb-2; margin-bottom: 0.25rem;">
+          <h2 style="font-size: 1.15rem; font-weight: 800; color: #0f172a; display: flex; align-items: center; gap: 0.5rem;">
+            <i class="fa-solid fa-clipboard-list" style="color: var(--teal-primary);"></i> Informasi Temuan ALDFG
+          </h2>
+          <p style="font-size: 0.8rem; color: #64748b; margin-top: 0.2rem;">Lengkapi data temuan berikut secara akurat.</p>
+        </div>
+
+        <!-- Nama Pelapor -->
+        <div class="form-group">
+          <label class="form-label" for="reporterName">Nama Pelapor / Kelompok Nelayan: <span style="color: #ef4444;">*</span></label>
+          <input type="text" id="reporterName" class="form-control" placeholder="Contoh: Pak Sulaeman / KUB Mina Bahari" required>
+        </div>
+
+        <!-- Kontak Pelapor -->
+        <div class="form-group">
+          <label class="form-label" for="contactNum">Nomor HP / WhatsApp: (Untuk Konfirmasi Verifikasi)</label>
+          <input type="tel" id="contactNum" class="form-control" placeholder="Contoh: 0812-3456-7890">
+        </div>
+
+        <!-- Jenis Alat Tangkap -->
+        <div class="form-group">
+          <label class="form-label" for="gearType">Jenis Alat Tangkap yang Ditemukan: <span style="color: #ef4444;">*</span></label>
+          <select id="gearType" class="form-control" required>
+            <option value="" disabled selected>Pilih jenis alat tangkap...</option>
+            <option value="Jaring Rajungan (Gillnet)">Jaring Rajungan (Gillnet)</option>
+            <option value="Bubu Lipat (Wire Trap)">Bubu Lipat (Wire Trap)</option>
+            <option value="Jaring Insang Monofilamen">Jaring Insang Monofilamen</option>
+            <option value="Jaring Trammel Net">Jaring Trammel Net</option>
+            <option value="Tali Tambang &amp; Pelampung">Tali Tambang &amp; Pelampung Terbengkalai</option>
+            <option value="Lainnya">Lainnya (Tulis di deskripsi)</option>
+          </select>
+        </div>
+
+        <!-- Deskripsi Kondisi -->
+        <div class="form-group">
+          <label class="form-label" for="reportDesc">Kondisi &amp; Perkiraan Kedalaman: <span style="color: #ef4444;">*</span></label>
+          <textarea id="reportDesc" class="form-control" rows="3" placeholder="Contoh: Jaring membungkus karang di kedalaman ±8 meter, ada ikan tersangkut, lokasi dekat tubir karang." required></textarea>
+        </div>
+
+        <!-- Foto Bukti Temuan -->
+        <div class="form-group">
+          <label class="form-label" for="photoInputUrl">Foto Bukti Temuan (URL Gambar atau Unggah Berkas):</label>
+          <div style="display: flex; gap: 0.5rem; margin-bottom: 0.5rem;">
+            <input type="url" id="photoInputUrl" class="form-control" placeholder="Tempel URL foto (https://...)">
+            <button type="button" class="btn btn-outline" id="btnBrowseFile" style="white-space: nowrap;">
+              <i class="fa-solid fa-folder-open"></i> Pilih Berkas
+            </button>
+            <input type="file" id="photoFileInput" accept="image/*" style="display: none;">
+          </div>
+
+          <div class="photo-preview-box" id="photoPreviewContainer">
+            <img id="photoPreviewImg" alt="Preview Foto Temuan">
+            <div class="photo-preview-placeholder" id="photoPlaceholder">
+              <i class="fa-solid fa-image" style="font-size: 1.75rem;"></i>
+              <span>Preview foto akan muncul di sini</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Column: Interactive Map & Coordinate Picker -->
+      <div style="display: flex; flex-direction: column; gap: 1.25rem;">
+        <div style="border-bottom: 1px solid var(--border-light); pb-2; margin-bottom: 0.25rem;">
+          <h2 style="font-size: 1.15rem; font-weight: 800; color: #0f172a; display: flex; align-items: center; gap: 0.5rem;">
+            <i class="fa-solid fa-map-pin" style="color: var(--teal-primary);"></i> Lokasi Spasial Teluk Banten
+          </h2>
+          <p style="font-size: 0.8rem; color: #64748b; margin-top: 0.2rem;">Klik langsung pada peta atau gunakan GPS perangkat.</p>
+        </div>
+
+        <!-- Mini Leaflet Map -->
+        <div>
+          <div id="miniMap"></div>
+          <div style="font-size: 0.72rem; color: #64748b; margin-top: 0.4rem; display: flex; align-items: center; gap: 0.35rem;">
+            <i class="fa-solid fa-hand-pointer" style="color: var(--teal-primary);"></i>
+            <span>Geser atau klik peta untuk menempatkan pin lokasi secara tepat.</span>
+          </div>
+        </div>
+
+        <!-- GPS Locator Button -->
+        <button type="button" class="btn btn-outline" id="btnAutoGps" style="width: 100%; justify-content: center; border-color: var(--teal-primary); color: var(--teal-primary);">
+          <i class="fa-solid fa-location-crosshairs"></i> Deteksi Lokasi GPS Saya Saat Ini
+        </button>
+
+        <!-- Latitude & Longitude Inputs -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem;">
+          <div class="form-group">
+            <label class="form-label" for="reportLat">Latitude: <span style="color: #ef4444;">*</span></label>
+            <input type="number" step="any" id="reportLat" class="form-control" style="font-family: var(--font-mono); font-weight: 600;" placeholder="-5.9800" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="reportLng">Longitude: <span style="color: #ef4444;">*</span></label>
+            <input type="number" step="any" id="reportLng" class="form-control" style="font-family: var(--font-mono); font-weight: 600;" placeholder="106.1800" required>
+          </div>
+        </div>
+
+        <!-- Submit Button -->
+        <button type="submit" id="btnSubmitReport" class="btn btn-teal" style="width: 100%; justify-content: center; padding: 0.9rem; font-size: 1rem; margin-top: 0.5rem;">
+          <i class="fa-solid fa-paper-plane"></i> Kirim Laporan ke Database
+        </button>
+      </div>
+
+    </form>
+  </main>
+
+  <!-- ========================================================================
+       FEEDBACK / SUCCESS MODAL
+       ======================================================================== -->
+  <div class="status-modal-overlay" id="statusModal">
+    <div class="status-modal-card">
+      <div style="width: 60px; height: 60px; border-radius: 50%; background: rgba(16, 185, 129, 0.15); color: #10b981; display: flex; align-items: center; justify-content: center; font-size: 1.85rem; margin: 0 auto 1rem;">
+        <i class="fa-solid fa-check"></i>
+      </div>
+      <h3 style="font-size: 1.35rem; font-weight: 800; color: #0f172a; margin-bottom: 0.5rem;" id="modalTitle">Laporan Berhasil Terkirim!</h3>
+      <p style="font-size: 0.85rem; color: #64748b; line-height: 1.6; margin-bottom: 1.5rem;" id="modalMessage">
+        Terima kasih atas kontribusi Anda. Data temuan telah dicatat dengan status <strong>Pending</strong> dan akan segera divalidasi oleh tim admin sebelum dipublikasikan di WebGIS utama.
+      </p>
+      <div style="display: flex; gap: 0.75rem; justify-content: center;">
+        <a href="peta.html" class="btn btn-teal">
+          <i class="fa-solid fa-map"></i> Buka Peta Sebaran
+        </a>
+        <button type="button" class="btn btn-outline" onclick="closeStatusModal()">
+          Tutup &amp; Buat Laporan Baru
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================================
+       GLOBAL FOOTER
+       ======================================================================== -->
+  <footer class="site-footer">
+    <div class="footer-container">
+      <div style="display: flex; align-items: center; gap: 0.5rem; color: #ffffff; font-weight: 700; font-size: 1rem;">
+        <i class="fa-solid fa-satellite-dish" style="color: var(--teal-primary);"></i>
+        <span>GHOST-TRACK Banten &copy; 2026</span>
+      </div>
+      <ul class="footer-nav">
+        <li><a href="index.html">Beranda</a></li>
+        <li><a href="peta.html">Peta Utama</a></li>
+        <li><a href="ecoreef-1cube.html">Modul EcoReef 3D</a></li>
+        <li><a href="sijitu-3d.html">Perangkat SIJITU</a></li>
+        <li><a href="ai-model.html">GHOST-AI</a></li>
+        <li><a href="admin.html" style="color: var(--cyan-glow); opacity: 0.85;"><i class="fa-solid fa-lock"></i> Portal Admin</a></li>
+      </ul>
+      <span class="footer-credits">
+        Inisiatif Sains Terbuka Konservasi Bahari &amp; Hilirisasi Daur Ulang Ghost Gear Teluk Banten, Indonesia.
+      </span>
+    </div>
+  </footer>
+
+  <!-- Leaflet JS CDN -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+
+  <!-- Shared Controller Script (for Navbar Dropdown & UI Controls) -->
+  <script src="script.js"></script>
+
+  <!-- Citizen Science Form Controller Script -->
+  <script>
+    let miniMap, marker;
+    const defaultCenter = [-5.98, 106.18];
+
+    // Initialize Mini Leaflet Map on DOMContentLoaded
+    document.addEventListener('DOMContentLoaded', () => {
+      initMiniMap();
+      setupPhotoHandlers();
+      setupFormSubmit();
+      setupGeolocation();
+    });
+
+    function initMiniMap() {
+      const mapEl = document.getElementById('miniMap');
+      if (!mapEl || typeof L === 'undefined') return;
+
+      miniMap = L.map('miniMap', {
+        center: defaultCenter,
+        zoom: 12,
+        zoomControl: true,
+        attributionControl: false
+      });
+
+      // Esri World Imagery (Satellite)
+      L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+        maxZoom: 18
+      }).addTo(miniMap);
+
+      // Default Marker
+      marker = L.marker(defaultCenter, {
+        draggable: true,
+        title: "Geser pin ke titik temuan"
+      }).addTo(miniMap);
+
+      // Initial coordinates fill
+      document.getElementById('reportLat').value = defaultCenter[0].toFixed(5);
+      document.getElementById('reportLng').value = defaultCenter[1].toFixed(5);
+
+      // Map Click Event
+      miniMap.on('click', (e) => {
+        const { lat, lng } = e.latlng;
+        marker.setLatLng([lat, lng]);
+        document.getElementById('reportLat').value = lat.toFixed(5);
+        document.getElementById('reportLng').value = lng.toFixed(5);
+      });
+
+      // Marker Drag Event
+      marker.on('dragend', () => {
+        const pos = marker.getLatLng();
+        document.getElementById('reportLat').value = pos.lat.toFixed(5);
+        document.getElementById('reportLng').value = pos.lng.toFixed(5);
+      });
+
+      // Coordinate inputs change event
+      const latInp = document.getElementById('reportLat');
+      const lngInp = document.getElementById('reportLng');
+      const onManualCoordChange = () => {
+        const lat = parseFloat(latInp.value);
+        const lng = parseFloat(lngInp.value);
+        if (!isNaN(lat) && !isNaN(lng)) {
+          marker.setLatLng([lat, lng]);
+          miniMap.panTo([lat, lng]);
+        }
+      };
+      latInp.addEventListener('change', onManualCoordChange);
+      lngInp.addEventListener('change', onManualCoordChange);
+    }
+
+    function setupGeolocation() {
+      const btnGps = document.getElementById('btnAutoGps');
+      if (!btnGps) return;
+
+      btnGps.addEventListener('click', () => {
+        if (!navigator.geolocation) {
+          alert('Peramban Anda tidak mendukung deteksi lokasi HTML5 Geolocation.');
+          return;
+        }
+
+        btnGps.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Mendeteksi GPS...';
+        btnGps.disabled = true;
+
+        navigator.geolocation.getCurrentPosition(
+          (pos) => {
+            const lat = pos.coords.latitude;
+            const lng = pos.coords.longitude;
+            document.getElementById('reportLat').value = lat.toFixed(5);
+            document.getElementById('reportLng').value = lng.toFixed(5);
+            if (marker && miniMap) {
+              marker.setLatLng([lat, lng]);
+              miniMap.setView([lat, lng], 14);
+            }
+            btnGps.innerHTML = '<i class="fa-solid fa-location-crosshairs"></i> Lokasi GPS Berhasil Ditemukan';
+            btnGps.disabled = false;
+          },
+          (err) => {
+            btnGps.innerHTML = '<i class="fa-solid fa-location-crosshairs"></i> Deteksi Lokasi GPS Saya Saat Ini';
+            btnGps.disabled = false;
+            alert('Gagal mendeteksi koordinat GPS (' + err.message + '). Silakan klik langsung pada peta.');
+          },
+          { enableHighAccuracy: true, timeout: 8000, maximumAge: 0 }
+        );
+      });
+    }
+
+    function setupPhotoHandlers() {
+      const urlInput = document.getElementById('photoInputUrl');
+      const fileInput = document.getElementById('photoFileInput');
+      const btnBrowse = document.getElementById('btnBrowseFile');
+      const img = document.getElementById('photoPreviewImg');
+      const placeholder = document.getElementById('photoPlaceholder');
+
+      btnBrowse.addEventListener('click', () => fileInput.click());
+
+      // Live preview from URL
+      urlInput.addEventListener('input', () => {
+        const url = urlInput.value.trim();
+        if (url) {
+          img.src = url;
+          img.style.display = 'block';
+          placeholder.style.display = 'none';
+        } else {
+          img.style.display = 'none';
+          placeholder.style.display = 'flex';
+        }
+      });
+
+      // File upload to Base64
+      fileInput.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (file) {
+          const reader = new FileReader();
+          reader.onload = (evt) => {
+            const base64Data = evt.target.result;
+            urlInput.value = base64Data;
+            img.src = base64Data;
+            img.style.display = 'block';
+            placeholder.style.display = 'none';
+          };
+          reader.readAsDataURL(file);
+        }
+      });
+    }
+
+    function setupFormSubmit() {
+      const form = document.getElementById('publicReportForm');
+      const btnSubmit = document.getElementById('btnSubmitReport');
+
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const payload = {
+          reporter_name: document.getElementById('reporterName').value.trim(),
+          contact_num: document.getElementById('contactNum').value.trim(),
+          gear_type: document.getElementById('gearType').value,
+          description: document.getElementById('reportDesc').value.trim(),
+          latitude: parseFloat(document.getElementById('reportLat').value),
+          longitude: parseFloat(document.getElementById('reportLng').value),
+          photo_url: document.getElementById('photoInputUrl').value.trim()
+        };
+
+        btnSubmit.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Menyimpan Laporan...';
+        btnSubmit.disabled = true;
+
+        try {
+          const res = await fetch('/api/reports/submit', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+          });
+
+          const result = await res.json();
+
+          if (res.ok && result.success) {
+            showStatusModal('Laporan Berhasil Diajukan!', result.message || 'Laporan Anda telah berhasil dicatat dan sedang dalam antrean verifikasi.');
+            form.reset();
+            document.getElementById('photoPreviewImg').style.display = 'none';
+            document.getElementById('photoPlaceholder').style.display = 'flex';
+            if (marker && miniMap) {
+              marker.setLatLng(defaultCenter);
+              miniMap.setView(defaultCenter, 12);
+              document.getElementById('reportLat').value = defaultCenter[0].toFixed(5);
+              document.getElementById('reportLng').value = defaultCenter[1].toFixed(5);
+            }
+          } else {
+            alert('Gagal mengirim laporan: ' + (result.message || 'Terjadi kesalahan pada server.'));
+          }
+        } catch (err) {
+          console.error('Submit error:', err);
+          // If server is not running or network error, fallback alert
+          alert('Tidak dapat terhubung ke server backend Express (/api/reports/submit). Pastikan server aktif (jalankan npm start).');
+        } finally {
+          btnSubmit.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Kirim Laporan ke Database';
+          btnSubmit.disabled = false;
+        }
+      });
+    }
+
+    function showStatusModal(title, message) {
+      document.getElementById('modalTitle').textContent = title;
+      document.getElementById('modalMessage').textContent = message;
+      document.getElementById('statusModal').classList.add('active');
+    }
+
+    function closeStatusModal() {
+      document.getElementById('statusModal').classList.remove('active');
+    }
+  </script>
+</body>
+</html>
